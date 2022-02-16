@@ -1,0 +1,27 @@
+Topic: Rhyming Words
+Description: Words are formed by combining the letters of the alphabet. It is important to remember that the English alphabet is composed of 26 letters with five (5) vowels and 21 consonants.
+
+VOWELS
+ah. ae. ē. oh. oooh
+a e i o u
+
+CONSONANTS
+Bb Cc Dd Ff Gg Hh Jj
+Kk Ll Mm Nn Pp Qq Rr
+Ss Tt Vv Ww Xx Yy Zz
+
+By combining some of these letters, words may be formed. Some of these words include net, one, pen, and red.
+Some words have the same or similar ending sounds. They are called rhyming words.
+At the end of the lesson, you are expected to recognize rhyming words in nursery rhymes, poems or songs heard.
+
+
+Read the sets of words below.
+
+`display sets
+`get user voice input
+
+Notice the sounds of the words. Sets A and C are considered as rhyming words while Set B is not.
+
+//INITIATE QUIZ VIEW
+Learning Task 1:
+Match the pictures which have the same ending sounds.

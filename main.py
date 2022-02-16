@@ -1,16 +1,22 @@
 # MAIN CODE
 import os
+import time
+import datetime
+import numpy as np
 import pyglet
 from gtts import gTTS
 import pygame
 import speech_recognition as sr
 import sys
-import cv2
+
 from time import sleep
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import uic
+from PyQt5.uic import *
 
 my_answer = ""
 language = ""
@@ -19,6 +25,7 @@ user_input = ['hi', 'hello', 'good morning', 'good afternoon', 'good evening', '
               'lesson for today', 'whats the lesson, ettibot']
 
 respond = ['hello', 'hi', 'good morning too', 'good afternoon too', 'good evening too']
+
 
 # HERE CONVERTS USER VOICE INPUT INTO MACHINE READABLE TEXT
 def ask_ettibot():
@@ -45,6 +52,7 @@ def ask_ettibot():
     return text
 
 
+# HERE CONVERTS TEXT INTO VOICE OUTPUT
 def speak(text, lang="en"):  # here audio is var which contain text
     # Call LED lights here
     tts = gTTS(text=text, lang=lang)
@@ -56,23 +64,67 @@ def speak(text, lang="en"):  # here audio is var which contain text
     os.remove(filename)  # remove temporary file
 
 
-class win(QWidget):  # first window
+class SplashScreen(QSplashScreen):  # first window
     def __init__(self):
-        super().__init__()
+        super(QSplashScreen, self).__init__()
+        uic.loadUi('splashscreen.ui', self)
+        self.setWindowFlag(Qt.FramelessWindowHint)  # Removes the frame of the window
+        self.showMaximized()  # opening window in maximized size
+        # speak("Goodmorning Learner!")
+
+        # changing the text of label
+        self.Title_2.setText("Goodmorning learner")
+
+    def progress(self):
+        # speak("Welcome button clicked")
+        for i in range(100):
+            sleep(0.1)
+            self.progressBar.setValue(i)
+
+
+class MainPage(QDialog):  # first window
+    def __init__(self):
+        super(MainPage, self).__init__()
         uic.loadUi('welcome.ui', self)
-        self.btn1.clicked.connect(self.show_welcome)
+        self.btnTopics.clicked.connect(self.showTopics)
+        self.btnQuiz.clicked.connect(self.showQuiz)
+        self.btnTranslate.clicked.connect(self.showTranslate)
+        self.btnAbout.clicked.connect(self.showAbout)
+        self.showMaximized()  # opening window in maximized size
         speak("Goodmorning Learner!")
 
-    def show_welcome(self):
-        # speak("Welcome button clicked")
-        self.welcome = Form()
-        self.welcome.show()
+    def showTopics(self):
+        speak("Topics")
+        self.lesson = window1()
+        self.lesson.show()
         self.hide()
 
+    def showQuiz(self):
+        speak("Quiz")
+        self.lesson = window1()
+        self.lesson.show()
+        self.hide()
 
-class Form(QWidget):  # second screen showing the lesson and activity
+    def showTranslate(self):
+        speak("Translate")
+        self.activity = Activity()
+        self.activity.show()
+        self.hide()
+
+    def showAbout(self):
+        speak("About Me")
+        self.activity = Activity()
+        self.activity.show()
+        self.hide()
+
+    # self.welcome = Form()
+    # self.welcome.show()
+    # self.hide()
+
+
+class Menu(QWidget):  # second screen showing the lesson and activity
     def __init__(self):
-        super().__init__()
+        super(Menu, self).__init__()
         uic.loadUi('second.ui', self)
         self.btn3.clicked.connect(self.show_lesson)
         self.btn4.clicked.connect(self.show_activity)
@@ -89,6 +141,7 @@ class Form(QWidget):  # second screen showing the lesson and activity
         self.activity = Activity()
         self.activity.show()
         self.hide()
+
 
 class window1(QWidget):
     def __init__(self):
@@ -120,11 +173,11 @@ class Activity(QWidget):
         speak("Activity")
         self.start.clicked.connect(self.show_Quiz1)
 
-    # def show_Quiz1(self):
-    #     self.quiz = quiz1()
-    #     self.quiz.show()
-    #     self.hide()
-    #     speak("Start")
+    def show_Quiz1(self):
+        self.quiz = quiz1()
+        self.quiz.show()
+        self.hide()
+        speak("Start")
 
 
 class quiz1(QWidget):
@@ -154,9 +207,10 @@ class quiz1(QWidget):
         self.hide()
         speak("Quiz number 2")
 
+
 class quiz2(QWidget):
     def __init__(self):
-        super(). __init__()
+        super().__init__()
         uic.loadUi('Q2,ui', self)
         self.pushButton.clicked.connect(self.show)
 
@@ -165,9 +219,10 @@ class quiz2(QWidget):
         self.next.show()
         self.hide()
 
+
 class quiz3(QWidget):
     def __init__(self):
-        super(). __init__()
+        super().__init__()
         uic.loadUi('Q3,ui', self)
         self.pushButton.clicked.connect(self.show)
 
@@ -176,9 +231,10 @@ class quiz3(QWidget):
         self.next.show()
         self.hide()
 
+
 class quiz4(QWidget):
     def __init__(self):
-        super(). __init__()
+        super().__init__()
         uic.loadUi('Q4,ui', self)
         self.pushButton.clicked.connect(self.show)
 
@@ -187,9 +243,10 @@ class quiz4(QWidget):
         self.next.show()
         self.hide()
 
+
 class quiz5(QWidget):
     def __init__(self):
-        super(). __init__()
+        super().__init__()
         uic.loadUi('Q5,ui', self)
         self.pushButton.clicked.connect(self.show)
 
@@ -198,9 +255,10 @@ class quiz5(QWidget):
         self.next.show()
         self.hide()
 
+
 class quiz6(QWidget):
     def __init__(self):
-        super(). __init__()
+        super().__init__()
         uic.loadUi('Q6,ui', self)
         self.pushButton.clicked.connect(self.show)
 
@@ -213,8 +271,58 @@ class quiz6(QWidget):
 if __name__ == '__main__':
 
     APP = QApplication(sys.argv)
-    MY_APP = win()
-    MY_APP.show()
+    splash = SplashScreen()
+    splash.show()
+    speak("Please wait. while I'm initiating myself")
+    splash.progress()
+    speak("Done!")
+
+    window = MainPage()
+    window.show()
+
+    splash.finish(window)
+
+    query = ask_ettibot().lower()
+
+    # wake up
+    if "topics" in query:
+        window = MainPage()
+        window.showTopics()
+
+    # action time
+    elif "quiz" in query:
+        window = MainPage()
+        window.showQuiz()
+
+    # action time
+    elif "translate" in query:
+        window.showTranslate()
+
+    # action tim
+    elif "About" in query:
+        window.showAbout()
+    # while True:
+    #     query = ask_ettibot().lower()
+    #
+    #     ## wake up
+    #     if ask_ettibot() is True:
+    #         res = "Hello I am Athena the Teacher, what can I do for you?"
+    #
+    #     ## action time
+    #     elif "time" in query:
+    #         res = ai.action_time()
+    #
+    #     ## respond politely
+    #     elif any(i in query for i in ["thank", "thanks"]):
+    #         res = np.random.choice(
+    #             ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
+
+    ## conversation
+    # else:
+    #     chat = nlp(transformers.Conversation(ai.text), pad_token_id=50256)
+    #     res = str(chat)
+    #     res = res[res.find("bot >> ") + 6:].strip()
+    # ai.text_to_speech(res)
 
     try:
         sys.exit(APP.exec_())

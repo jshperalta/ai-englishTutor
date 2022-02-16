@@ -16,9 +16,7 @@ my_answer = ""
 language = ""
 counter = 0
 user_input = ['hi', 'hello', 'good morning', 'good afternoon', 'good evening', 'what is lesson for today',
-              'lesson for today', 'whats the lesson, ettibot', 'what is qualitative', 'qualitative',
-              'what is quantitative', 'quantitative', 'what is discrete', 'discrete', 'what is continuous',
-              'continuous']
+              'lesson for today', 'whats the lesson, ettibot']
 
 respond = ['hello', 'hi', 'good morning too', 'good afternoon too', 'good evening too']
 
@@ -66,7 +64,7 @@ class win(QWidget):  # first window
         speak("Goodmorning Learner!")
 
     def show_welcome(self):
-        speak("Welcome button clicked")
+        # speak("Welcome button clicked")
         self.welcome = Form()
         self.welcome.show()
         self.hide()
@@ -78,7 +76,7 @@ class Form(QWidget):  # second screen showing the lesson and activity
         uic.loadUi('second.ui', self)
         self.btn3.clicked.connect(self.show_lesson)
         self.btn4.clicked.connect(self.show_activity)
-        speak("Try saying. i want to learn. or. i want to play")
+        # speak("Try saying. i want to learn. or. i want to play")
 
     def show_lesson(self):
         speak("You choose to learn!")

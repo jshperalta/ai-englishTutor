@@ -20,7 +20,7 @@ user_input = ['hi', 'hello', 'good morning', 'good afternoon', 'good evening', '
 
 respond = ['hello', 'hi', 'good morning too', 'good afternoon too', 'good evening too']
 
-
+# HERE CONVERTS USER VOICE INPUT INTO MACHINE READABLE TEXT
 def ask_ettibot():
     global my_answer, counter, user_input, respond
     counter += 1

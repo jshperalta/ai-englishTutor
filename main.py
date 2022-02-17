@@ -21,6 +21,7 @@ from PyQt5.uic import *
 my_answer = ""
 language = ""
 counter = 0
+p = 0
 user_input = ['hi', 'hello', 'good morning', 'good afternoon', 'good evening', 'what is lesson for today',
               'lesson for today', 'whats the lesson, ettibot']
 
@@ -68,6 +69,7 @@ class SplashScreen(QSplashScreen):  # first window
     def __init__(self):
         super(QSplashScreen, self).__init__()
         uic.loadUi('splashscreen.ui', self)
+
         self.setWindowFlag(Qt.FramelessWindowHint)  # Removes the frame of the window
         self.showMaximized()  # opening window in maximized size
         # speak("Goodmorning Learner!")
@@ -77,9 +79,15 @@ class SplashScreen(QSplashScreen):  # first window
 
     def progress(self):
         # speak("Welcome button clicked")
-        for i in range(100):
-            sleep(0.1)
-            self.progressBar.setValue(i)
+        global progressBar
+        global p
+        p = p + 1
+        progressBar.setValue(p)
+        progressBar.update()
+
+        # for _ in range(200):
+        #     sleep(0.1)
+        #     self.progressBar.setValue(i)
 
 
 class MainPage(QDialog):  # first window
@@ -272,8 +280,15 @@ if __name__ == '__main__':
 
     APP = QApplication(sys.argv)
     splash = SplashScreen()
+    pbar = QProgressBar()
     splash.show()
     speak("Please wait. while I'm initiating myself")
+
+    animation = QPropertyAnimation(pbar, "value")
+    animation.setDuration(2000)
+    animation.setStartValue(0)
+    animation.setEndValue(100)
+    animation.start()
     splash.progress()
     speak("Done!")
 

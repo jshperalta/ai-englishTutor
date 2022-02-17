@@ -33,11 +33,14 @@ def ask_ettibot():
     global my_answer, counter, user_input, respond
     counter += 1
     print("Speak Now . . .")
+
     r = sr.Recognizer()
+    r.energy_threshold = 50
+    r.dynamic_energy_threshold = False
 
     with sr.Microphone() as source:
         print("Listening....")
-        audio = r.listen(source)
+        audio = r.listen(source, phrase_time_limit=10)
         # Call LED lights here
 
         try:
@@ -291,25 +294,29 @@ if __name__ == '__main__':
 
     splash.finish(window)
 
-    # query = ask_ettibot().lower()
-    #
-    # # wake up
-    # if "topics" in query:
-    #     window = MainPage()
-    #     window.showTopics()
-    #
-    # # action time
-    # elif "quiz" in query:
-    #     window = MainPage()
-    #     window.showQuiz()
-    #
-    # # action time
-    # elif "translate" in query:
-    #     window.showTranslate()
-    #
-    # # action tim
-    # elif "about" in query:
-    #     window.showAbout()
+    while (True):
+        query = ask_ettibot().lower()
+        # wake up
+        if "topics" in query:
+            window = MainPage()
+            window.showTopics()
+
+        # action time
+        elif "quiz" in query:
+            window = MainPage()
+            window.showQuiz()
+
+        # action time
+        elif "translate" in query:
+            window.showTranslate()
+
+        # action tim
+        elif "about" in query:
+            window.showAbout()
+
+        else:
+            speak("Sorry, I don't understand what you said. Please try again.")
+
     # while True:
     #     query = ask_ettibot().lower()
     #

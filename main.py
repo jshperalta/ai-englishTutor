@@ -40,7 +40,7 @@ def ask_ettibot():
 
     with sr.Microphone() as source:
         print("Listening....")
-        audio = r.listen(source, phrase_time_limit=10)
+        audio = r.listen(source, phrase_time_limit=3)
         # Call LED lights here
 
         try:

@@ -74,20 +74,11 @@ class SplashScreen(QSplashScreen):  # first window
         self.showMaximized()  # opening window in maximized size
         # speak("Goodmorning Learner!")
 
-        # changing the text of label
-        self.Title_2.setText("Goodmorning learner")
-
     def progress(self):
         # speak("Welcome button clicked")
-        global progressBar
-        global p
-        p = p + 1
-        progressBar.setValue(p)
-        progressBar.update()
-
-        # for _ in range(200):
-        #     sleep(0.1)
-        #     self.progressBar.setValue(i)
+        for i in range(100):
+            sleep(0.01)
+            self.progressBar.setValue(i)
 
 
 class MainPage(QDialog):  # first window
@@ -100,10 +91,12 @@ class MainPage(QDialog):  # first window
         self.btnAbout.clicked.connect(self.showAbout)
         self.showMaximized()  # opening window in maximized size
         speak("Goodmorning Learner!")
+        # # changing the text of label
+        # self.Title_2.setText("Goodmorning learner")
 
     def showTopics(self):
         speak("Topics")
-        self.lesson = window1()
+        self.lesson = topics()
         self.lesson.show()
         self.hide()
 
@@ -128,6 +121,14 @@ class MainPage(QDialog):  # first window
     # self.welcome = Form()
     # self.welcome.show()
     # self.hide()
+
+
+class topics(QDialog):  # second screen showing the lesson and activity
+    def __init__(self):
+        super(topics, self).__init__()
+        uic.loadUi('topics.ui', self)
+
+        # speak("Try saying. i want to learn. or. i want to play")
 
 
 class Menu(QWidget):  # second screen showing the lesson and activity
@@ -280,15 +281,8 @@ if __name__ == '__main__':
 
     APP = QApplication(sys.argv)
     splash = SplashScreen()
-    pbar = QProgressBar()
     splash.show()
     speak("Please wait. while I'm initiating myself")
-
-    animation = QPropertyAnimation(pbar, "value")
-    animation.setDuration(2000)
-    animation.setStartValue(0)
-    animation.setEndValue(100)
-    animation.start()
     splash.progress()
     speak("Done!")
 
@@ -297,25 +291,25 @@ if __name__ == '__main__':
 
     splash.finish(window)
 
-    query = ask_ettibot().lower()
-
-    # wake up
-    if "topics" in query:
-        window = MainPage()
-        window.showTopics()
-
-    # action time
-    elif "quiz" in query:
-        window = MainPage()
-        window.showQuiz()
-
-    # action time
-    elif "translate" in query:
-        window.showTranslate()
-
-    # action tim
-    elif "About" in query:
-        window.showAbout()
+    # query = ask_ettibot().lower()
+    #
+    # # wake up
+    # if "topics" in query:
+    #     window = MainPage()
+    #     window.showTopics()
+    #
+    # # action time
+    # elif "quiz" in query:
+    #     window = MainPage()
+    #     window.showQuiz()
+    #
+    # # action time
+    # elif "translate" in query:
+    #     window.showTranslate()
+    #
+    # # action tim
+    # elif "about" in query:
+    #     window.showAbout()
     # while True:
     #     query = ask_ettibot().lower()
     #

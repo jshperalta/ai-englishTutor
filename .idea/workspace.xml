@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="39d0e6e0-718a-4ba8-846c-6671cf435754" name="Changes" comment="added content scripts">
+    <list default="true" id="39d0e6e0-718a-4ba8-846c-6671cf435754" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q1.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q2.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q3.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q4.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q5.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Q6.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Threaded Speech Recognition.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/activity.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output.avi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyqt.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/script.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/second.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/servo.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/splashscreen.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topics.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/welcome.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/window1.ui" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,14 +35,8 @@
       </list>
     </option>
   </component>
-  <component name="FormatOnSaveOptions">
-    <option name="myRunOnSave" value="true" />
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="259FIrAEsidocI0CF2Cq2z0kRod" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -44,7 +53,8 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="PLAIN_TEXT" />
-    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+    <property name="format.on.save" value="true" />
+    <property name="settings.editor.selected.configurable" value="actions.on.save" />
   </component>
   <component name="RunManager" selected="Python.main">
     <configuration name="Threaded Speech Recognition" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -75,9 +85,9 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Users\joshu\PycharmProjects\pythonProject\venv\Scripts\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
@@ -177,40 +187,8 @@
       <option name="project" value="LOCAL" />
       <updated>1645005830860</updated>
     </task>
-    <task id="LOCAL-00005" summary="added content scripts">
-      <created>1645086723498</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1645086723498</updated>
-    </task>
-    <task id="LOCAL-00006" summary="added content scripts">
-      <created>1645087977335</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1645087977335</updated>
-    </task>
-    <task id="LOCAL-00007" summary="added content scripts">
-      <created>1645092312674</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1645092312674</updated>
-    </task>
-    <option name="localTasksCounter" value="8" />
+    <option name="localTasksCounter" value="5" />
     <servers />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added new components" />

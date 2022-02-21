@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39d0e6e0-718a-4ba8-846c-6671cf435754" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/defines/xyz.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screens/sp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ai-thesis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ai-thesis.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/defines/pyqt.py" beforeDir="false" afterPath="$PROJECT_DIR$/defines/pyqt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/window1.ui" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -227,7 +222,14 @@
       <option name="project" value="LOCAL" />
       <updated>1645419073968</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="minor changes on the transition error">
+      <created>1645424653461</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1645424653461</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

@@ -336,13 +336,30 @@ class Window(QMainWindow):
         self.showMaximized()  # opening window in maximized size
         
         # Create and connect widgets
-        self.btnTopics.clicked.connect(self.runTasks2)
-        self.btnQuiz.clicked.connect(self.runTasks2)
+        self.btnTopics.clicked.connect(self.runTopics)
+        self.btnQuiz.clicked.connect(self.runQuiz)
+        self.btnTranslate.clicked.connect(self.runTranslate)
+        self.btnAbout.clicked.connect(self.runAbout)
         
-    def runTasks2(self):
+    def runTopics(self):
         threadCount = QThreadPool.globalInstance().maxThreadCount()
         self.label.setText("Topics")
         speak("You have selected Topics")
+        
+    def runQuiz(self):
+        threadCount = QThreadPool.globalInstance().maxThreadCount()
+        self.label.setText("Topics")
+        speak("You have selected Quiz")
+        
+    def runTranslate(self):
+        threadCount = QThreadPool.globalInstance().maxThreadCount()
+        self.label.setText("Topics")
+        speak("You have selected Translate")
+        
+    def runAbout(self):
+        threadCount = QThreadPool.globalInstance().maxThreadCount()
+        self.label.setText("Topics")
+        speak("You have selected About")
 
     def setupUi(self):
         self.setWindowTitle("QThreadPool + QRunnable")

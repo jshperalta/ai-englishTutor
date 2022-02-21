@@ -85,7 +85,7 @@ class Runnable(QRunnable):
 
     def run(self):
         # Your long-running task goes here ...
-        snr.speak("logging")
+        speak("logging")
         for i in range(5):
             logging.info(f"Working in thread {self.n}, step {i + 1}/5")
             time.sleep(random.randint(700, 2500) / 1000)
@@ -111,13 +111,13 @@ class Window(QMainWindow):
         layout.addWidget(self.label)
         layout.addWidget(countBtn)
         self.centralWidget.setLayout(layout)
-        snr.speak("setup u.i")
+        speak("setup u.i")
 
     def runTasks(self):
         threadCount = QThreadPool.globalInstance().maxThreadCount()
         self.label.setText(f"Running {threadCount} Threads")
         pool = QThreadPool.globalInstance()
-        snr.speak("pool")
+        speak("pool")
         for i in range(threadCount):
             # 2. Instantiate the subclass of QRunnable
             runnable = Runnable(i)

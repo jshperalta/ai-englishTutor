@@ -270,15 +270,15 @@ def my_loop(queue):
 
 if __name__ == '__main__':
     APP = QApplication(sys.argv)
-    splash = SplashScreen()
-    splash.show()
-    snr.speak("Please wait. while I'm initiating myself")
-    splash.progress()
-    snr.speak("Done!")
+    # splash = SplashScreen()
+    # splash.show()
+    # snr.speak("Please wait. while I'm initiating myself")
+    # splash.progress()
+    # snr.speak("Done!")
     window = MainPage()
     window.show()
 
-    splash.finish(window)
+    # splash.finish(window)
 
     try:
         sys.exit(APP.exec_())

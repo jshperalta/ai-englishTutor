@@ -1,3 +1,7 @@
+import logging
+import random
+import sys
+import time
 # MAIN CODE
 import os
 import time
@@ -8,6 +12,7 @@ from time import sleep
 from googletrans import Translator
 import threading
 import queue
+from gtts import gTTS
 
 import sys
 import defines.speakandrecognize as snr
@@ -22,6 +27,8 @@ from PyQt5 import uic
 from PyQt5.uic import *
 
 translator = Translator()
+pygame.mixer.init()
+logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 my_answer = ""
 language = ""
@@ -207,14 +214,54 @@ class quiz(QWidget):
         self.quiz.show()
         self.hide()
         snr.speak("Quiz number 2")
+        
+        
 
 
 # ------FUNCTIONS
 
-def my_loop(queue):
-    while MainPage:
-        query = snr.ask_ettibot().lower()
+# HERE CONVERTS USER VOICE INPUT INTO MACHINE READABLE TEXT
+def ask_ettibot():
+    print("Speak Now . . .")
 
+    r = sr.Recognizer()
+    r.energy_threshold = 50
+    r.dynamic_energy_threshold = False
+
+    with sr.Microphone() as source:
+        print("Listening....")
+        audio = r.listen(source)  # phrase_time_limit=3)
+        # Call LED lights here
+
+        try:
+            # Call LED lights here
+            print("Recognising....")
+            text = r.recognize_google(audio, language='en')
+            print(text)
+
+        except Exception as e:
+            print("Exception " + str(e))
+            return "topics"
+
+    return text
+
+
+# HERE CONVERTS TEXT INTO VOICE OUTPUT
+def speak(text, lang="en"):  # here audio is var which contain text
+    global my_answer, counter, user_input, respond
+    counter += 1
+    # Call LED lights here
+    tts = gTTS(text=text, lang=lang)
+    filename = 'temp.mp3'
+    tts.save(filename)
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play()
+    os.remove(filename)  # remove temporary file
+    
+
+def my_loop():
+    while True:
+        query = snr.ask_ettibot().lower()
         # translator
         if any(i in query for i in ["translate", "tagalog ng", "english ng"]):
             word = query.replace(["translate", "tagalog ng", "english ng"], '')
@@ -226,20 +273,20 @@ def my_loop(queue):
             if detected_lang.lang == 'en':
                 translate_text = translator.translate(word, dest='tl')
                 print(translate_text)
-                snr.speak(translate_text.text, 'tl')
+                speak(translate_text.text, 'tl')
 
             elif detected_lang.lang == 'tl':
                 translate_text = translator.translate(word, dest='en')
                 print(translate_text)
-                snr.speak(translate_text.text, 'en')
+                speak(translate_text.text, 'en')
 
         # topics
-        if any(i in query for i in ["topics", "show topics", "what's the lessons"]):
-            window = MainPage()
-            window.showTopics()
+        elif any(i in query for i in ["topics", "show topics", "what's the lessons"]):
+            window = Window()
+            window.runTasks2()
 
         # quiz
-        if any(i in query for i in ["quiz", "show quiz", "what's the challenge"]):
+        elif any(i in query for i in ["quiz", "show quiz", "what's the challenge"]):
             window = MainPage()
             window.showQuiz()
 
@@ -255,33 +302,98 @@ def my_loop(queue):
         elif any(_ in query for _ in ["thank", "thanks"]):
             res = np.random.choice(
                 ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
-            snr.speak(res)
+            speak(res)
 
         # respond politely
         elif any(i in query for i in ["hi", "hello", "can you hear me"]):
             res = np.random.choice(
                 ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
-            snr.speak(res)
+            speak(res)
 
         else:
-            snr.speak("Sorry, I don't understand what you said. Please try again.")
+            speak("Sorry, I don't understand what you said. Please try again.")
             print(query)
+            
+# 1. Subclass QRunnable
+class Runnable(QRunnable):
+    def __init__(self, n):
+        super().__init__()
+        self.n = n
+        speak("this is runnable subclass")
+
+    def run(self):
+        # Your long-running task goes here ...
+        for i in range(5):
+           logging.info(f"Working in thread {self.n}, step {i + 1}/5")
+           time.sleep(random.randint(700, 2500) / 1000)
+           
+              
+class Window(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        uic.loadUi('MainWindow.ui', self)
+        #self.setupUi()
+        self.showMaximized()  # opening window in maximized size
+        
+        # Create and connect widgets
+        self.btnTopics.clicked.connect(self.runTasks2)
+        self.btnQuiz.clicked.connect(self.runTasks2)
+        
+    def runTasks2(self):
+        threadCount = QThreadPool.globalInstance().maxThreadCount()
+        self.label.setText("Topics")
+        speak("You have selected Topics")
+
+    def setupUi(self):
+        self.setWindowTitle("QThreadPool + QRunnable")
+        self.resize(250, 150)
+        self.centralWidget = QWidget()
+        self.setCentralWidget(self.centralWidget)
+        
+        # Create and connect widgets
+        self.label = QLabel("Hello, World!")
+        self.label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        countBtn = QPushButton("Click me!")
+        countBtn.clicked.connect(self.runTasks)
+
+        countBtn2 = QPushButton("Say Hello")
+        countBtn2.clicked.connect(self.runTasks2)
+        
+        # Set the layout
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(countBtn)
+        layout.addWidget(countBtn2)
+        self.centralWidget.setLayout(layout)
+        speak("setup you I")
+        
+    def runTasks2(self):
+        threadCount = QThreadPool.globalInstance().maxThreadCount()
+        self.label.setText("Hello!")
+        speak("Hello")
+
+    def runTasks(self):
+        threadCount = QThreadPool.globalInstance().maxThreadCount()
+        self.label.setText(f"Running {threadCount} Threads")
+        pool = QThreadPool.globalInstance()
+        for i in range(threadCount):
+            # 2. Instantiate the subclass of QRunnable
+            runnable = Runnable(i)
+            # 3. Call start()
+            pool.start(runnable)
 
 
 if __name__ == '__main__':
-    APP = QApplication(sys.argv)
-    # splash = SplashScreen()
-    # splash.show()
-    # snr.speak("Please wait. while I'm initiating myself")
-    # splash.progress()
-    # snr.speak("Done!")
-    window = MainPage()
+    app = QApplication(sys.argv)
+    #window = Window()
+    #window.show()
+    speak("You can say the word to select.")
+    
+    #start threading
+    t = threading.Thread(target=my_loop)
+    t.setDaemon(True)
+    t.start()
+    
+    window = Window()
     window.show()
-
-    # splash.finish(window)
-
-    try:
-        sys.exit(APP.exec_())
-
-    except SystemExit:
-        print()
+    sys.exit(app.exec())

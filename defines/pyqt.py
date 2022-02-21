@@ -2,6 +2,27 @@ import logging
 import random
 import sys
 import time
+# MAIN CODE
+import os
+import time
+import datetime
+import numpy as np
+import pygame
+from time import sleep
+from googletrans import Translator
+import threading
+import queue
+
+import sys
+import defines.speakandrecognize as snr
+
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5 import uic
+from PyQt5.uic import *
 
 from PyQt5.QtCore import QRunnable, Qt, QThreadPool
 from PyQt5.QtWidgets import (
@@ -12,6 +33,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
@@ -24,6 +47,7 @@ class Runnable(QRunnable):
 
     def run(self):
         # Your long-running task goes here ...
+        snr.speak("logging")
         for i in range(5):
             logging.info(f"Working in thread {self.n}, step {i + 1}/5")
             time.sleep(random.randint(700, 2500) / 1000)
@@ -49,11 +73,13 @@ class Window(QMainWindow):
         layout.addWidget(self.label)
         layout.addWidget(countBtn)
         self.centralWidget.setLayout(layout)
+        snr.speak("setup u.i")
 
     def runTasks(self):
         threadCount = QThreadPool.globalInstance().maxThreadCount()
         self.label.setText(f"Running {threadCount} Threads")
         pool = QThreadPool.globalInstance()
+        snr.speak("pool")
         for i in range(threadCount):
             # 2. Instantiate the subclass of QRunnable
             runnable = Runnable(i)

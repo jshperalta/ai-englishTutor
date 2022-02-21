@@ -2,14 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39d0e6e0-718a-4ba8-846c-6671cf435754" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/defines/speakandrecognize.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/defines/translator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/defines/xyz.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/screens/sp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ai-thesis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ai-thesis.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/defines/pyqt.py" beforeDir="false" afterPath="$PROJECT_DIR$/defines/pyqt.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/splashscreen.ui" beforeDir="false" afterPath="$PROJECT_DIR$/screens/splashscreen.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/topics.ui" beforeDir="false" afterPath="$PROJECT_DIR$/screens/topics.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/welcome.ui" beforeDir="false" afterPath="$PROJECT_DIR$/screens/welcome.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +27,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="259FIrAEsidocI0CF2Cq2z0kRod" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="compactDirectories" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -37,6 +38,7 @@
     <option name="showMembers" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
@@ -51,7 +53,7 @@
       <recent name="C:\Users\joshu\OneDrive\Documents\GitHub\ai-thesis\defines" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.pyqt (1)">
+  <component name="RunManager" selected="Python.main">
     <configuration name="Threaded Speech Recognition" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ai-thesis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -136,19 +138,19 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="servo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="sp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ai-thesis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="SDK_HOME" value="C:\Users\joshu\PycharmProjects\pythonProject\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/screens" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/servo.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/screens/sp.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -159,11 +161,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.pyqt (1)" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.pyqt (1)" />
+        <item itemvalue="Python.sp" />
         <item itemvalue="Python.pyqt" />
         <item itemvalue="Python.Threaded Speech Recognition" />
-        <item itemvalue="Python.servo" />
       </list>
     </recent_temporary>
   </component>
@@ -218,13 +220,22 @@
       <option name="project" value="LOCAL" />
       <updated>1645261032111</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="minor changes on the transition error">
+      <created>1645419073968</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1645419073968</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="added new components" />
     <MESSAGE value="minor edits" />
     <MESSAGE value="added content scripts" />
-    <option name="LAST_COMMIT_MESSAGE" value="added content scripts" />
+    <MESSAGE value="minor changes on the transition error" />
+    <option name="LAST_COMMIT_MESSAGE" value="minor changes on the transition error" />
   </component>
 </project>

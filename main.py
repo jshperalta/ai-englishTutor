@@ -12,6 +12,7 @@ import queue
 import sys
 import defines.speakandrecognize as snr
 
+from PyQt5.QtCore import QRunnable, Qt, QThreadPool
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QWidget
@@ -33,7 +34,7 @@ screen = ""
 
 class SplashScreen(QSplashScreen):  # first window
     def __init__(self):
-        super(QSplashScreen, self).__init__()
+        super(SplashScreen, self).__init__()
         uic.loadUi('screens/splashscreen.ui', self)
 
         self.setWindowFlag(Qt.FramelessWindowHint)  # Removes the frame of the window
@@ -55,11 +56,17 @@ class SplashScreen(QSplashScreen):  # first window
             self.progressBar.setValue(i)
 
 
+def thread(self, target="self.Operation"):
+    print("Thread started")
+    t1 = Thread(target=target)
+    t1.start()
+
+
 class MainPage(QDialog):  # first window
     def __init__(self):
         super(MainPage, self).__init__()
         uic.loadUi('screens/welcome.ui', self)
-        self.btnTopics.clicked.connect(thread, showTopics)
+        self.btnTopics.clicked.connect(thread)
         self.btnQuiz.clicked.connect(self.showQuiz)
         self.btnTranslate.clicked.connect(self.showTranslate)
         self.btnAbout.clicked.connect(self.showAbout)
@@ -72,10 +79,6 @@ class MainPage(QDialog):  # first window
         snr.speak("Goodmorning Learner!")
         # # changing the text of label
         # self.Title_2.setText("Goodmorning learner")
-
-    def thread(self, target="self.Operation"):
-        t1 = Thread(target=target)
-        t1.start()
 
     def Operation(self):
         print("time start")

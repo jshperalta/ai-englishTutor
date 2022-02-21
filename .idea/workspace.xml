@@ -2,25 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39d0e6e0-718a-4ba8-846c-6671cf435754" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/defines/speakandrecognize.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/defines/translator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Q1.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Q2.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Q3.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Q4.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Q5.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Q6.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Threaded Speech Recognition.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/activity.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/defines/pyqt.py" beforeDir="false" afterPath="$PROJECT_DIR$/defines/pyqt.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output.avi" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyqt.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/second.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/servo.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/splashscreen.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topics.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/welcome.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/window1.ui" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/splashscreen.ui" beforeDir="false" afterPath="$PROJECT_DIR$/screens/splashscreen.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/topics.ui" beforeDir="false" afterPath="$PROJECT_DIR$/screens/topics.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/welcome.ui" beforeDir="false" afterPath="$PROJECT_DIR$/screens/welcome.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,9 +43,15 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="PLAIN_TEXT" />
     <property name="format.on.save" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/defines" />
     <property name="settings.editor.selected.configurable" value="actions.on.save" />
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\joshu\OneDrive\Documents\GitHub\ai-thesis\defines" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.pyqt (1)">
     <configuration name="Threaded Speech Recognition" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ai-thesis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -91,6 +86,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pyqt (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ai-thesis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\joshu\PycharmProjects\pythonProject\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/defines" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/defines/pyqt.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -143,6 +159,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.pyqt (1)" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.pyqt" />
         <item itemvalue="Python.Threaded Speech Recognition" />
@@ -187,7 +204,21 @@
       <option name="project" value="LOCAL" />
       <updated>1645005830860</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="added content scripts">
+      <created>1645260970259</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1645260970259</updated>
+    </task>
+    <task id="LOCAL-00006" summary="added content scripts">
+      <created>1645261032111</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1645261032111</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

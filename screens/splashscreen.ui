@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>674</width>
-    <height>316</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: cyan;</string>
+   <string notr="true">background-color: white;</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -76,13 +76,11 @@ color: black;</string>
         <string notr="true">QProgressBar {
 	border-radius: 10px;
 	background-color: #AFFFEC;
-	transition: 0.5s ease-in-out;
 }
 
 QProgressBar::chunk {
 	border-radius: 10px;
 	background-color: #00E5AE;
-	transition: 0.5s ease-in-out;
 }</string>
        </property>
        <property name="value">

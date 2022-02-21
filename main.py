@@ -3,13 +3,15 @@ import os
 import time
 import datetime
 import numpy as np
-import pyglet
-from gtts import gTTS
 import pygame
-import speech_recognition as sr
-import sys
-
 from time import sleep
+from googletrans import Translator
+import threading
+import queue
+
+import sys
+import defines.speakandrecognize as snr
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QWidget
@@ -18,51 +20,16 @@ from PyQt5.QtCore import *
 from PyQt5 import uic
 from PyQt5.uic import *
 
+translator = Translator()
+
 my_answer = ""
 language = ""
 counter = 0
 p = 0
+screen = ""
 
 
-# HERE CONVERTS USER VOICE INPUT INTO MACHINE READABLE TEXT
-def ask_ettibot():
-    global my_answer, counter, user_input, respond
-    counter += 1
-    print("Speak Now . . .")
-
-    r = sr.Recognizer()
-    r.energy_threshold = 50
-    r.dynamic_energy_threshold = False
-
-    with sr.Microphone() as source:
-        print("Listening....")
-        audio = r.listen(source, phrase_time_limit=3)
-        # Call LED lights here
-
-        try:
-            # Call LED lights here
-            print("Recognising....")
-            text = r.recognize_google(audio, language='en')
-            print(text)
-
-        except Exception as e:
-            print("Exception " + str(e))
-            return "none"
-
-    return text
-
-
-# HERE CONVERTS TEXT INTO VOICE OUTPUT
-def speak(text, lang="en"):  # here audio is var which contain text
-    # Call LED lights here
-    tts = gTTS(text=text, lang=lang)
-    filename = 'temp.mp3'
-    tts.save(filename)
-    music = pyglet.media.load(filename, streaming=False)
-    music.play()
-    sleep(music.duration)  # prevent from killing
-    os.remove(filename)  # remove temporary file
-
+# ------CLASSES
 
 class SplashScreen(QSplashScreen):  # first window
     def __init__(self):
@@ -70,12 +37,21 @@ class SplashScreen(QSplashScreen):  # first window
         uic.loadUi('screens/splashscreen.ui', self)
 
         self.setWindowFlag(Qt.FramelessWindowHint)  # Removes the frame of the window
-        self.showMaximized()  # opening window in maximized size
+        # self.showMaximized()  # opening window in maximized size
+
+    def thread(self):
+        t1 = Thread(target=self.Operation)
+        t1.start()
+
+    def Operation(self):
+        print("time start")
+        time.sleep(10)
+        print("time stop")
 
     def progress(self):
         # speak("Welcome button clicked")
         for i in range(100):
-            sleep(0.01)
+            sleep(0.001)
             self.progressBar.setValue(i)
 
 
@@ -83,35 +59,49 @@ class MainPage(QDialog):  # first window
     def __init__(self):
         super(MainPage, self).__init__()
         uic.loadUi('screens/welcome.ui', self)
-        self.btnTopics.clicked.connect(self.showTopics)
+        self.btnTopics.clicked.connect(thread, showTopics)
         self.btnQuiz.clicked.connect(self.showQuiz)
         self.btnTranslate.clicked.connect(self.showTranslate)
         self.btnAbout.clicked.connect(self.showAbout)
-        self.showMaximized()  # opening window in maximized size
-        speak("Goodmorning Learner!")
+
+        # Add Push Button
+        clear_btn = QPushButton('Click Me', self)
+        clear_btn.clicked.connect(self.thread)
+
+        # self.showMaximized()  # opening window in maximized size
+        snr.speak("Goodmorning Learner!")
         # # changing the text of label
         # self.Title_2.setText("Goodmorning learner")
 
+    def thread(self, target="self.Operation"):
+        t1 = Thread(target=target)
+        t1.start()
+
+    def Operation(self):
+        print("time start")
+        time.sleep(10)
+        print("time stop")
+
     def showTopics(self):
-        speak("Topics")
+        snr.speak("Topics")
         self.lesson = topics()
         self.lesson.show()
         self.hide()
 
     def showQuiz(self):
-        speak("Quiz")
+        snr.speak("Quiz")
         self.lesson = quiz()
         self.lesson.show()
         self.hide()
 
     def showTranslate(self):
-        speak("Translate")
+        snr.speak("Translate")
         self.activity = translate()
         self.activity.show()
         self.hide()
 
     def showAbout(self):
-        speak("About Me")
+        snr.speak("About Me")
         self.activity = about()
         self.activity.show()
         self.hide()
@@ -125,8 +115,9 @@ class topics(QDialog):  # second screen showing the lesson and activity
     def __init__(self):
         super(topics, self).__init__()
         uic.loadUi('screens/topics.ui', self)
-
-        # speak("Try saying. i want to learn. or. i want to play")
+        snr.speak(
+            "Let us learn something new! You can choose between rhyming words, short stories, and polite expressions. Which one should we try? ")
+        self.showMaximized()  # opening window in maximized size
 
 
 class Menu(QWidget):  # second screen showing the lesson and activity
@@ -135,16 +126,16 @@ class Menu(QWidget):  # second screen showing the lesson and activity
         uic.loadUi('second.ui', self)
         self.btn3.clicked.connect(self.show_lesson)
         self.btn4.clicked.connect(self.show_activity)
-        # speak("Try saying. i want to learn. or. i want to play")
+        # snr.speak("Try saying. i want to learn. or. i want to play")
 
     def show_lesson(self):
-        speak("You choose to learn!")
+        snr.speak("You choose to learn!")
         self.lesson = window1()
         self.lesson.show()
         self.hide()
 
     def show_activity(self):
-        speak("You choose to challenge. nice!")
+        snr.speak("You choose to challenge. nice!")
         self.activity = Activity()
         self.activity.show()
         self.hide()
@@ -157,7 +148,7 @@ class window1(QWidget):
         uic.loadUi('window1.ui', self)
         self.TIMER = QTimer(self)
         self.TIMER.start(0)
-        speak("Lesson")
+        snr.speak("Lesson")
 
         # video recorder
         self.btn_hide.clicked.connect(self.ask_ettibot)
@@ -165,7 +156,7 @@ class window1(QWidget):
         language = "en"
         mytext = "Hello, my name is ettibot. I am your english teacher."
         self.txt_ettibot_words.append("ettibot: " + mytext)
-        speak(mytext)
+        snr.speak(mytext)
 
     def show_activity(self):
         self.activity = Activity()
@@ -177,21 +168,21 @@ class Activity(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi('activity.ui', self)
-        speak("Activity")
+        snr.speak("Activity")
         self.start.clicked.connect(self.show_Quiz1)
 
     def show_Quiz1(self):
         self.quiz = quiz1()
         self.quiz.show()
         self.hide()
-        speak("Start")
+        snr.speak("Start")
 
 
 class quiz(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi('Quizzes.ui', self)
-        speak("Quiz. number. one")
+        snr.speak("Quiz. number. one")
         self.my_countdown_timer = QTimer()
 
         # video recorder
@@ -212,40 +203,45 @@ class quiz(QWidget):
         self.quiz = quiz2()
         self.quiz.show()
         self.hide()
-        speak("Quiz number 2")
+        snr.speak("Quiz number 2")
 
 
-if __name__ == '__main__':
+# ------FUNCTIONS
 
-    APP = QApplication(sys.argv)
-    splash = SplashScreen()
-    splash.show()
-    # speak("Please wait. while I'm initiating myself")
-    splash.progress()
-    # speak("Done!")
+def my_loop(queue):
+    while MainPage:
+        query = snr.ask_ettibot().lower()
 
-    window = MainPage()
-    window.show()
+        # translator
+        if any(i in query for i in ["translate", "tagalog ng", "english ng"]):
+            word = query.replace(["translate", "tagalog ng", "english ng"], '')
 
-    splash.finish(window)
+            print(word)
+            detected_lang = translator.detect(word)
+            print(detected_lang.lang)
 
-    while (True):
-        query = ask_ettibot().lower()
-        # wake up
-        if "topics" in query:
+            if detected_lang.lang == 'en':
+                translate_text = translator.translate(word, dest='tl')
+                print(translate_text)
+                snr.speak(translate_text.text, 'tl')
+
+            elif detected_lang.lang == 'tl':
+                translate_text = translator.translate(word, dest='en')
+                print(translate_text)
+                snr.speak(translate_text.text, 'en')
+
+        # topics
+        if any(i in query for i in ["topics", "show topics", "what's the lessons"]):
             window = MainPage()
             window.showTopics()
 
-        # action time
-        elif "quiz" in query:
+        # quiz
+        if any(i in query for i in ["quiz", "show quiz", "what's the challenge"]):
             window = MainPage()
             window.showQuiz()
 
-        # action time
-        elif "translate" in query:
-            window.showTranslate()
 
-        # action tim
+        # about me
         elif "about" in query:
             window.showAbout()
 
@@ -256,41 +252,30 @@ if __name__ == '__main__':
         elif any(_ in query for _ in ["thank", "thanks"]):
             res = np.random.choice(
                 ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
-            speak(res)
+            snr.speak(res)
 
         # respond politely
         elif any(i in query for i in ["hi", "hello", "can you hear me"]):
-            print(i)
             res = np.random.choice(
                 ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
-            speak(res)
+            snr.speak(res)
 
         else:
-            speak("Sorry, I don't understand what you said. Please try again.")
+            snr.speak("Sorry, I don't understand what you said. Please try again.")
             print(query)
 
-    # while True:
-    #     query = ask_ettibot().lower()
-    #
-    #     ## wake up
-    #     if ask_ettibot() is True:
-    #         res = "Hello I am Athena the Teacher, what can I do for you?"
-    #
-    #     ## action time
-    #     elif "time" in query:
-    #         res = ai.action_time()
-    #
-    #     ## respond politely
-    #     elif any(i in query for i in ["thank", "thanks"]):
-    #         res = np.random.choice(
-    #             ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
 
-    ## conversation
-    # else:
-    #     chat = nlp(transformers.Conversation(ai.text), pad_token_id=50256)
-    #     res = str(chat)
-    #     res = res[res.find("bot >> ") + 6:].strip()
-    # ai.text_to_speech(res)
+if __name__ == '__main__':
+    APP = QApplication(sys.argv)
+    splash = SplashScreen()
+    splash.show()
+    snr.speak("Please wait. while I'm initiating myself")
+    splash.progress()
+    snr.speak("Done!")
+    window = MainPage()
+    window.show()
+
+    splash.finish(window)
 
     try:
         sys.exit(APP.exec_())

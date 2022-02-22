@@ -345,21 +345,27 @@ class Window(QMainWindow):
         threadCount = QThreadPool.globalInstance().maxThreadCount()
         self.label.setText("Topics")
         speak("You have selected Topics")
+        self.btnTopics.hide()
         
     def runQuiz(self):
         threadCount = QThreadPool.globalInstance().maxThreadCount()
-        self.label.setText("Topics")
+        self.label.setText("Quiz")
         speak("You have selected Quiz")
+        self.btnQuiz.hide()
         
     def runTranslate(self):
         threadCount = QThreadPool.globalInstance().maxThreadCount()
-        self.label.setText("Topics")
+        self.label.setText("Translate")
         speak("You have selected Translate")
+        self.btnTranslate.hide()
+
         
     def runAbout(self):
         threadCount = QThreadPool.globalInstance().maxThreadCount()
-        self.label.setText("Topics")
+        self.label.setText("About")
         speak("You have selected About")
+        self.btnAbout.hide()
+
 
     def setupUi(self):
         self.setWindowTitle("QThreadPool + QRunnable")

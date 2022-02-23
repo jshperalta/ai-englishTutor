@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>825</width>
-    <height>612</height>
+    <width>903</width>
+    <height>668</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,11 @@
   </property>
   <property name="styleSheet">
    <string notr="true">
-background-color: #fff;</string>
+background-color: #fff;
+
+QPushButton {
+font-size: 16px !important;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -52,16 +56,16 @@ background-color: #fff;</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
-       <number>200</number>
+       <number>100</number>
       </property>
       <property name="topMargin">
-       <number>90</number>
+       <number>80</number>
       </property>
       <property name="rightMargin">
-       <number>200</number>
+       <number>100</number>
       </property>
       <property name="bottomMargin">
-       <number>90</number>
+       <number>80</number>
       </property>
       <item row="0" column="0">
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -70,6 +74,12 @@ background-color: #fff;</string>
         </property>
         <item>
          <widget class="QLabel" name="Topics">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>100</height>
+           </size>
+          </property>
           <property name="styleSheet">
            <string notr="true">font: 87 32pt &quot;Gilroy&quot;;
 font-weight: 900;</string>
@@ -106,7 +116,6 @@ font-weight: 900;</string>
           <property name="font">
            <font>
             <family>Gilroy</family>
-            <pointsize>20</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -143,7 +152,6 @@ font-weight: 900;</string>
           <property name="font">
            <font>
             <family>Gilroy</family>
-            <pointsize>20</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -179,7 +187,6 @@ font-weight: 900;</string>
           <property name="font">
            <font>
             <family>Gilroy</family>
-            <pointsize>20</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -215,7 +222,6 @@ font-weight: 900;</string>
           <property name="font">
            <font>
             <family>Gilroy</family>
-            <pointsize>20</pointsize>
             <weight>75</weight>
             <bold>true</bold>
            </font>
@@ -243,6 +249,31 @@ font-weight: 900;</string>
           </property>
           <property name="flat">
            <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnMenu">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>60</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #f3f3f3;
+	color: black; 
+	font-family: 'Gilroy';
+	font-weight: 600;
+	border-radius: 10px;
+	padding: 20px;
+</string>
+          </property>
+          <property name="text">
+           <string>Main Menu</string>
           </property>
          </widget>
         </item>

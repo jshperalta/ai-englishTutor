@@ -13,6 +13,7 @@ from googletrans import Translator
 import threading
 import queue
 from gtts import gTTS
+from mutagen.mp3 import MP3
 
 import pyglet
 import sys
@@ -34,31 +35,33 @@ pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
 pygame.init()
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
+global activeScreen, speaking, duration
+duration = 0
 my_answer = ""
 language = ""
 counter = 0
 p = 0
 activeScreen = ""
 translatedWord = ""
-
-
+r = sr.Recognizer()
+m = sr.Microphone()
+speaking = False
 
 # ------FUNCTIONS
+
+
 
 # HERE CONVERTS USER VOICE INPUT INTO MACHINE READABLE TEXT
 def ask_ettibot():
     print("Speak Now . . .")
-    r = sr.Recognizer()
     r.energy_threshold = 50
     r.dynamic_energy_threshold = False
-
+    speaking=False
     with sr.Microphone() as source:
         print("Listening....")
         audio = r.listen(source)  # phrase_time_limit=3)
         # Call LED lights here
-        print(f"Translated: " +translatedWord)
-        print(f"Screen: " +activeScreen)
-
+        
         try:
             # Call LED lights here
             print("Recognising....")
@@ -70,22 +73,37 @@ def ask_ettibot():
             print("Exception " + str(e))
             return "none"
 
-    return text
+    return text, speaking
 
+
+# start listening in the background (note that we don't have to do this inside a `with` statement)
+stop_listening = r.listen_in_background(m, ask_ettibot)
 
 # HERE CONVERTS TEXT INTO VOICE OUTPUT
 def speak(text, lang="en"):  # here audio is var which contain text
-    global my_answer, counter, user_input, respond
+    global my_answer, counter, user_input, respond, speaking, duration
     counter += 1
     # Call LED lights here
+    speaking = True
+    # calling this function requests that the background listener stop listening
+    stop_listening(wait_for_stop=True)
     tts = gTTS(text=text, lang=lang)
     filename = 'temp.mp3'
     tts.save(filename)
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play()
+    #mixer.music.load(filename)
+    song = MP3(filename)
+    songLength = song.info.length
+    duration = songLength
+    #print(songLength)
+    #print(duration)
+    #sleep(duration)
     #music = pyglet.media.load(filename, streaming=False)
     #music.play()    
     #os.remove(filename)  # remove temporary file
+    return speaking, duration
+    
     
     
 def checkPlaying():
@@ -220,7 +238,9 @@ class SplashScreen(QSplashScreen):  # first window
 
 def my_loop():
     #LOOP Listening state
+    
     while True:
+        print("Speaking: "+str(speaking))
         query = ask_ettibot().lower()
         
         #if window.isVisible():
@@ -305,7 +325,7 @@ class MainMenu(QMainWindow):
         #self.setupUi()
         #self.showMaximized()  # opening window in maximized size
         #self.transWidget.hide()
-        global activeScreen
+        #global activeScreen
         speak("Main Menu...")
         #activeScreen = "MainMenu"
         # Create and connect widgets
@@ -370,7 +390,7 @@ if __name__ == '__main__':
     
     
     
-    #t2 = threading.Thread(target=main)
+    #t2 = threading.Thread(target=MainMenu)
     #t2.setDaemon(True)
     
 
@@ -390,9 +410,14 @@ if __name__ == '__main__':
     translatr = Translator()
     #splash.finish(window)
     window.show()
-    print(activeScreen)
     
-    
+    sleep(duration)
+    speak("mic test")
+    print(duration)
+    sleep(duration)
+    speak("Hello")
+    sleep(duration)
+    speak("World")
     #translate.translateNow()
     
     #topics = Topics()

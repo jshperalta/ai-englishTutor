@@ -1,39 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>903</width>
-    <height>668</height>
+    <width>954</width>
+    <height>666</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Welcome</string>
+   <string>Quizzes Screen</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-image: url(:/background/wallpaper2.jpeg);
-
-QPushButton {
-font-size: 16px !important;
-}</string>
+   <string notr="true">background-image: url(:/background/wallpaper.jpeg);</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <widget class="QWidget" name="gridWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -86,7 +70,7 @@ background: transparent;
 color: black;</string>
           </property>
           <property name="text">
-           <string>TOPICS</string>
+           <string>Quizzes</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -135,7 +119,7 @@ color: black;</string>
 </string>
           </property>
           <property name="text">
-           <string>Rhyming Words</string>
+           <string>Rhyming Word Match</string>
           </property>
           <property name="autoDefault">
            <bool>true</bool>
@@ -170,42 +154,7 @@ color: black;</string>
 </string>
           </property>
           <property name="text">
-           <string>Sentences and Non Sentences</string>
-          </property>
-          <property name="autoDefault">
-           <bool>true</bool>
-          </property>
-          <property name="default">
-           <bool>true</bool>
-          </property>
-          <property name="flat">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btnStories">
-          <property name="font">
-           <font>
-            <family>Gilroy</family>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: #AFFFEC;
-	color: black; 
-	font-family: 'Gilroy';
-	font-weight: 600;
-	border-radius: 10px;
-	padding: 20px;
-</string>
-          </property>
-          <property name="text">
-           <string>Short Stories</string>
+           <string>Complete the sentence</string>
           </property>
           <property name="autoDefault">
            <bool>true</bool>
@@ -254,6 +203,25 @@ color: black;</string>
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btnStart">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #92ff8f;
+	color: black; 
+	font-family: 'Gilroy';
+	font-weight: 600;
+	border-radius: 10px;
+	padding: 20px;
+</string>
+          </property>
+          <property name="text">
+           <string>START</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btnMenu">
           <property name="minimumSize">
            <size>
@@ -265,7 +233,7 @@ color: black;</string>
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: #f3f3f3;
+           <string notr="true">background-color: #ffafaf;
 	color: black; 
 	font-family: 'Gilroy';
 	font-weight: 600;
@@ -274,7 +242,7 @@ color: black;</string>
 </string>
           </property>
           <property name="text">
-           <string>Main Menu</string>
+           <string>MAIN MENU</string>
           </property>
          </widget>
         </item>

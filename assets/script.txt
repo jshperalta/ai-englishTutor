@@ -20,6 +20,15 @@ Read the sets of words below.
 `display sets
 `get user voice input
 
+set A
+house - mouse
+
+set B
+big - small
+
+set C
+nap - tap
+
 Notice the sounds of the words. Sets A and C are considered as rhyming words while Set B is not.
 
 //INITIATE QUIZ VIEW

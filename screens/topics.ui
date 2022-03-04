@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Welcome</string>
+   <string>Topics Screen</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-image: url(:/background/wallpaper2.jpeg);
@@ -52,6 +52,9 @@ font-size: 16px !important;
        <width>1024</width>
        <height>600</height>
       </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-image: url(:/background/wallpaper2.jpeg);</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">

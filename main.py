@@ -20,6 +20,7 @@ import pyglet
 import sys
 import defines.speakandrecognize as snr
 import speech_recognition as sr
+import arduinoServo as ard
 
 from PyQt5.QtCore import QRunnable, Qt, QThreadPool
 from PyQt5 import QtWidgets
@@ -421,8 +422,10 @@ class MainMenu(QWidget):
         self.hide()
         
     def runAbout(self):
+        ard.nod()
         speak("I'm Etti, I am designed to teach basic english for my children and communicate with people, just like you!")
-            
+        ard.lookStraight()
+        
     def gotoMenu(self):
         self.show()
         
@@ -494,6 +497,7 @@ def my_loop():
             res = np.random.choice(
                 ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
             speak(res)
+            ard.nod()
             
         elif "none" in query:
             print(query)

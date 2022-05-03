@@ -4,7 +4,7 @@
 # Created by John Woolsey on 12/17/2019.
 # Copyright (c) 2019 Woolsey Workshop.  All rights reserved.
 #USB_PORT = "2341:0001"  # Arduino Uno R3 Compatible
-USB_PORT = "/dev/ttyACM1"  # Arduino Uno WiFi Rev2
+#USB_PORT = "/dev/ttyACM1"  # Arduino Uno WiFi Rev2
 # Imports# servo control 15.12.2016
  
 # 1) user set servo position in python
@@ -16,8 +16,32 @@ USB_PORT = "/dev/ttyACM1"  # Arduino Uno WiFi Rev2
 
 import serial
 import time
+import warnings
+import serial.tools.list_ports
 
-arduino = serial.Serial(port=USB_PORT, baudrate=115200, timeout=.1)
+arduino_ports = None
+arduino_ports = [
+        p.device
+        for p in serial.tools.list_ports.comports()
+        if 'Arduino' in p.description  # may need tweaking to match new arduinos
+    ]
+
+if not arduino_ports:
+    raise IOError("No Arduino found")
+    
+
+if len(arduino_ports) > 1:
+    warnings.warn('Multiple Arduinos found - using the first')
+
+#ser = serial.Serial(arduino_ports[0])
+
+
+print(arduino_ports)
+#print(ser.port)
+
+
+
+arduino = serial.Serial(port=arduino_ports[0], baudrate=115200, timeout=.2)
 
 
 def write_readx(x):
@@ -37,6 +61,15 @@ def nod ():
     
 def lookStraight ():
     write_readx(str(4))
+    
+def lookUp ():
+    write_readx(str(5))
+    
+def lookDown ():
+    write_readx(str(6))
+    
+def notNod():
+    write_readx(str(7))
 
 #while True:
 #    lookLeft()

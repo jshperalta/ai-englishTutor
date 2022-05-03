@@ -34,17 +34,40 @@ void loop() {
     lookStraight();
   }
   
+  if (x == 5) {
+    lookUp();
+  }
+  
+  if (x == 6) {
+    lookDown();
+  }
+  
+  if (x == 7) {
+    notNod();
+  }
+  
 }
 
 void nod () {
+  lookUp();
+  lookDown();
+}
+
+void notNod () {
+  lookLeft();
+  lookRight();
+  lookLeft();
+}
+
+
+void lookUp () {
   servo2.write(135); // move MG996R's shaft to angle 0°
-  delay(200); // wait for one second
-  
-  servo2.write(70); // move MG996R's shaft to angle 0°
-  delay(200); // wait for one second
-  
-  servo2.write(90); // move MG996R's shaft to angle 0°
-  delay(200); // wait for one second
+  delay(400); // wait for one second
+}
+
+void lookDown () {
+  servo2.write(80); // move MG996R's shaft to angle 0°
+  delay(400); // wait for one second
 }
 
 void lookLeft () {

@@ -1,44 +1,105 @@
-from threading import Thread;
-from threading import Event;
-import time;
+import sys
+from time import sleep
 
- 
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QApplication,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
-class ChildThread(Thread):
-    myStopSignal = 0
-   
-    def __init__(self,aStopSignal):
-        Thread.__init__(self)
-        self.myStopSignal = aStopSignal   
-
+# Step 1: Create a worker class
+class Worker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(str)
 
     def run(self):
-        print("Child Thread:Started")
-        for i in range(1,10):
-            if(self.myStopSignal.wait(0)):
-                print ("ChildThread:Asked to stop")
-                break;       
+        """Long-running task."""
+        sleep(1)
+        self.progress.emit("one")
+        sleep(1)
+        self.progress.emit("two")
+        sleep(1)
+        self.progress.emit("three")
+        sleep(1)
+        self.progress.emit("four")
+        sleep(1)
+        self.progress.emit("five")
+        self.finished.emit()
 
-            print("Doing some low priority task taking long time")
-            time.sleep(2) #Just simulating time taken by task with sleep
+class Window(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.clicksCount = 0
+        self.setupUi()
 
-        print("Child Thread:Exiting")
+    def setupUi(self):
+        self.setWindowTitle("Freezing GUI")
+        self.resize(300, 150)
+        self.centralWidget = QWidget()
+        self.setCentralWidget(self.centralWidget)
+        # Create and connect widgets
+        self.clicksLabel = QLabel("Counting: 0 clicks", self)
+        self.clicksLabel.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.stepLabel = QLabel("Long-Running Step: 0")
+        self.stepLabel.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.countBtn = QPushButton("Click me!", self)
+        self.countBtn.clicked.connect(self.countClicks)
+        self.longRunningBtn = QPushButton("Long-Running Task!", self)
+        self.longRunningBtn.clicked.connect(self.runLongTask)
+        # Set the layout
+        layout = QVBoxLayout()
+        layout.addWidget(self.clicksLabel)
+        layout.addWidget(self.countBtn)
+        layout.addStretch()
+        layout.addWidget(self.stepLabel)
+        layout.addWidget(self.longRunningBtn)
+        self.centralWidget.setLayout(layout)
         
+    # Snip...
+    def runLongTask(self):
+        # Step 2: Create a QThread object
+        self.thread = QThread()
+        # Step 3: Create a worker object
+        self.worker = Worker()
+        # Step 4: Move worker to the thread
+        self.worker.moveToThread(self.thread)
+        # Step 5: Connect signals and slots
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.progress.connect(self.reportProgress)
+        # Step 6: Start the thread
+        self.thread.start()
 
-print("Main Thread:Started")
-aStopSignal     = Event()           
-aChildThread    = ChildThread(aStopSignal)
-aChildThread.start()
-aChildThread.join(4) # I can wait for 4 seconds only
+        # Final resets
+        self.longRunningBtn.setEnabled(False)
+        self.thread.finished.connect(
+            lambda: self.longRunningBtn.setEnabled(True)
+        )
+        self.thread.finished.connect(
+            lambda: self.stepLabel.setText("Long-Running Step: 0")
+        )
 
- 
+    def countClicks(self):
+        self.clicksCount += 1
+        self.clicksLabel.setText(f"Counting: {self.clicksCount} clicks")
 
-if aChildThread.is_alive() is True:
-    print("Child thread is alive")
-    aStopSignal.set()
-    aChildThread.join()
-    
+    def reportProgress(self, n):
+        self.stepLabel.setText(f"Long-Running Step: {n}")
 
- 
+    #def runLongTask(self):
+    #   """Long-running task in 5 steps."""
+    #   for i in range(5):
+    #      sleep(1)
+    #      self.reportProgress(i + 1)
 
-print("Main Thread; Exiting")
+app = QApplication(sys.argv)
+win = Window()
+win.show()
+sys.exit(app.exec())

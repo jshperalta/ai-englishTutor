@@ -2,7 +2,7 @@ import logging
 import random
 import sys
 import time
-# MAIN CODE
+
 import os
 import time
 import datetime
@@ -11,6 +11,7 @@ import pygame
 from time import sleep
 from googletrans import Translator
 import threading
+import continuous_threading
 import queue
 from gtts import gTTS
 from mutagen.mp3 import MP3
@@ -21,6 +22,8 @@ import sys
 import defines.speakandrecognize as snr
 import speech_recognition as sr
 import arduinoServo as ard
+import PyQt5.QtCore
+import PyQt5
 
 from PyQt5.QtCore import QRunnable, Qt, QThreadPool
 from PyQt5 import QtWidgets
@@ -28,19 +31,22 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from PyQt5 import uic
+from PyQt5 import uic, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from PyQt5.uic import *
 
 translator= Translator()
 
 pygame.mixer.init()
-pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
+#pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
 pygame.init()
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-global activeScreen, speaking, duration, flag
+global activeScreen, speaking, duration, flag, subjectLesson, user_input, score
+score = 0
 duration = 0
+user_input = ""
+subjectLesson = ""
 my_answer = ""
 language = ""
 counter = 0
@@ -80,8 +86,6 @@ def ask_ettibot():
 
     return text
 
-# start listening in the background (note that we don't have to do this inside a `with` statement)
-#stop_listening = r.listen_in_background(m, ask_ettibot)
 
 # HERE CONVERTS TEXT INTO VOICE OUTPUT
 def speak(text, lang="en"):  # here audio is var which contain text
@@ -97,18 +101,17 @@ def speak(text, lang="en"):  # here audio is var which contain text
     #pygame.mixer.music.load(filename)
     #pygame.mixer.music.play()
     #mixer.music.load(filename)
-    playsound(filename)
+    playsound(filename, True)
     song = MP3(filename)
     songLength = song.info.length
     duration = songLength
     #print(songLength)
-    #print(duration)
+    print(duration)
     #sleep(duration)
     #music = pyglet.media.load(filename, streaming=False)
     #music.play()    
     #os.remove(filename)  # remove temporary file
     #return speaking, duration
-    
     
     
 def checkPlaying():
@@ -118,50 +121,182 @@ def checkPlaying():
             
 # ------CLASSES ----- SCREENS
 
-class Subject(QDialog):  # second screen showing the lesson and activity
+class Worker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def run(self):
+        """Long-running task."""
+        
+        
+        
+class Subject(QWidget):  # second screen showing the lesson and activity
     def __init__(self):
         super().__init__()
         uic.loadUi('screens/subject.ui', self)
+        self.btnStart.clicked.connect(self.run)
         self.btnMenu.clicked.connect(self.showMenu)
-        print("Main Thread")
+        
+    def speak(self, text, lang="en"):  # here audio is var which contain text
+        # Call LED lights here
+        speaking = True
+        tts = gTTS(text=text, lang=lang)
+        filename = 'temp.mp3'
+        tts.save(filename)
+        playsound(filename, True)
+        #pygame.mixer.music.load(filename)
+        #pygame.mixer.music.play()
+        #while pygame.mixer.music.get_busy():
+          #  print("busy")
         
         #self.subjectLesson()
     def run(self):
+        self.btnStart.setEnabled(False)
         global flag
         flag = "Subject"
-        #self.t1.join()
+        #self.t1 = threading.Thread(name = "TranslateLoop", target=self.subjectNow)
+        #self.t1.setDaemon(True)
+        #self.t1.start()
+        #MainThrd.stop()
+        if subjectLesson == "Rhyme":
+            self.subjectNow()
         
-    def subjectLesson(self):
-        print("Sub Thread")
-        self.subject = "Rhyming Words"
-        self.subject_Title.setText("Rhyming Words")
-        self.script = "Words are formed by combining the letters of the alphabet. It is important to remember that the English alphabet is composed of 26 letters with 5 vowels and 21 consonants. vowels are like, ah. ae. ē. oh. oooh. Now, consonants are like alphabets without vowels. Such as b,c,d,f,g, and so on. By combining some of these letters, words may be formed. Some of these words include net, one, pen, and red.Some words have the same or similar ending sounds. They are called rhyming words.At the end of the lesson, you are expected to recognize rhyming words in nursery rhymes, poems or songs heard."
-        self.script2 = "vowels are like, ah. ae. ē. oh. oooh"
-        self.script2_2 = "a. e. i. o. u"
+        if subjectLesson == "Express":
+            self.subjectNow2()
+            
+        if subjectLesson == "Sentence":
+            self.subjectNow3()
+            
+        if subjectLesson == "Stories":
+            self.subjectNow4()
+        
+    def updateScreen(self, message):
+        self.subtitle_2.setText(message)
+        
+    def subjectNow(self):
+        subject = "Rhyming Words"
+        self.subject_Title.setText(subject)
         #self.speaks(self.script)
         #self.speaks("Try to read the sets of words below")
-        self.updateText(self.script)
-        speak(self.script)
+        self.updateScreen("In this lesson, you will learn about Rhyming Words.")
+        self.speak("In this lesson, you will learn about Rhyming Words.")
+        self.updateScreen("Words are formed by combining the letters of the alphabet.")
+        self.speak("Words are formed by combining the letters of the alphabet.")
+        self.updateScreen("It is important to remember that the English alphabet is composed of 26 letters with 5 vowels and 21 consonants.")
+        self.speak("It is important to remember that the English alphabet is composed of 26 letters, with 5 vowels and 21 consonants.")
+        self.updateScreen("Vowels: \nAa  Ee Ii Oo Uu")
+        self.speak("vowels are like, ah. ae. ē. oh. oooh.")
+        self.updateScreen("Consonants: \nBb Cc Dd Ff Gg Hh Jj Kk Ll Mm Nn Pp Qq Rr Ss Tt Vv Ww Xx Yy Zz.")
+        self.speak("Now, consonants are like alphabets without vowels. Such as b,c,d,f,g, and so on.")
+        self.updateScreen("By combining some of these letters, words may be formed.")
+        self.speak("By combining some of these letters, words may be formed.")
+        self.updateScreen("Some of these words include net, one, pen, and red.Some words have the same or similar ending sounds.")
+        self.speak("Some of these words include net, one, pen, and red.Some words have the same or similar ending sounds.")
+        self.updateScreen("They are called rhyming words.At the end of the lesson, you are expected to recognize rhyming words in nursery rhymes, poems or songs heard.")
+        self.speak("They are called rhyming words.At the end of the lesson, you are expected to recognize rhyming words in nursery rhymes, poems or songs heard.")
+        self.updateScreen("SET A: \nHouse - Mouse.")
+        self.speak("Try to read the example below.")
         
-    def updateText(self, text):
-        self.subtitle_2.setText(text)
+        while True:
+            response = ask_ettibot().lower()     
+            if response == "house mouse":
+                self.speak("Perfect!")
+                self.updateScreen("Perfect")
+                self.countResponse()
+                break
+        
+        self.updateScreen("SET B: \nSet - Net.")
+        self.speak("Try this one.")
+        
+        while True:
+            response = ask_ettibot().lower()
+            if response == "set net":
+                self.speak("Great!")
+                self.updateScreen("Perfect")
+                self.countResponse()
+                break
+        
+        self.updateScreen("SET C: \nBig - Small.")
+        self.speak("How about this one?")
+        
+        while True:
+            response = ask_ettibot().lower()   
+            if response == "big small":
+                self.speak("Well done!")
+                self.updateScreen("Perfect")
+                break
+            
+        self.subjectNow3()
         
         
+    def subjectNow3(self):
+        subject = "Sentences and Non Sentences"
+        self.subject_Title.setText(subject)
+        #self.speaks(self.script)
+        #self.speaks("Try to read the sets of words below")
+        self.updateScreen("When words are combined, you will form a group of words which may either be a sentence or a non-sentence.")
+        self.speak("When words are combined, you will form a group of words which may either be a sentence or a non-sentence.")
+     
+        self.updateScreen("Sentence\n\nA sentence is a group of words. It tells a complete thought or idea. It is composed of a subject and a predicate. It begins with a capital letter and ends with a period ( . ), a question mark ( ? ), or an exclamation point ( ! ).")
+        self.speak("A sentence is a group of words. It tells a complete thought or idea. It is composed of a subject and a predicate.")
+        self.speak("It begins with a capital letter and ends with a period, a question mark, or an exclamation point.")
         
-        #self.hide()
+        self.updateScreen("1. Ella plays the piano.\n2. The sun rises in the east.\n3. The garden is beautiful.")
+        self.speak("Study the sample sentences below.")
+        self.speak("Ella plays the piano.")
+        self.speak("The sun rises in the east.")
+        self.speak("The garden is beautiful.")
         
-    #def speaks(self, text, lang="en"):  # here audio is var which contain text
+        self.updateScreen("Non-Sentences\n\nA non-sentence, like a phrase, is also a group of words. Unlike a sentence, it does not tell a complete thought or idea. It may just be the subject or the predicate.")
+        self.speak("A non-sentence, like a phrase, is also a group of words.")
+        self.speak("Unlike a sentence, it does not tell a complete thought or idea.")
+        self.speak("It may just be the subject or the predicate.")
         
+        self.updateScreen("1. playing the piano\n2. wide garden\n3. Ray and May")
+        self.speak("Study the sample non-sentences below.")
+        self.speak("playing the piano")
+        self.speak("wide garden")
+        self.speak("Ray and May")
+        self.speak("Unlike a sentence, the examples below do not give complete thoughts or meanings.")
         
-        
+        self.speak("That's all for today's video, thank you for listening!")
+        self.close()
+            
+    def countResponse (self):
+        global score
+        score =+ 1
+            
+    def countClicks(self):
+        self.clicksCount += 1
+        self.clicksLabel.setText(f"Counting: {self.clicksCount} clicks")
+
+    def reportProgress(self, n):
+        self.stepLabel.setText(f"Long-Running Step: {n}")
+    
     def showMenu(self):
-        speak(self.btnMenu.text())
-        lesson.show()
-        self.hide()
+        #self.stop_listening(wait_for_stop=False)
+        global flag
+        flag = "Topics"
+        #self.MainThrd.join()
+        self.speak("topics")
+        self.lesson = topics()
+        self.lesson.show()
+        #self.hide()
+        self.close()
+        #self.my_loop("topics")
+        #MainThrd.join()
+        MainMenu=False
+        
+        
+        #window = MainMenu()
+        #lesson.show()
+        #threadSubj.stop()
+        #MainThrd.start()
+        #self.hide()
 
         
 
-class topics(QDialog):  # second screen showing the lesson and activity
+class topics(QWidget):  # second screen showing the lesson and activity
     def __init__(self):
         super().__init__()
         uic.loadUi('screens/topics.ui', self)
@@ -173,45 +308,178 @@ class topics(QDialog):  # second screen showing the lesson and activity
         self.btnRhyming.clicked.connect(self.showRhyme)
         self.btnSentence.clicked.connect(self.showSentence)
         self.btnStories.clicked.connect(self.showStories)
-        #self.listen()
+        self.btnStart.clicked.connect(self.startLesson)
+        
+    def startLesson(self):
+        self.showRhyme()
+        
+    def run(self):
+        global flag
+        flag = "Topics"
+        #initialize audio for listening in background
+        r = sr.Recognizer()
+        m = sr.Microphone()
+        with m as source:
+            r.adjust_for_ambient_noise(source)
+            r.energy_threshold = 4000
+            
+        # start listening in the background (note that we don't have to do this inside a `with` statement)
+        self.stop_listening = r.listen_in_background(m, self.callback)
         
         
     def showRhyme(self):
-        self.rhyme = Subject()
-        self.rhyme.show()     
-        self.hide()
-        speak(self.btnRhyming.text())
-        #self.t1 = threading.Thread(target=self.rhyme.subjectLesson)
-        #self.t1.setDaemon(True)
-        #self.t1.start()
+        global subjectLesson
+        subjectLesson = "Rhyme"
+        #self.threadTopic.stop()
+        self.subj = Subject()
+        self.subj.show()
+        self.close()
         
-        subjectTitle = self.btnRhyming.text()
-        return subjectTitle
-
-        
-    def showMenu(self):
-        self.Topics.setText(self.btnMenu.text())
-        speak(self.btnMenu.text())
-        window.show()
-        self.hide()
         
     def showExpress(self):
+        global subjectLesson
+        subjectLesson = "Express"
         self.Topics.setText(self.btnExpress.text())
         speak(self.btnExpress.text())
-        #self.hide()
+        self.subj = Subject()
+        self.subj.show()
+        self.close()
         
         
     def showSentence(self):
-        
+        global subjectLesson
+        subjectLesson = "Sentence"
         self.Topics.setText(self.btnSentence.text())
         speak(self.btnSentence.text())
-        #self.hide()
+        self.subj = Subject()
+        self.subj.show()
+        self.close()
         
     def showStories(self):
-       
+        global subjectLesson
+        subjectLesson = "Stories"
         self.Topics.setText(self.btnStories.text())
         speak(self.btnStories.text())
+        self.subj = Subject()
+        self.subj.show()
+        self.close()
+        
+    def showMenu(self):
+        global flag
+        flag = "Topics"
+        window = MainMenu()
+        
+        window.show()
+       
         #self.hide()
+        self.close()
+        
+    def updateScreen(self, text):    
+        self.Topics.setText(text)
+        
+    def speak(self, text, lang="en"):  # here audio is var which contain text
+        # Call LED lights here
+        speaking = True
+        tts = gTTS(text=text, lang=lang)
+        filename = 'temp.mp3'
+        tts.save(filename)
+        playsound(filename, False)
+        #pygame.mixer.music.load(filename)
+        #pygame.mixer.music.play()
+        #while pygame.mixer.music.get_busy():
+          #  print("busy")
+        
+    # this is called from the background thread
+    def callback(self, recognizer, audio):
+        # received audio data, now we'll recognize it using Google Speech Recognition
+        try:
+            # for testing purposes, we're just using the default API key
+            # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+            # instead of `r.recognize_google(audio)`
+            text = recognizer.recognize_google(audio)
+            print("Google Speech Recognition thinks you said " + text)
+            self.recognizedWords(text)
+        except sr.UnknownValueError:
+            print("Google Speech Recognition could not understand audio")
+        except sr.RequestError as e:
+            print("Could not request results from Google Speech Recognition service; {0}".format(e))
+            
+            
+    def recognizedWords(self, text):
+        global user_input, flag
+        user_input = text
+        print (text)
+        
+        if flag == "Topics":
+            query = text
+            #print("Speaking: "+str(speaking))
+            #window = MainMenu ()
+            self.updateScreen(f"You: {query}")
+            #print(query)
+            #if window.isVisible():
+            #    print("Main Menu is Visible")
+                
+            #elif splash.isVisible():
+            #    print("Splash is Visible")
+            
+            # rhyme
+            if any(i in query for i in ["rhyme", "rhyming word", "show rhyme", "rhyming words"]):
+                self.showRhyme()
+                self.stop_listening(wait_for_stop=False)
+
+            # sentence
+            elif any(i in query for i in ["sentence", "sentences"]):
+                self.showSentence()
+                self.stop_listening(wait_for_stop=False)
+                
+            # express
+            elif any(i in query for i in ["express", "polite expression"]):
+                self.showExpress()
+                self.stop_listening(wait_for_stop=False)
+                
+            # stories
+            elif any(i in query for i in ["story", "stories"]):
+                self.showStories()
+                self.stop_listening(wait_for_stop=False)
+                
+            #menu
+            elif any(i in query for i in ["menu", "main menu"]):
+                self.showMenu()
+                self.stop_listening(wait_for_stop=False)
+                
+            
+            
+            # respond politely
+            elif any(_ in query for _ in ["thank", "thanks"]):
+                res = np.random.choice(
+                    ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
+                self.speak(res)
+
+                
+            # respond politely
+            elif any(_ in query for _ in ["good morning", "morning"]):
+                res = np.random.choice(
+                    ["Good morning human", "good morning too!"])
+                self.speak(res)
+                
+
+            # respond politely
+            elif any(i in query for i in ["hi", "hello", "can you hear me"]):
+                res = np.random.choice(
+                    ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
+                
+                self.speak(res)
+                self.updateScreen(f"Etti: {res}")
+                ard.nod()
+                
+            elif "none" in query:
+                print(query)
+                
+            else:
+                res = np.random.choice(
+                    ["Sorry, I don't understand what you said.", "I dont know that yet.", "Sorry, I didn't catch that.", "I didn't get that, but I heard you.", "Sorry?"])
+                self.speak(res)
+                print(query)
     
 
 
@@ -225,7 +493,7 @@ class TranslatorScreen(QDialog):
         #checkPlaying()
         #checkPlaying()
         #speak("at sasabihin ko sa wikang filipino ay. Magandang Umaga!", "tl")
-        self.t1 = threading.Thread(target=self.translateNow)
+        self.t1 = threading.Thread(name = "TranslateLoop", target=self.translateNow)
         self.t1.setDaemon(True)
 
         
@@ -236,14 +504,16 @@ class TranslatorScreen(QDialog):
     def showMenu(self):
         global flag
         flag = "MainMenu"
-        #window = MainMenu()
-        window.show()
-        self.hide()
-        t3 = threading.Thread(target=my_loop)
-        t3.setDaemon(True)
-        t3.start()
+        self.window = MainMenu()
+        #Thread 1
+        #MyLoop = threading.Thread(name="MenuLoop", target=window.my_loop)
+        #MyLoop.setDaemon(True)
+        #MyLoop.start()
+        self.window.show()
+        self.close()
         
-    def start_button(self):
+        
+    def run(self):
         global flag
         flag = "Translate"
         self.t1.start()
@@ -304,6 +574,9 @@ class TranslatorScreen(QDialog):
                 res = np.random.choice(
                     ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
                 speak(res)
+                          
+            elif "menu" in query:
+                self.showMenu()
                 
             elif "none" in query:
                 print(query)
@@ -321,74 +594,159 @@ class TranslatorScreen(QDialog):
          
         
 
-class QuizScreen(QDialog):
+class QuizScreen(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi('screens/Quizzes.ui', self)
-    
-
-        # video recorder
-        #self.my_countdown_timer.timeout.connect(self.my_timer)
-        #self.my_countdown_timer.start(1000)
-        self.btnStart.clicked.connect(self.show_Quiz)
+        
+        self.btnStart.clicked.connect(self.showMenu)
         self.btnMenu.clicked.connect(self.showMenu)
-        self.btnExpress.clicked.connect(self.show_Quiz)
-        self.btnRhyming.clicked.connect(self.show_Quiz)
-        self.btnSentence.clicked.connect(self.show_Quiz)
-        #self.counter = 5
-        #self.lcd_TIMER.display(self.counter)
-
-    def my_timer(self):
-        self.counter -= 1
-        if (self.counter == 0):
-            quiz1.show_Quiz2(self)
-        self.lcd_TIMER.display(self.counter)
-
-    def show_Quiz(self):
-        #self.my_countdown_timer.stop()
-        #self.quiz = quiz1()
-        #self.quiz.show()
-        #self.hide()
-        speak("Quiz number 1")
+        self.btnExpress.clicked.connect(self.showMenu)
+        self.btnRhyming.clicked.connect(self.showMenu)
+        self.btnSentence.clicked.connect(self.showMenu)
+        
+        self.speak("Quizzes")
+        
+        #initialize audio for listening in background
+        r = sr.Recognizer()
+        m = sr.Microphone()
+        with m as source:
+            r.adjust_for_ambient_noise(source)
+            r.energy_threshold = 4000
+            
+        # start listening in the background (note that we don't have to do this inside a `with` statement)
+        self.stop_listening = r.listen_in_background(m, self.callback)
+        
         
     def showMenu(self):
+        self.stop_listening(wait_for_stop=False)
         global flag
         flag = "MainMenu"
-        #window = MainMenu()
+        window = MainMenu()
+        #Thread 1
+        #MyLoop = threading.Thread(name="MenuLoop", target=window.my_loop)
+        #MyLoop.setDaemon(True)
+        #MyLoop.start()
         window.show()
-        self.hide()
-        t3 = threading.Thread(target=my_loop)
-        t3.setDaemon(True)
-        t3.start()
-           
-
-class SplashScreen(QSplashScreen):  # first window
-    def __init__(self):
-        super().__init__()
-        self.showMaximized()  # opening window in maximized size
-        uic.loadUi('screens/splashscreen.ui', self)
+        self.close()
         
-        self.setWindowFlag(Qt.FramelessWindowHint)  # Removes the frame of the window
-        global activeScreen
-        activeScreen = "SplashScreen"
+    def updateScreen(self, text):    
+        self.Title.setText(text)
         
+    def speak(self, text, lang="en"):  # here audio is var which contain text
+        # Call LED lights here
+        speaking = True
+        tts = gTTS(text=text, lang=lang)
+        filename = 'temp.mp3'
+        tts.save(filename)
+        playsound(filename, False)
+        #pygame.mixer.music.load(filename)
+        #pygame.mixer.music.play()
+        #while pygame.mixer.music.get_busy():
+          #  print("busy")
+    
+    # this is called from the background thread
+    def callback(self, recognizer, audio):
+        # received audio data, now we'll recognize it using Google Speech Recognition
+        try:
+            # for testing purposes, we're just using the default API key
+            # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+            # instead of `r.recognize_google(audio)`
+            text = recognizer.recognize_google(audio)
+            print("Google Speech Recognition thinks you said " + text)
+            self.recognizedWords(text)
+        except sr.UnknownValueError:
+            print("Google Speech Recognition could not understand audio")
+        except sr.RequestError as e:
+            print("Could not request results from Google Speech Recognition service; {0}".format(e))
+            
+            
+    def recognizedWords(self, text):
+        global user_input, flag
+        user_input = text
+        print (text)
+        
+        if flag == "Quiz":
+            query = text
+            #print("Speaking: "+str(speaking))
+            #window = MainMenu ()
+            self.updateScreen(f"You: {query}")
+            #print(query)
+            #if window.isVisible():
+            #    print("Main Menu is Visible")
+                
+            #elif splash.isVisible():
+            #    print("Splash is Visible")
+            
+            # topics
+            if any(i in query for i in ["topic", "topics", "show topics", "what's the lessons"]):
+                self.runTopics()
+                self.stop_listening(wait_for_stop=False)
 
-    def progress(self):
-        # speak("Welcome button clicked")
-        for i in range(100):
-            sleep(0.03)
-            self.progressBar.setValue(i)
+            # quiz
+            elif any(i in query for i in ["quiz", "show quiz", "what's the challenge"]):
+                self.runQuiz()
+                self.stop_listening(wait_for_stop=False)
+                
+            # translate
+            elif flag == "Translate":
+                print("flag is Translate")
+               
+            
+            elif any(i in query for i in ["translate", "salin wika", "translation"]):
+                if translatr.isVisible():
+                    pass
+                else:
+                    flag = "Translate"
+                    self.runTranslate()
+                    self.hide()
+                    self.stop_listening(wait_for_stop=False)
+            
+            # about me
+            elif "about" in query:
+                self.showAbout() 
 
+
+            # respond politely
+            elif any(_ in query for _ in ["thank", "thanks"]):
+                res = np.random.choice(
+                    ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
+                self.speak(res)
+
+                
+            # respond politely
+            elif any(_ in query for _ in ["good morning", "morning"]):
+                res = np.random.choice(
+                    ["Good morning human", "good morning too!"])
+                self.speak(res)
+                
+
+            # respond politely
+            elif any(i in query for i in ["hi", "hello", "can you hear me"]):
+                res = np.random.choice(
+                    ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
+                
+                self.speak(res)
+                self.updateScreen(f"Etti: {res}")
+                ard.nod()
+                
+            elif "none" in query:
+                print(query)
+                
+            else:
+                res = np.random.choice(
+                    ["Sorry, I don't understand what you said.", "I dont know that yet.", "Sorry, I didn't catch that.", "I didn't get that, but I heard you.", "Sorry?"])
+                self.speak(res)
+                print(query)
 
               
 class MainMenu(QWidget):
     def __init__(self):
+        global flag
+        flag = "MainMenu"
+        threading.current_thread().name = "Menu"
         super().__init__()
         uic.loadUi('screens/welcome.ui', self) # MainWindow.ui
-        #self.setupUi()
-        #self.showMaximized()  # opening window in maximized size
-        #self.transWidget.hide()
-        #global activeScreen
         
         #activeScreen = "MainMenu"
         # Create and connect widgets
@@ -396,154 +754,242 @@ class MainMenu(QWidget):
         self.btnQuiz.clicked.connect(self.runQuiz)
         self.btnTranslate.clicked.connect(self.runTranslate)
         self.btnAbout.clicked.connect(self.runAbout)
+    
+        self.updateScreen("Main Menu...")
+        self.speak("Main Menu...")
         
-        
-        # Step 6: Start the thread   
+    
+        #initialize audio for listening in background
+        self.r = sr.Recognizer()
+        self.m = sr.Microphone()
+        with m as source:
+            r.adjust_for_ambient_noise(source)
+            r.energy_threshold = 4000
+            
+        # start listening in the background (note that we don't have to do this inside a `with` statement)
+        self.stop_listening = r.listen_in_background(m, self.callback)
+
         
     def runTopics(self):
-        speak("topics")
+        self.stop_listening(wait_for_stop=False)
+        global flag
+        flag = "Topics"
+        #self.MainThrd.join()
+        self.speak("topics")
         self.lesson = topics()
-        self.lesson.show()     
+        self.lesson.show()
         self.hide()
-        query = self.btnTopics.text()
-        return query
+        #self.close()
+        #self.my_loop("topics")
+        #MainThrd.join()
+        MainMenu=False
+      
+        
+    def updateScreen(self, text):    
+        self.Title.setText(text)
         
     def runQuiz(self):
-        threadCount = QThreadPool.globalInstance().maxThreadCount()
-        speak("You have selected Quiz")
+        self.stop_listening(wait_for_stop=False)
+        global flag
+        flag = "Quiz"
+        #self.MainThrd.close()
+        #self.speak("Quizzes")
         self.quiz = QuizScreen()
         self.quiz.show()
-        self.hide()
+        #self.hide()
+        self.close()
+        
         
     def runTranslate(self):
-        self.translate = TranslatorScreen()
-        self.translate.show()
-        self.translate.start_button()
+        self.stop_listening(wait_for_stop=False)
+        global flag
+        flag = "Translate"
+        #self.MainThrd.close()
+        translate = TranslatorScreen()
+        translate.show()
+        translate.run()
         self.hide()
+        #self.close()
+        
         
     def runAbout(self):
         ard.nod()
-        speak("I'm Etti, I am designed to teach basic english for my children and communicate with people, just like you!")
+        self.speak("I'm Etti, I am designed to teach basic english for my children and communicate with people, just like you!")
         ard.lookStraight()
         
     def gotoMenu(self):
         self.show()
         
-
-        
-def my_loop():
-    global flag
-    # Final resets
-    #self.longRunningBtn.setEnabled(False)
-    #self.thread.finished.connect(
-    #    lambda: self.longRunningBtn.setEnabled(True)
-    #)
-    #self.thread.finished.connect(
-    #    lambda: self.stepLabel.setText("Long-Running Step: 0")
-    #)
-    speak("Main Menu...")
-    #LOOP Listening state
-    flag = "MainMenu"
-    while True:
-        flag = "MainMenu"
-        print(f"FLAG is: {flag}")
-        #print("Speaking: "+str(speaking))
-        query = ask_ettibot().lower()
-        #print(query)
-        #if window.isVisible():
-        #    print("Main Menu is Visible")
+    def speak(self, text, lang="en"):  # here audio is var which contain text
+        # Call LED lights here
+        speaking = True
+        tts = gTTS(text=text, lang=lang)
+        filename = 'temp.mp3'
+        tts.save(filename)
+        playsound(filename, False)
+        #pygame.mixer.music.load(filename)
+        #pygame.mixer.music.play()
+        #while pygame.mixer.music.get_busy():
+          #  print("busy")
+    
+    # this is called from the background thread
+    def callback(self, recognizer, audio):
+        # received audio data, now we'll recognize it using Google Speech Recognition
+        try:
+            # for testing purposes, we're just using the default API key
+            # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+            # instead of `r.recognize_google(audio)`
+            text = recognizer.recognize_google(audio)
+            print("Google Speech Recognition thinks you said " + text)
+            self.recognizedWords(text)
+        except sr.UnknownValueError:
+            print("Google Speech Recognition could not understand audio")
+        except sr.RequestError as e:
+            print("Could not request results from Google Speech Recognition service; {0}".format(e))
             
-        #elif splash.isVisible():
-        #    print("Splash is Visible")
-        
-        # topics
-        if any(i in query for i in ["topic", "topics", "show topics", "what's the lessons"]):
-            window.runTopics()
-            break
-
-        # quiz
-        elif any(i in query for i in ["quiz", "show quiz", "what's the challenge"]):
-            self.window.runQuiz()
-            break
             
-        # translate
-        elif flag == "Translate":
-            print("flag is Translate")
-            break
+    def recognizedWords(self, text):
+        global user_input, flag
+        user_input = text
+        print (text)
         
-        elif any(i in query for i in ["translate", "salin wika", "translation"]):
-            if translatr.isVisible():
-                continue
+        if flag == "MainMenu":
+            query = text
+            #print("Speaking: "+str(speaking))
+            #window = MainMenu ()
+            self.updateScreen(f"You: {query}")
+            #print(query)
+            #if window.isVisible():
+            #    print("Main Menu is Visible")
+                
+            #elif splash.isVisible():
+            #    print("Splash is Visible")
+            
+            # topics
+            if any(i in query for i in ["topic", "topics", "show topics", "what's the lessons"]):
+                self.stop_listening(wait_for_stop=False)
+                lesson = topics(threading.thead)
+                lesson.show()
+                self.close()
+
+            # quiz
+            elif any(i in query for i in ["quiz", "show quiz", "what's the challenge"]):
+                self.stop_listening(wait_for_stop=False)
+                flag = "Quiz"
+                #self.MainThrd.close()
+                #self.speak("Quizzes")
+                quiz = QuizScreen()
+                quiz.show()
+                #self.hide()
+                self.close()
+                
+            # translate
+            elif flag == "Translate":
+                print("flag is Translate")
+               
+            
+            elif any(i in query for i in ["translate", "salin wika", "translation"]):
+                self.runTranslate()
+                self.hide()
+                self.stop_listening(wait_for_stop=False)
+            
+            # about me
+            elif "about" in query:
+                self.runAbout() 
+
+
+            # respond politely
+            elif any(_ in query for _ in ["thank", "thanks"]):
+                res = np.random.choice(
+                    ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
+                self.speak(res)
+
+                
+            # respond politely
+            elif any(_ in query for _ in ["good morning", "morning"]):
+                res = np.random.choice(
+                    ["Good morning human", "good morning too!"])
+                self.speak(res)
+                ard.lookLeft()
+                
+
+            # respond politely
+            elif any(i in query for i in ["hi", "hello", "can you hear me"]):
+                res = np.random.choice(
+                    ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
+                
+                self.speak(res)
+                self.updateScreen(f"Etti: {res}")
+                ard.lookRight()
+                
+            elif any(i in query for i in ["up", "look up"]):
+                ard.lookUp()
+                ard.lookStraight()
+                
+            elif any(i in query for i in ["down", "look down"]):
+                ard.lookDown()
+                ard.lookStraight()
+                
+            elif any(i in query for i in ["left", "look left"]):
+                ard.lookLeft()
+                ard.lookStraight()
+                
+            elif any(i in query for i in ["right", "look right"]):
+                ard.lookRight()
+                ard.lookStraight()
+                
+            elif any(i in query for i in ["disagree", "disaffirm"]):
+                ard.notNod()
+                ard.lookStraight()
+                
+            elif any(i in query for i in ["agree", "affirm"]):
+                ard.nod()
+                ard.lookStraight()
+                
+                
+            elif "none" in query:
+                print(query)
+                
             else:
-                flag = "Translate"
-                window.runTranslate()
-                window.hide()
-                break
-            
-        
-        # about me
-        elif "about" in query:
-            window.showAbout() 
-
-
-        # respond politely
-        elif any(_ in query for _ in ["thank", "thanks"]):
-            res = np.random.choice(
-                ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
-            speak(res)
-
-        # respond politely
-        elif any(i in query for i in ["hi", "hello", "can you hear me"]):
-            res = np.random.choice(
-                ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
-            speak(res)
-            ard.nod()
-            
-        elif "none" in query:
-            print(query)
-            
-
-        else:
-            res = np.random.choice(
-                ["Sorry, I don't understand what you said.", "I dont know that yet.", "Sorry, I didn't catch that.", "I didn't get that, but I heard you."])
-            speak(res)
-            print(query)
-            
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    #window = MainMenu()
-    #window.show()
-  
+                res = np.random.choice(
+                    ["Sorry, I don't understand what you said.", "I dont know that yet.", "Sorry, I didn't catch that.", "I didn't get that, but I heard you.", "Sorry?"])
+                self.speak(res)
+                print(query)
+                
    
+def myThread():
+    while True:
+        print(f"User voice: {user_input}")
+        print(f"Counter: {counter}")
+        print(f"FLAG: {flag}")
+        print(f"Subject: {subjectLesson}")
+        print(threading.enumerate())
+        time.sleep(1)
+        try:
+            pass
+        
+        except KeyboardInterrupt:
+            sys.exit(0)
+        
+            
+            
+def main():
+    app = QApplication(sys.argv)
     
-    #t2 = threading.Thread(target=menuloop)
-    #t2.setDaemon(True)
-    t = threading.Thread(target=my_loop)
-    t.setDaemon(True)
-    t.start()
-
-    #start threading
-    
-    #t2.start()
-    #t2.join()
-    #t.join()
-    
-    #splash = SplashScreen()
-    #splash.show()
-    #splash.progress()
     print("Mainthread: Started")
     window = MainMenu()
-    #splash.finish(window)
     window.show()
-    translatr = TranslatorScreen()
-    lesson = topics()
-    subject = Subject()
-    #translate.translateNow()
     
-    #topics = Topics()
-    #quiz = Quiz()
-    #translate = Translate()
-    #about = About()
+    #MainThrd.join()
     
+    #Enumerate Running Threads
+    checkThread = threading.Thread(name="Enumerate", target=myThread)
+    checkThread.setDaemon(True)
+    checkThread.start()
     sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    #Main Thread
+    main()
+    
+    

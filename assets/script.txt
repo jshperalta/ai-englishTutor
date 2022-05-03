@@ -34,3 +34,6 @@ Notice the sounds of the words. Sets A and C are considered as rhyming words whi
 //INITIATE QUIZ VIEW
 Learning Task 1:
 Match the pictures which have the same ending sounds.
+
+
+

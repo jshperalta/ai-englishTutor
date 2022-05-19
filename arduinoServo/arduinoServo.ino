@@ -12,12 +12,18 @@ void setup() {
   
   servo.attach(10); // servo is wired to Arduino on digital pin 10
   servo2.attach(9); // servo is wired to Arduino on digital pin 9
+  
+  pinMode(11, OUTPUT);    // sets the digital pin 13 as output
+  pinMode(12, OUTPUT);    // sets the digital pin 13 as output
+  
 }
 
 void loop() {
   while (!Serial.available());
   x = Serial.readString().toInt();
   Serial.println(x + 1);
+ 
+  
   if (x == 1) {
     nod();
   }
@@ -46,6 +52,35 @@ void loop() {
     notNod();
   }
   
+  if (x == 11) {
+    ledWhite();
+  }
+  
+  if (x == 12) {
+    ledBlue();
+  }
+  
+  if (x == 13) {
+    ledOff();
+  }
+  
+  
+  
+}
+
+void ledOff (){
+  digitalWrite(11, LOW); // sets the digital pin 13 on
+  digitalWrite(12, LOW);  // sets the digital pin 13 off
+}
+
+void ledWhite (){
+  digitalWrite(11, HIGH); // sets the digital pin 13 on
+  digitalWrite(12, LOW);  // sets the digital pin 13 off
+}
+
+void ledBlue (){
+  digitalWrite(12, HIGH); // sets the digital pin 13 on
+  digitalWrite(11, LOW);  // sets the digital pin 13 off
 }
 
 void nod () {

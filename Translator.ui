@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>823</width>
-    <height>676</height>
+    <width>779</width>
+    <height>576</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,19 +17,40 @@
    <string notr="true">QLabel {
 font-size: 33px;
 font-weight: 900;
+}
+
+#Translate{
+background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 198, 255, 255), stop:0.517857 rgba(0, 255, 251, 255), stop:1 rgba(174, 255, 236, 255))
+}
+
+QPushButton {
+font-size: 16px !important;
+background-color: #AFFFEC !important;
+color: black; 
+font-family: 'Gilroy';
+font-weight: 600;
+border-radius: 10px;
+padding: 20px;
+}
+
+QPushButton::hover {
+background-color: #AFFFAA;
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>10</number>
+     </property>
      <property name="leftMargin">
-      <number>100</number>
+      <number>20</number>
      </property>
      <property name="topMargin">
       <number>100</number>
      </property>
      <property name="rightMargin">
-      <number>100</number>
+      <number>20</number>
      </property>
      <property name="bottomMargin">
       <number>100</number>
@@ -77,6 +98,9 @@ border-radius: 20px;</string>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item row="2" column="0">
@@ -90,6 +114,9 @@ border-radius: 20px;</string>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -100,13 +127,11 @@ border-radius: 20px;</string>
        <property name="cursor">
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
-        <string notr="true">background-color: #f3f3f3;
-	color: black; 
-	font-family: 'Gilroy';
-	font-weight: 600;
-	border-radius: 10px;
-	padding: 20px;
+        <string notr="true">
 </string>
        </property>
        <property name="text">

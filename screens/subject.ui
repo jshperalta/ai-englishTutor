@@ -14,9 +14,14 @@
    <string>Subject</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: #fff;</string>
+   <string notr="true">#Subject{
+background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 198, 255, 255), stop:0.517857 rgba(0, 255, 251, 255), stop:1 rgba(174, 255, 236, 255))
+}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
    <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="subject_Title">
      <property name="font">
@@ -58,7 +63,7 @@ font-size: 26px;</string>
       <bool>false</bool>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: #AFFFEC;
+      <string notr="true">background-color: #fff;
 	color: black; 
 	font-family: 'Gilroy';
 	font-weight: 400;
@@ -77,7 +82,7 @@ font-size: 26px;</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Gilroy'; font-size:16pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click Start button to continue...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
@@ -101,6 +106,9 @@ p, li { white-space: pre-wrap; }
    </item>
    <item row="2" column="1">
     <widget class="QPushButton" name="btnStart">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="cursor">
       <cursorShape>PointingHandCursor</cursorShape>
      </property>

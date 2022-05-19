@@ -6,15 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>919</width>
-    <height>658</height>
+    <width>804</width>
+    <height>594</height>
    </rect>
+  </property>
+  <property name="mouseTracking">
+   <bool>true</bool>
+  </property>
+  <property name="tabletTracking">
+   <bool>true</bool>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Topics Screen</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: #fff;</string>
+   <string notr="true">#Form{
+background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 198, 255, 255), stop:0.517857 rgba(0, 255, 251, 255), stop:1 rgba(174, 255, 236, 255))
+}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="leftMargin">
@@ -40,16 +51,19 @@ font-size: 16px !important;
 background-color: #AFFFEC !important;
 color: black; 
 font-family: 'Gilroy';
-font-weight: 400;
+font-weight: 600;
 border-radius: 10px;
 padding: 20px;
 }
 
 QPushButton::hover {
-background-color: #AFFFDD !important;
+background-color: #AFFFAA !important;
 }</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <property name="spacing">
+       <number>10</number>
+      </property>
       <item row="0" column="0" colspan="2">
        <widget class="QLabel" name="Topics">
         <property name="minimumSize">
@@ -84,12 +98,21 @@ color: black;</string>
          <font>
           <family>Gilroy</family>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
          <string notr="true"/>
@@ -114,12 +137,21 @@ color: black;</string>
          <font>
           <family>Gilroy</family>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
          <string notr="true"/>
@@ -144,12 +176,21 @@ color: black;</string>
          <font>
           <family>Gilroy</family>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
          <string notr="true"/>
@@ -174,12 +215,21 @@ color: black;</string>
          <font>
           <family>Gilroy</family>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
          <string notr="true"/>
@@ -209,6 +259,9 @@ color: black;</string>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
          <string notr="true">background-color: #ffafaf;
 	color: black; 
@@ -227,6 +280,9 @@ color: black;</string>
        <widget class="QPushButton" name="btnStart">
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
          <string notr="true">background-color: #92ff8f;

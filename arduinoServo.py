@@ -27,8 +27,8 @@ arduino_ports = [
     ]
 
 if not arduino_ports:
-    raise IOError("No Arduino found")
-    
+    #raise IOError("No Arduino found")
+    print("No Arduino")
 
 if len(arduino_ports) > 1:
     warnings.warn('Multiple Arduinos found - using the first')
@@ -43,6 +43,8 @@ print(arduino_ports)
 
 arduino = serial.Serial(port=arduino_ports[0], baudrate=115200, timeout=.2)
 
+
+#print("No arduino")
 
 def write_readx(x):
     arduino.write(bytes(x, 'utf-8'))
@@ -70,6 +72,15 @@ def lookDown ():
     
 def notNod():
     write_readx(str(7))
+
+def ledSpeaking():
+    write_readx(str(11))
+
+def ledListening():
+    write_readx(str(12))
+    
+def ledOff():
+    write_readx(str(13))
 
 #while True:
 #    lookLeft()

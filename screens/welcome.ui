@@ -7,15 +7,16 @@
     <x>0</x>
     <y>0</y>
     <width>827</width>
-    <height>596</height>
+    <height>576</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Main Menu</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-background-color: #fff;</string>
+   <string notr="true">#Form{
+background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 198, 255, 255), stop:0.517857 rgba(0, 255, 251, 255), stop:1 rgba(174, 255, 236, 255))
+}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
@@ -35,10 +36,22 @@ background-color: #fff;</string>
    </property>
    <item row="0" column="0">
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <property name="spacing">
-       <number>9</number>
-      </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+font-size: 16px !important;
+background-color: #AFFFEC !important;
+color: black; 
+font-family: 'Gilroy';
+font-weight: 600;
+border-radius: 10px;
+padding: 20px;
+}
+
+QPushButton::hover {
+background-color: #AFFFAA;
+}</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
        <number>50</number>
       </property>
@@ -51,19 +64,19 @@ background-color: #fff;</string>
       <property name="bottomMargin">
        <number>70</number>
       </property>
-      <item>
+      <property name="verticalSpacing">
+       <number>10</number>
+      </property>
+      <item row="0" column="0">
        <widget class="QLabel" name="Title">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>170</height>
-         </size>
-        </property>
         <property name="baseSize">
          <size>
           <width>1024</width>
           <height>600</height>
          </size>
+        </property>
+        <property name="whatsThis">
+         <string>Title</string>
         </property>
         <property name="styleSheet">
          <string notr="true">font: 87 32pt &quot;Gilroy&quot;;
@@ -83,12 +96,12 @@ font-weight: 900;</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="1" column="0">
        <widget class="QPushButton" name="btnTopics">
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>16</pointsize>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -96,18 +109,14 @@ font-weight: 900;</string>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
-         <string notr="true">#btnTopics{
-	background-color: #AFFFEC;
-	color: black; 
-	font-family: 'Gilroy';
-	font-weight: 600;
-	border-radius: 10px;
-	padding: 20px;
-}</string>
+         <string notr="true"/>
         </property>
         <property name="text">
-         <string>TOPICS</string>
+         <string>LEARNING MODULE</string>
         </property>
         <property name="autoDefault">
          <bool>true</bool>
@@ -120,12 +129,12 @@ font-weight: 900;</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="2" column="0">
        <widget class="QPushButton" name="btnQuiz">
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>16</pointsize>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -133,17 +142,14 @@ font-weight: 900;</string>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
-         <string notr="true">background-color: #AFFFEC;
-	color: black; 
-	font-family: 'Gilroy';
-	font-weight: 600;
-	border-radius: 10px;
-	padding: 20px;
-</string>
+         <string notr="true"/>
         </property>
         <property name="text">
-         <string>QUIZ</string>
+         <string>LEARNING TASKS</string>
         </property>
         <property name="autoDefault">
          <bool>true</bool>
@@ -156,12 +162,12 @@ font-weight: 900;</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="3" column="0">
        <widget class="QPushButton" name="btnTranslate">
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>16</pointsize>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -169,14 +175,11 @@ font-weight: 900;</string>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
-         <string notr="true">background-color: #AFFFEC;
-	color: black; 
-	font-family: 'Gilroy';
-	font-weight: 600;
-	border-radius: 10px;
-	padding: 20px;
-</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string>TRANSLATE</string>
@@ -192,12 +195,12 @@ font-weight: 900;</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="4" column="0">
        <widget class="QPushButton" name="btnAbout">
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>16</pointsize>
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -205,13 +208,11 @@ font-weight: 900;</string>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
-         <string notr="true">background-color: #AFFFEC;
-	color: black; 
-	font-family: 'Gilroy';
-	font-weight: 600;
-	border-radius: 10px;
-	padding: 20px;
+         <string notr="true">
 </string>
         </property>
         <property name="text">

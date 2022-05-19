@@ -1,0 +1,7 @@
+README.md
+pyproject.toml
+setup.cfg
+src/ai_package_jshperalta.egg-info/PKG-INFO
+src/ai_package_jshperalta.egg-info/SOURCES.txt
+src/ai_package_jshperalta.egg-info/dependency_links.txt
+src/ai_package_jshperalta.egg-info/top_level.txt

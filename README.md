@@ -2,7 +2,7 @@
 This project acts like alexa but contents are limited only to teaching Grade 1 students.
 This AI has the ability to discuss lessons, ask questions to the user, and validate user input.
 
-## Main Menu
+## Dashboard
 - **Learning Module** - The list of all topics or lessons.
 - **Learning Tasks** - The list of all tasks or activity that the learner can engage with.
 - **Translate** - Translates user input from Filipino Language into English Language or vice versa. It has the ability to detect which language is inputted then translate that language opposite to it.

@@ -1,6 +1,6 @@
 # Artificial Intelligence English Tutor
 This project acts like alexa but contents are limited only to teaching Grade 1 students.
-This AI has the ability to discuss lessons, ask questions to the user, and validate user input.
+This AI has the ability to translate filipino words to english (vice versa), discuss lessons, ask questions to the user, and validate user input.
 
 ## Dashboard
 - **Learning Module** - The list of all topics or lessons.

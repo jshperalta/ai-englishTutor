@@ -5,7 +5,6 @@
         #self.speaks("Try to read the sets of words below")
         self.updateScreen("Politeness")
         self.speak("Politeness is one of the characteristics that you should have.")
-        
         self.speak("There are lots of ways on how one can show politeness.")
         self.speak("Saying,")
         self.updateScreen("po and opo")

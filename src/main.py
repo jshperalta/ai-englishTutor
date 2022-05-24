@@ -45,7 +45,8 @@ pygame.mixer.init()
 pygame.init()
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-global activeScreen, speaking, duration, flag, subjectLesson, user_input, score
+global activeScreen, speaking, duration, flag, subjectLesson, user_input, score, learner_name
+learner_name = ""
 score = 0
 duration = 0
 user_input = ""
@@ -60,15 +61,15 @@ r = sr.Recognizer()
 m = sr.Microphone()
 speaking = False
 flag = ""
+energyThres = 60
 
 
-
-# ------FUNCTIONS
+################################################################################### GLOBAL FUNCTIONS #####################################################################
 
 # HERE CONVERTS USER VOICE INPUT INTO MACHINE READABLE TEXT
 def ask_ettibot():
     print("Speak Now . . .")
-    r.energy_threshold = 50
+    r.energy_threshold = energyThres
     r.dynamic_energy_threshold = False
     speaking=False
     
@@ -85,7 +86,7 @@ def ask_ettibot():
 
         except Exception as e:
             print("ask etti: Exception " + str(e))
-            return "none"
+            return "0x01"
 
     return text
 
@@ -117,8 +118,9 @@ def speak(text, lang="en"):  # here audio is var which contain text
     hours, mins, seconds = convert(length_in_secs)
     sleep(seconds+0.7)
             
-# ------CLASSES ----- SCREENS
-# RHYMING WORDS
+############################################################################################ SCREENS ###################################################################
+    
+############ SUBJECT1: RHYMING WORDS
 class Worker(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(str)
@@ -134,18 +136,19 @@ class Worker(QObject):
         speak("Words are formed by combining the letters of the alphabet.")
         self.progress.emit("It is important to remember that the English alphabet is composed of 26 letters with 5 vowels and 21 consonants.")
         speak("It is important to remember that the English alphabet is composed of 26 letters, with 5 vowels and 21 consonants.")
-        self.progress.emit("Vowels: \nAa  Ee Ii Oo Uu")
+        self.progress.emit("Vowels: Aa  Ee Ii Oo Uu")
         speak("vowels are like, ah. ae. ē. oh. oooh.")
-        self.progress.emit("Consonants: \nBb Cc Dd Ff Gg Hh Jj Kk Ll Mm Nn Pp Qq Rr Ss Tt Vv Ww Xx Yy Zz.")
+        self.progress.emit("Consonants: Bb Cc Dd Ff Gg Hh Jj Kk Ll Mm Nn Pp Qq Rr Ss Tt Vv Ww Xx Yy Zz.")
         speak("Now, consonants are like alphabets without vowels. Such as b,c,d,f,g, and so on.")
         self.progress.emit("By combining some of these letters, words may be formed.")
         speak("By combining some of these letters, words may be formed.")
         self.progress.emit("Some of these words include net, one, pen, and red. Some words have the same or similar ending sounds.")
         speak("Some of these words include net, one, pen, and red.Some words have the same or similar ending sounds.")
-        self.progress.emit("They are called rhyming words.At the end of the lesson, you are expected to recognize rhyming words in nursery rhymes, poems or songs heard.")
+        self.progress.emit("They are called rhyming words. At the end of the lesson, you are expected to recognize rhyming words in nursery rhymes, poems or songs heard.")
         speak("They are called rhyming words.At the end of the lesson, you are expected to recognize rhyming words in nursery rhymes, poems or songs heard.")
-        self.progress.emit("SET A: \nHouse - Mouse.")
+        
         speak("Try to read the example below.")
+        self.progress.emit("SET A: \nHouse - Mouse.")
         
         while True:
             response = ask_ettibot().lower()     
@@ -220,7 +223,7 @@ class Worker(QObject):
     def stopThread (self):
         self.finished.emit()
         
-# SENTENCES AND NON-SENTENCES
+############ SUBJECT2: SENTENCES AND NON-SENTENCES
 class Worker2(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(str)
@@ -270,12 +273,27 @@ class Worker2(QObject):
         #self.clicksLabel.setText(f"Counting: {self.clicksCount} clicks")
         
 
-# Short Stories or Poems
+############ SUBJECT3: Short Stories or Poems
 class Worker3(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(str)
         
     def subjectNow3(self):
+        
+        def emitStory():
+            self.progress.emit("The New Toys")
+            speak("The New Toys")
+            
+            self.progress.emit("The New Toys\n\n Jay and Joy have new toys. \n Jay has a new toy car. It is small but shiny.\n Meanwhile, Joy has a new doll. It is big and beautiful.\n She hid them behind the table to surprise them.\n They hurriedly looked for the hidden gifts.\n When they saw them, they immediately opened them.\n They jumped for joy when they saw their new toys. They were just what they wished for.\n They thanked and kissed their Tita. They love their new toys.") 
+            speak("Jay and Joy have new toys.")
+            speak("Jay has a new toy car. It is small but shiny.")
+            speak("Meanwhile,Joy has a new doll. It is big and beautiful.")
+            speak("She hid them behind the table to surprise them.")
+            speak("They hurriedly looked for the hidden gifts.")
+            speak("When they saw them, they immediately opened them.")
+            speak("They jumped for joy when they saw their new toys. They were just what they wished for.")
+            speak("They thanked and kissed their Tita. They love their new toys.")
+            
         subject = "Details in Short Stories or Poems"
         #speaks(self.script)
         #speaks("Try to read the sets of words below")
@@ -294,19 +312,7 @@ class Worker3(QObject):
         self.progress.emit("Now. Listen to this story.")
         speak("Now. Listen to this story,")
         
-        self.progress.emit("The New Toys")
-        speak("The New Toys")
-        
-        self.progress.emit("The New Toys\n\n Jay and Joy have new toys. \n Jay has a new toy car. It is small but shiny.\n Meanwhile, Joy has a new doll. It is big and beautiful.\n She hid them behind the table to surprise them.\n They hurriedly looked for the hidden gifts.\n When they saw them, they immediately opened them.\n They jumped for joy when they saw their new toys. They were just what they wished for.\n They thanked and kissed their Tita. They love their new toys.") 
-        speak("Jay and Joy have new toys.")
-        speak("Jay has a new toy car. It is small but shiny.")
-        speak("Meanwhile,Joy has a new doll. It is big and beautiful.")
-        speak("She hid them behind the table to surprise them.")
-        speak("They hurriedly looked for the hidden gifts.")
-        speak("When they saw them, they immediately opened them.")
-        speak("They jumped for joy when they saw their new toys. They were just what they wished for.")
-        speak("They thanked and kissed their Tita. They love their new toys.")
-        
+        emitStory()
         
         speak("Try to answer these questions")
         self.progress.emit("Who received gifts during their birthday?")
@@ -314,11 +320,24 @@ class Worker3(QObject):
     
         while True:
             response = ask_ettibot().lower()     
-            if response == "jay and joy":
+            if any(i in response for i in ["jay", "joy", "jay and joy", "j n joy"]):
                 speak("Perfect!")
+                ard.nod()
                 self.progress.emit("jay and joy")
+                sleep(3)
                 self.countResponse()
                 break
+            
+            elif any(i in response for i in ["can you repeat the story", "repeat story"]):
+                speak("okay!")
+                emitStory()
+                continue
+            
+            else:
+                res = np.random.choice(
+                    ["Nope, Try again.", "incorrect", "I heard you, but I think it's not right", "uh nope, try again"])
+                speak(res)
+                ard.notNod()
                 
         self.progress.emit("Who gave them the gifts?")
         speak("Who gave them the gifts?")
@@ -327,8 +346,21 @@ class Worker3(QObject):
             if any(i in response for i in ["tita", "auntie"]):
                 speak("Perfect!")
                 self.progress.emit("tita")
+                ard.nod()
+                sleep(3)
                 self.countResponse()
                 break
+            
+            elif any(i in response for i in ["can you repeat the story", "repeat story"]):
+                speak("okay!")
+                emitStory()
+                continue
+            
+            else:
+                res = np.random.choice(
+                    ["Nope, Try again.", "incorrect", "I heard you, but I think it's not right", "uh nope, try again"])
+                speak(res)
+                ard.notNod()
                 
         self.progress.emit("Where did she hide the gifts?")
         speak("Where did she hide the gifts?")
@@ -337,8 +369,21 @@ class Worker3(QObject):
             if any(i in response for i in ["table", "behind the table"]):
                 speak("Great!")
                 self.progress.emit("behind the table")
+                ard.nod()
+                sleep(3)
                 self.countResponse()
                 break
+            
+            elif any(i in response for i in ["can you repeat the story", "repeat story"]):
+                speak("okay!")
+                emitStory()
+                continue
+            
+            else:
+                res = np.random.choice(
+                    ["Nope, Try again.", "incorrect", "I heard you, but I think it's not right", "uh nope, try again"])
+                speak(res)
+                ard.notNod()
                 
         self.progress.emit("What gifts did they receive?")
         speak("What gifts did they receive?")
@@ -347,8 +392,21 @@ class Worker3(QObject):
             if any(i in response for i in ["toy car and doll", "car", "doll", "toy"]):
                 speak("Perfect!")
                 self.progress.emit("toy car and doll")
+                ard.nod()
+                sleep(3)
                 self.countResponse()
                 break
+            
+            elif any(i in response for i in ["can you repeat the story", "repeat story"]):
+                speak("okay!")
+                emitStory()
+                continue
+            
+            else:
+                res = np.random.choice(
+                    ["Nope, Try again.", "incorrect", "I heard you, but I think it's not right", "uh nope, try again"])
+                speak(res)
+                ard.notNod()
                 
         self.progress.emit("What did they do when they found the gifts?")
         speak("What did they do when they found the gifts?")
@@ -357,8 +415,21 @@ class Worker3(QObject):
             if any(i in response for i in ["jumped", "jump", "jumped for joy"]):
                 speak("Well done!")
                 self.progress.emit("they jumped for joy")
+                ard.nod()
+                sleep(3)
                 self.countResponse()
                 break
+            
+            elif any(i in response for i in ["can you repeat the story", "repeat story"]):
+                speak("okay!")
+                emitStory()
+                continue
+            
+            else:
+                res = np.random.choice(
+                    ["Nope, Try again.", "incorrect", "I heard you, but I think it's not right", "uh nope, try again"])
+                speak(res)
+                ard.notNod()
                 
                 
         speak("That's all for today's video, thank you for listening!")
@@ -371,16 +442,91 @@ class Worker3(QObject):
     def countClicks(self):
         self.clicksCount += 1
         #self.clicksLabel.setText(f"Counting: {self.clicksCount} clicks")
+        
+
+############ SUBJECT4: Polite Expressions
+class Worker4(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(str)
+    image = pyqtSignal()
+        
+    def subjectNow4(self):
+        subject = "Polite Expressions"
+        #self.speaks(self.script)
+        #self.speaks("Try to read the sets of words below")
+        self.progress.emit("Politeness is one of the characteristics that you should have.")
+        speak("Politeness is one of the characteristics that you should have.")
+        
+        self.progress.emit("There are lots of ways on how one can show politeness.")
+        speak("There are lots of ways on how one can show politeness.")
+        
+        self.progress.emit("Saying po and opo is one of these ways")
+        speak("Saying")
+        speak("po at opo", "tl")
+        speak("is one of these ways.")
+        
+        self.progress.emit("Also, you can show politeness using appropriate words or expressions in different events.")
+        speak("Also, you can show politeness using appropriate words or expressions in different events.")
+    
+        self.progress.emit("At the end of the lesson, you are expected to use respond appropriately to polite expressions in greetings, leave takings, expressing gratitude and apology, asking permission, and offering help. ")
+        speak("At the end of the lesson, you are expected to use respond appropriately to polite expressions in greetings leave takings, expressing gratitude and apology, asking permission, and offering help.")
+        
+        self.progress.emit("Read the example shown on screen. ")
+        speak("Read the example shown on screen. ")
+        
+        self.progress.emit("\n")
+        self.image.emit()
+        
+        sleep(7)
+        
+        speak("Notice the highlighted words.")
+        speak("Good afternoon, Thank you very much. and You are welcome are examples of polite greetings. that you may use in talking to other people. ")
+        
+        
+        self.progress.emit("That's All, Thank you for listening!")
+        speak("That's all for today's discussion, thank you for listening!")
+        
+        sleep(3)
+        self.finished.emit()
+            
+    def countResponse (self):
+        global score
+        score =+ 1
+            
+    def countClicks(self):
+        self.clicksCount += 1
+        #self.clicksLabel.setText(f"Counting: {self.clicksCount} clicks")
 
 
-# DYNAMIC SCREEN SUBJECT
-class Subject(QWidget):  # second screen showing the lesson and activity
+########################################################################### DYNAMIC SCREEN SUBJECT #########################################################
+class Subject(QWidget):  # second screen showing the discussion screen
     def __init__(self):
         super().__init__()
         uic.loadUi('screens/subject.ui', self)
         self.btnStart.clicked.connect(self.run)
         self.btnMenu.clicked.connect(self.showMenu)
         self.showMaximized()  # opening window in maximized size
+        #self.updateImage()
+        
+        
+    def updateImage(self, url='images/polite expression.png'):
+        pixmap = QPixmap(url)
+        self.subtitle_2.setPixmap(pixmap)
+        self.subtitle_2.setScaledContents(True)
+        #self.setCentralWidget(label)
+        self.resize(pixmap.width(), pixmap.height())
+        
+        #document = self.subtitle_2.document()
+        #self.resize(1024, 600)
+        #cursor = QTextCursor(document)
+        #p1 = cursor.position() # returns int
+        #cursor.insertImage(url)
+        
+        
+    def updateScreen(self, message):
+        self.subtitle_2.setText(message)
+        self.subtitle_2.setAlignment(Qt.AlignCenter)
+        #self.subject_Title.setText(subject)
         
     def speak(self, text, lang="en"):  # here audio is var which contain text
         # Call LED lights here
@@ -408,7 +554,6 @@ class Subject(QWidget):  # second screen showing the lesson and activity
         global flag
         flag = "Topics"
         #self.MainThrd.join()
-        speak("topics")
         self.lesson = topics()
         self.lesson.show()
         #self.hide()
@@ -471,6 +616,10 @@ class Subject(QWidget):  # second screen showing the lesson and activity
                 lambda: self.subtitle_2.setText("Click Start to Continue...")
             )
             
+            self.thread.finished.connect(
+                lambda: self.showMenu()
+            )
+            
         if subjectLesson == "Sentence":
             
             # Step 2: Create a QThread object
@@ -509,6 +658,10 @@ class Subject(QWidget):  # second screen showing the lesson and activity
             
             self.thread.finished.connect(
                 lambda: self.subtitle_2.setText("Click Start to Continue...")
+            )
+            
+            self.thread.finished.connect(
+                lambda: self.showMenu()
             )
         
         if subjectLesson == "Stories":
@@ -549,24 +702,58 @@ class Subject(QWidget):  # second screen showing the lesson and activity
             self.thread.finished.connect(
                 lambda: self.subtitle_2.setText("Click Start to Continue...")
             )
+            
+            self.thread.finished.connect(
+                lambda: self.showMenu()
+            )
 
         
         if subjectLesson == "Express":
-            #self.subjectNow2()
-            self.thread.started.connect(self.worker.subjectNow2)
-            self.subject_Title.setText(subjectLesson)
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = Worker4()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            #self.subjectNow()
+            self.thread.started.connect(self.worker.subjectNow4)
+            self.subject_Title.setText("Polite Expressions")
             
-        
-        # Step 5: Connect signals and slots
-        #self.thread.started.connect(self.worker.subjectNow)
-        
-        
-    
-    def updateScreen(self, message):
-        self.subtitle_2.setText(message)
-        #self.subject_Title.setText(subject)
-        
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.image.connect(self.updateImage)
+            self.worker.progress.connect(self.updateScreen)
+            # Step 6: Start the thread
+            self.thread.start()
 
+            # Final resets
+            self.btnStart.hide()
+            self.btnMenu.hide()
+            self.btnStart.setEnabled(False)
+            
+            self.thread.finished.connect(
+                lambda: self.btnStart.setEnabled(True)
+            )
+            
+            self.thread.finished.connect(
+                lambda: self.btnStart.show()
+            )
+            
+            self.thread.finished.connect(
+                lambda: self.btnMenu.show()
+            )
+            
+            self.thread.finished.connect(
+                lambda: self.subtitle_2.setText("Click Start to Continue...")
+            )
+            
+            self.thread.finished.connect(
+                lambda: self.showMenu()
+            )
+        
+  
+########################################################################### TOPICS Screen  #####################################################################
 class topics(QWidget):  # second screen showing the lesson and activity
     def __init__(self):
         super().__init__()
@@ -575,6 +762,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
         activeScreen = "topics"
         #sleep(duration)
         self.btnMenu.clicked.connect(self.showMenu)
+        
         self.btnExpress.clicked.connect(self.showExpress)
         self.btnRhyming.clicked.connect(self.showRhyme)
         self.btnSentence.clicked.connect(self.showSentence)
@@ -599,7 +787,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
         m = sr.Microphone()
         with m as source:
             r.adjust_for_ambient_noise(source)
-            r.energy_threshold = 4000
+            r.energy_threshold = energyThres
             
         # start listening in the background (note that we don't have to do this inside a `with` statement)
         self.stop_listening = r.listen_in_background(m, self.callback)
@@ -608,9 +796,11 @@ class topics(QWidget):  # second screen showing the lesson and activity
     def showRhyme(self):
         global subjectLesson
         subjectLesson = self.btnRhyming.text()
+        speak(self.btnRhyming.text())
         #self.threadTopic.stop()
         self.subj = Subject()
         self.subj.show()
+        #self.subj.run()
         self.close()
         
         
@@ -621,6 +811,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
         speak(self.btnExpress.text())
         self.subj = Subject()
         self.subj.show()
+        self.subj.run()
         self.close()
         
         
@@ -631,6 +822,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
         speak(self.btnSentence.text())
         self.subj = Subject()
         self.subj.show()
+        self.subj.run()
         self.close()
         
     def showStories(self):
@@ -640,9 +832,11 @@ class topics(QWidget):  # second screen showing the lesson and activity
         speak(self.btnStories.text())
         self.subj = Subject()
         self.subj.show()
+        self.subj.run()
         self.close()
         
     def showMenu(self):
+        self.stop_listening(wait_for_stop=False)
         global flag
         flag = "Topics"
         window = MainMenu()
@@ -749,27 +943,68 @@ class topics(QWidget):  # second screen showing the lesson and activity
                 print(query)
     
 
+########################################################################################  TRANSLATE Screen  #######################################################             
+class TranslateWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(str)
+    
+    def run(self):
+        speak("You can translate English words to Filipino and vise versa. Just speak the word you want to translate. Then the output would be the opposite language.")
+        self.finished.emit()
 
+        
 class TranslatorScreen(QDialog): 
     def __init__(self):
         super().__init__()
         uic.loadUi('Translator.ui', self)
         activeScreen = "Translator"
         self.btnMenu.clicked.connect(self.showMenu)
+        self.btnHow.clicked.connect(self.showHow)
         self.showMaximized()  # opening window in maximized size
         #self.start_button()
         #checkPlaying()
         #checkPlaying()
         #speak("at sasabihin ko sa wikang filipino ay. Magandang Umaga!", "tl")
-        self.t1 = threading.Thread(name = "TranslateLoop", target=self.translateNow)
-        self.t1.setDaemon(True)
+        #self.t1 = threading.Thread(name = "TranslateLoop", target=self.translateNow)
+        #self.t1.setDaemon(True)
+        
+        #initialize audio for listening in background
+        self.r = sr.Recognizer()
+        self.m = sr.Microphone()
+        
+        # start listening in the background (note that we don't have to do this inside a `with` statement)
+        self.stop_listening = r.listen_in_background(self.m, self.callback)
 
         
     def updateScreen(self, inputTxt="User Input", outputTxt="Translation"):
-        self.transInput.setText(inputTxt)
+        self.transInput.setText(f"You: {inputTxt}")
         self.transOutput.setText(outputTxt)
         
+    def showHow(self):
+        # Step 2: Create a QThread object
+        self.thread = QThread()
+        # Step 3: Create a worker object
+        self.worker = TranslateWorker()
+        # Step 4: Move worker to the thread
+        self.worker.moveToThread(self.thread)
+        #self.subjectNow()
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.progress.connect(self.updateScreen)
+        # Step 6: Start the thread
+        self.thread.start()
+
+        # Final resets
+        self.btnHow.setEnabled(False)
+        self.thread.finished.connect(
+            lambda: self.btnHow.setEnabled(True)
+        )
+        
+        
     def showMenu(self):
+        self.stop_listening(wait_for_stop=False)
         global flag
         flag = "MainMenu"
         self.window = MainMenu()
@@ -784,7 +1019,90 @@ class TranslatorScreen(QDialog):
     def run(self):
         global flag
         flag = "Translate"
-        self.t1.start()
+        
+        #initialize audio for listening in background
+        self.r = sr.Recognizer()
+        self.m = sr.Microphone()
+        
+        # start listening in the background (note that we don't have to do this inside a `with` statement)
+        self.stop_listening = r.listen_in_background(m, self.callback)
+        #self.t1.start()
+        
+        
+    # this is called from the background thread
+    def callback(self, recognizer, audio):
+        ard.ledListening()
+        # received audio data, now we'll recognize it using Google Speech Recognition
+        try:
+            # for testing purposes, we're just using the default API key
+            # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+            # instead of `r.recognize_google(audio)`
+            text = recognizer.recognize_google(audio)
+            print("Google Speech Recognition thinks you said " + text)
+            self.recognizedWords(text)
+        except sr.UnknownValueError:
+            print("Google Speech Recognition could not understand audio")
+        except sr.RequestError as e:
+            print("Could not request results from Google Speech Recognition service; {0}".format(e))
+            
+            
+    def recognizedWords(self, text):
+        global user_input, flag
+        user_input = text
+        print (text)
+        
+        #if flag == "Translate":
+        query = text
+        #print("Speaking: "+str(speaking))
+        #window = MainMenu ()
+        self.updateScreen(f"You: {query}")
+        word = text
+        prefix = 'translate'
+        print(word[word.startswith(prefix) and len(prefix):])
+        stippedWord = word[word.startswith(prefix) and len(prefix):]
+        #translatr.updateScreen(word)
+        #print(f"User Input: {word}")
+        detected_lang = translator.detect(word)
+        
+        if detected_lang.lang == 'en':
+            translate_text = translator.translate(stippedWord, dest='tl')
+            print(f"Translation: {translate_text.text}")
+            output = translate_text.text
+            self.updateScreen(stippedWord, output)
+            speak(translate_text.text, 'tl')
+
+        elif detected_lang.lang == 'tl':
+            translate_text = translator.translate(stippedWord, dest='en')
+            print(f"Translation: {translate_text.text}")
+            output = translate_text.text
+            self.updateScreen(stippedWord, output)
+            speak(translate_text.text, 'en')
+                    
+        
+        # respond politely
+        elif any(_ in query for _ in ["thank", "thanks"]):
+            res = np.random.choice(
+                ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
+            speak(res)
+
+        # respond politely
+        elif any(i in query for i in ["hi", "hello", "can you hear me"]):
+            res = np.random.choice(
+                ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
+            speak(res)
+                      
+        elif "menu" in query:
+            self.showMenu()
+            
+        elif "none" in query:
+            print(query)
+            
+
+        else:
+            res = np.random.choice(
+                ["Sorry, I don't understand what you said.", "I dont know that yet.", "Sorry, I didn't catch that.", "I didn't get that, but I heard you."])
+            speak(res)
+            print(query)
         
         
     def translateNow(self):
@@ -859,9 +1177,214 @@ class TranslatorScreen(QDialog):
             #else:
             #    continue
                 
-         
-        
 
+######################################################################## QUIZ SCREEN ###################################################################################
+############ SUBJECT1: RHYMING WORDS
+class QuizWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(str, bool)
+    button = pyqtSignal(str,str)
+    
+    def Quiz1(self):
+        
+        global user_input, score
+        
+        self.button.emit("NO", "YES")
+        self.progress.emit("Identify whether the words shown are rhyming or not rhyming. Answer by clicking the button or with your voice saying the word 'YES' if it's rhyming and 'NO' if it's not rhyming words.\n", True)
+        speak("Identify whether the words shown are rhyming or not rhyming. You can answer by clicking the buttons or with your voice saying the word yes if it's rhyming and no if it's not.")
+        
+        speak("ready?")
+        
+        def q1():
+            self.progress.emit("1. Car - bar", True)
+            speak("number 1. car. bar")
+            
+        def q2():
+            self.progress.emit("2. sail - tail", True)
+            speak("number 2. sail. tail")
+            
+        def q3():
+            self.progress.emit("3. can - cat", True)
+            speak("number 3. can. cat")
+            
+        def q4():
+            self.progress.emit("4. pig - wig", True)
+            speak("number 4. pig. wig")
+            
+        def q5():
+            self.progress.emit("5. map - hut", True)
+            speak("number 5. map. hut")
+            
+        q1()    
+        while True:
+            response = user_input   
+            if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+                speak("Perfect!")
+                #self.countResponse()
+                score += 1
+                break
+            
+            elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
+                speak("uhm")
+                break
+            
+        user_input = ""
+   
+        q2()  
+        while True:
+            response = user_input
+            if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+                speak("Great!")
+                #self.countResponse()
+                score += 1
+                break
+            
+            elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
+                speak("uh oh!")
+                break
+        
+        user_input = ""
+   
+        q3()  
+        while True:
+            response = user_input
+            if any(_ in response for _ in ["no", "not"]) or user_input == "no":
+                speak("Great!")
+                #self.countResponse()
+                score += 1
+                break
+            
+            elif any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+                speak("nope!")
+                break
+            
+        user_input = ""
+   
+        q4()  
+        while True:
+            response = user_input
+            if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+                speak("Great!")
+                #self.countResponse()
+                score += 1
+                break
+            
+            elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
+                speak("nice try!")
+                break
+            
+        user_input = ""
+   
+        q5()  
+        while True:
+            response = user_input
+            if any(_ in response for _ in ["no", "not"]) or user_input == "no":
+                speak("Well Done!")
+                #self.countResponse()
+                score += 1
+                break
+            
+            elif any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+                speak("nope!")
+                break
+            
+        user_input = ""
+        
+        self.progress.emit(f"You've got {score} out of 5.", False)
+        speak(f"You've got {score} out of 5.")
+        
+        if score >= 3:
+            self.progress.emit("You did well! :)", True)
+            speak("You did well!")
+            
+            
+        elif score < 3:
+            self.progress.emit("Try again Next Time :(", True)
+            speak("Try again Next Time")
+        
+        
+        self.finished.emit()
+        score = 0
+        
+        
+class QuizMain(QWidget):  # second screen showing the quiz screen
+    def __init__(self):
+        super().__init__()
+        uic.loadUi('screens/Q1.ui', self)
+        self.btnFalse.clicked.connect(self.falseButton)
+        self.btnTrue.clicked.connect(self.trueButton)
+        self.showMaximized()  # opening window in maximized size
+        
+        
+    def run(self):
+        global flag, subjectLesson
+        flag = "Quiz"
+
+        if subjectLesson == "Rhyming and Non-Rhyming":
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = QuizWorker()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            #self.subjectNow()
+            self.thread.started.connect(self.worker.Quiz1)
+            self.quiz_Title.setText(subjectLesson)
+            
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progress.connect(self.updateScreen)
+            self.worker.button.connect(self.updateButton)
+            
+            # Step 6: Start the thread
+            self.thread.start()
+
+            # Final reset
+            self.thread.finished.connect(
+                lambda: self.showMenu()
+            )
+            
+    def showMenu(self):
+        worker = Worker()
+        worker.stopThread()
+        #self.stop_listening(wait_for_stop=False)
+        global flag
+        flag = "Quiz Screen"
+        self.quiz = QuizScreen()
+        self.quiz.show()
+        #self.hide()
+        self.close()
+        #self.my_loop("topics")
+       
+        
+            
+    def updateButton (self, opt1, opt2):
+        self.btnFalse.setText(opt1)
+        self.btnTrue.setText(opt2)
+    
+    def updateScreen(self, message, append=True):
+        if append:
+            self.subtitle_2.append(message)
+        
+        elif not append:
+            self.subtitle_2.setText(message)
+        
+        self.subtitle_2.setAlignment(Qt.AlignCenter)
+        #self.subject_Title.setText(subject)
+        
+    def falseButton(self):
+        global user_input
+        user_input = "no"
+        print("validate the answer if false")
+        
+    def trueButton(self):
+        global user_input
+        user_input = "yes"
+        print("validate the answer if true")
+        
+        
+            
 class QuizScreen(QWidget):
     def __init__(self):
         super().__init__()
@@ -869,21 +1392,59 @@ class QuizScreen(QWidget):
         self.showMaximized()  # opening window in maximized size
         self.btnStart.clicked.connect(self.showMenu)
         self.btnMenu.clicked.connect(self.showMenu)
-        self.btnExpress.clicked.connect(self.showMenu)
-        self.btnRhyming.clicked.connect(self.showMenu)
-        self.btnSentence.clicked.connect(self.showMenu)
+        self.btnExpress.clicked.connect(self.showExpress)
+        self.btnRhyming.clicked.connect(self.showRhyme)
+        self.btnSentence.clicked.connect(self.showSentence)
 
-        
         #initialize audio for listening in background
-        r = sr.Recognizer()
-        m = sr.Microphone()
-        with m as source:
-            r.adjust_for_ambient_noise(source)
-            r.energy_threshold = 4000
+        self.r = sr.Recognizer()
+        self.m = sr.Microphone()
             
         # start listening in the background (note that we don't have to do this inside a `with` statement)
         self.stop_listening = r.listen_in_background(m, self.callback)
         
+        
+    def showRhyme(self):
+        global subjectLesson
+        subjectLesson = self.btnRhyming.text()
+        speak(self.btnRhyming.text())
+        #self.threadTopic.stop()
+        self.subj = QuizMain()
+        self.subj.show()
+        self.subj.run()
+        self.close()
+        
+        
+    def showExpress(self):
+        global subjectLesson
+        subjectLesson = "Express"
+        self.Topics.setText(self.btnExpress.text())
+        speak(self.btnExpress.text())
+        self.subj = QuizMain()
+        self.subj.show()
+        self.subj.run()
+        self.close()
+        
+        
+    def showSentence(self):
+        global subjectLesson
+        subjectLesson = "Sentence"
+        self.Topics.setText(self.btnSentence.text())
+        speak(self.btnSentence.text())
+        self.subj = QuizMain()
+        self.subj.show()
+        self.subj.run()
+        self.close()
+        
+    def showStories(self):
+        global subjectLesson
+        subjectLesson = "Stories"
+        self.Topics.setText(self.btnStories.text())
+        speak(self.btnStories.text())
+        self.subj = QuizMain()
+        self.subj.show()
+        self.subj.run()
+        self.close()
         
     def showMenu(self):
         self.stop_listening(wait_for_stop=False)
@@ -923,7 +1484,7 @@ class QuizScreen(QWidget):
         user_input = text
         print (text)
         
-        if flag == "Quiz":
+        if flag == "Quiz Screen":
             query = text
             #print("Speaking: "+str(speaking))
             #window = MainMenu ()
@@ -936,33 +1497,16 @@ class QuizScreen(QWidget):
             #    print("Splash is Visible")
             
             # topics
-            if any(i in query for i in ["topic", "topics", "show topics", "what's the lessons"]):
-                self.runTopics()
+            if any(i in query for i in ["rhyme", "rhyming", "first"]):
+                self.showRhyme()
                 self.stop_listening(wait_for_stop=False)
 
             # quiz
-            elif any(i in query for i in ["quiz", "show quiz", "what's the challenge"]):
-                self.runQuiz()
+            elif any(i in query for i in ["express", "second", "what's the challenge"]):
+                self.showExpress()
                 self.stop_listening(wait_for_stop=False)
                 
-            # translate
-            elif flag == "Translate":
-                print("flag is Translate")
-               
-            
-            elif any(i in query for i in ["translate", "salin wika", "translation"]):
-                if translatr.isVisible():
-                    pass
-                else:
-                    flag = "Translate"
-                    self.runTranslate()
-                    self.hide()
-                    self.stop_listening(wait_for_stop=False)
-            
-            # about me
-            elif "about" in query:
-                self.showAbout() 
-
+    
 
             # respond politely
             elif any(_ in query for _ in ["thank", "thanks"]):
@@ -996,6 +1540,27 @@ class QuizScreen(QWidget):
                 speak(res)
                 print(query)
 
+
+                
+
+######################################################################## MAIN MENU SCREEN ###################################################################################        
+class MenuWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(str)
+    time = pyqtSignal()
+    
+    def run(self):
+        ard.nod()
+        speak("I'm Etti, I am programmed to teach basic english for my children and communicate with people, just like you!")
+        ard.lookStraight()
+        self.finished.emit()
+        
+    def updateTime(self):
+        while True:
+            self.time.emit()
+            
+    
+              
               
 class MainMenu(QWidget):
     def __init__(self):
@@ -1011,13 +1576,27 @@ class MainMenu(QWidget):
         self.btnQuiz.clicked.connect(self.runQuiz)
         self.btnTranslate.clicked.connect(self.runTranslate)
         self.btnAbout.clicked.connect(self.runAbout)
-    
-        self.updateScreen("Main Menu")
         
-    
-            
         # start listening in the background (note that we don't have to do this inside a `with` statement)
         self.stop_listening = r.listen_in_background(m, self.callback)
+
+        
+    def run():
+        # Step 2: Create a QThread object
+        thread = QThread()
+        # Step 3: Create a worker object
+        worker = MenuWorker()
+        # Step 4: Move worker to the thread
+        worker.moveToThread(self.thread)
+        #self.subjectNow()
+        thread.started.connect(self.worker.updateTime)
+        worker.finished.connect(self.thread.quit)
+        worker.finished.connect(self.worker.deleteLater)
+        thread.finished.connect(self.thread.deleteLater)
+        worker.time.connect(self.updateScreenTime)
+        # Step 6: Start the thread
+        thread.start()
+        
 
         
     def runTopics(self):
@@ -1034,14 +1613,29 @@ class MainMenu(QWidget):
         #MainThrd.join()
         MainMenu=False
       
+    def updateScreenTime(self):
+        x = datetime.datetime.now()
+        Day = x.strftime("%A")
+        Month = x.strftime("%B")
+        DayInt = x.strftime("%d")
+        
+        Hour = x.strftime("%I")
+        Minute = x.strftime("%M")
+        Seconds =  x.strftime("%S")
+        Meridian =  x.strftime("%p")
+        
+        
+        self.date.setText(f"{Month}, {Day}")
+        self.day.setText(Day)
+        self.time.setText(f"{Hour}:{Minute}:{Seconds} {Meridian}")
         
     def updateScreen(self, text):    
         self.Title.setText(text)
         
-    def runQuiz(self):
+    def runQuiz():
         self.stop_listening(wait_for_stop=False)
         global flag
-        flag = "Quiz"
+        flag = "Quiz Screen"
         speak(self.btnQuiz.text())
         #self.MainThrd.close()
         #speak("Quizzes")
@@ -1056,21 +1650,37 @@ class MainMenu(QWidget):
         global flag
         flag = "Translate"
         #self.MainThrd.close()
-        translate = TranslatorScreen()
-        translate.show()
-        translate.run()
-        self.hide()
-        #self.close()
+        speak(self.btnTranslate.text())
+        self.translate = TranslatorScreen()
+        self.translate.show()
+        #self.translate.run()
+        #self.hide()
+        self.close()
         
         
     def runAbout(self):
-        ard.nod()
-        speak("I'm Etti, I am programmed to teach basic english for my children and communicate with people, just like you!")
-        ard.lookStraight()
+        # Step 2: Create a QThread object
+        self.thread = QThread()
+        # Step 3: Create a worker object
+        self.worker = MenuWorker()
+        # Step 4: Move worker to the thread
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.run)
         
-    def gotoMenu(self):
-        self.show()
-    
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.progress.connect(self.updateScreen)
+        # Step 6: Start the thread
+        self.thread.start()
+
+        # Final resets
+        self.btnAbout.setEnabled(False)
+        
+        self.thread.finished.connect(
+            lambda: self.btnAbout.setEnabled(True)
+        )
+        
     # this is called from the background thread
     def callback(self, recognizer, audio):
         ard.ledListening()
@@ -1108,8 +1718,7 @@ class MainMenu(QWidget):
             # topics
             if any(i in query for i in ["topic", "topics", "show topics", "what's the lessons"]):
                 self.stop_listening(wait_for_stop=False)
-                lesson = topics(threading.thead)
-                lesson.show()
+                self.runTopics()
                 self.close()
 
             # quiz
@@ -1130,6 +1739,7 @@ class MainMenu(QWidget):
             
             elif any(i in query for i in ["translate", "salin wika", "translation"]):
                 self.runTranslate()
+                
                 self.hide()
                 self.stop_listening(wait_for_stop=False)
             
@@ -1196,9 +1806,21 @@ class MainMenu(QWidget):
                 speak(res)
                 print(query)
                 
+        
+    def gotoMenu(self):
+        self.show()
+    
+                
    
 def myThread():
+    speak("Good Day, learner!")
+    ard.ledAll()
+    
     while True:
+        if flag == "Quiz":
+            print(f"Score: {score}")
+            
+        print(f"Learner's Name: {learner_name}")
         print(f"User voice: {user_input}")
         print(f"Counter: {counter}")
         print(f"FLAG: {flag}")
@@ -1215,16 +1837,17 @@ def myThread():
             
 def main():
     app = QApplication(sys.argv)
-    speak("Good Day, Human!")
+    
     print("Mainthread: Started")
     #initialize audio for listening in background
     r = sr.Recognizer()
     m = sr.Microphone()
     with m as source:
         r.adjust_for_ambient_noise(source)
-        r.energy_threshold = 50
+        r.energy_threshold = energyThres
         
     window = MainMenu()
+    #window.run()
     window.show()
     
     #MainThrd.join()
@@ -1233,8 +1856,12 @@ def main():
     checkThread = threading.Thread(name="Enumerate", target=myThread)
     checkThread.setDaemon(True)
     checkThread.start()
+    
+    
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
     #Main Thread
     main()
+    
+    

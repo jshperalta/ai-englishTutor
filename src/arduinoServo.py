@@ -52,14 +52,14 @@ def write_readx(x):
     data = arduino.readline()
     return data
 
+def nod ():
+    write_readx(str(1))
+
 def lookLeft ():
     write_readx(str(2))
     
 def lookRight ():
     write_readx(str(3))
-    
-def nod ():
-    write_readx(str(1))
     
 def lookStraight ():
     write_readx(str(4))
@@ -81,6 +81,9 @@ def ledListening():
     
 def ledOff():
     write_readx(str(13))
+    
+def ledAll():
+    write_readx(str(14))
 
 #while True:
 #    lookLeft()

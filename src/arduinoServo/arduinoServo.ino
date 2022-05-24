@@ -21,7 +21,7 @@ void setup() {
 void loop() {
   while (!Serial.available());
   x = Serial.readString().toInt();
-  Serial.println(x + 1);
+  Serial.println(x);
  
   
   if (x == 1) {
@@ -64,8 +64,15 @@ void loop() {
     ledOff();
   }
   
-  
-  
+  if (x == 14) {
+    ledAll();
+  }
+}
+
+
+void ledAll() {
+  digitalWrite(11, HIGH); // sets the digital pin 13 on
+  digitalWrite(12, HIGH); // sets the digital pin 13 on
 }
 
 void ledOff (){
@@ -84,14 +91,17 @@ void ledBlue (){
 }
 
 void nod () {
+  lookStraight();
   lookUp();
-  lookDown();
+  lookStraight();
 }
 
 void notNod () {
+  lookStraight();
   lookLeft();
   lookRight();
   lookLeft();
+  lookStraight();
 }
 
 

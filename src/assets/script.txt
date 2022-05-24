@@ -31,9 +31,182 @@ nap - tap
 
 Notice the sounds of the words. Sets A and C are considered as rhyming words while Set B is not.
 
-//INITIATE QUIZ VIEW
-Learning Task 1:
-Match the pictures which have the same ending sounds.
+
+POLITE EXPRESSION
+Observe the example conversation.
+
+Good afternoon, mark.
+Good afternoon, wena.
+
+This box is for you. Happy birthday!
+Thank you very much! You are thoughtful.
+
+You are welcome, mark!
+
+# Notice the highlighted words above. Good afternoon, Thank you very much and You are welcome are examples of polite greetings that you may use in talking to other people. 
+
+GREETINGS
+It is important that you learn how to use polite expressions in greeting others.
+
+Example: 
+Jane : Good morning. How are you doing?
+Julio : Good morning. I am great. How about you?
+Jane : I am fine. Thank you.
+
+LEAVE TAKINGS
+In leaving, there are also appropriate expressions that you have to use.
+
+Example: 
+Warren : Goodbye, Dina.
+Dina : Goodbye, Warren. See you tomorrow.
+Warren : See you tomorrow and take care.
+Dina : Take care, too. 
+
+EXPRESSING GRATITUDE AND APOLOGY
+
+Expressing gratitude means being thankful for the help received from others. It is also used when one is thankful for receiving items or things from someone.
+
+Example: 
+John : Thank you for this gift.
+Emily : You are welcome.
+
+Expressing apology means being sorry for something that you have done. You also say it when you fail to do something that you are expected to do.
+
+Example A: 
+Pearl : I am very sorry, Teacher Mary. I forgot to bring my assignment notebook.
+Teacher : It is okay, Pearl. Be sure to bring and submit it tomorrow.
+
+Example B: 
+Gio : I am sorry. I lost the pencil that I borrowed from you. I will just buy a new one for you.
+Nica : It is okay, Gio. I understand.
+
+
+ASKING PERMISSION
+There are appropriate expressions that you may use in asking permission. Asking permission is expressed by using can and may. Can is used to express one’s ability while may is used to express permission in doing something. 
+
+Example A: 
+Rita : Can you bring this inside?
+Tony : Yes, I can.
+
+Example B: 
+Barron : Teacher, may I go out?
+Teacher : Yes, you may. 
+
+
+
+
+
+//======================= QUIZ 
+
+atleast 5 items per quiz
+
+
+
+RHYMING
+yes 	1. Car - bar 
+yes 	2. sail - tail
+no 	3. can - cat
+yes 	4. pig - wig
+no 	5. map - hut
+
+
+Sentence or non sentence
+yes	1. My mother washes our clothes.
+no	2. a pretty dress
+yes	3. Anthony takes a bath. 
+no	4. the two eyes
+yes	5. Aura sleeps well. 
+
+	
+Learning Task 3: Write S if the given item is a sentence
+and NS if it is a non-sentence. Write your answers in your
+notebook.
+________1. My name is Paula Marie.
+________2. my wonderful pet
+________3. Anna’s new phone
+________4. What is your name?
+________5. her father’s house
+________6. The children are playing.
+________7. Ramon sings a song.
+________8. I am sorry.
+________9. playing the piano
+________10. selling some apples
+
+Learning Task 4: Group the items (A-J) below as to
+sentences and non-sentences. Write only the letters of
+your answers in the table. Do this in your notebook.
+
+A. reading books
+B. I love my parents.
+C. Luis enjoys his vacation.
+D. Clara reads some stories.
+E. Alexa and Arman
+F. My sister bakes a cake.
+G. drinking apple juice
+H. Carlo recites a poem.
+I. visiting my grandparents
+J. Vin’s favorite toy
+
+
+POLITE EXPRESSION
+Learning Task 1: Match the expressions in Column A with
+their appropriate responses in Column B. Write the letters
+of your answers in your notebook.
+ Column A Column B
+_____1. Good morning. A. Yes, please open it.
+_____2. May I go out? B. You’re welcome.
+_____3. Thank you for helping C. Good morning.
+ me.
+_____4. Would you like me to D. Yes, you may.
+ open this for you?
+
+
+Learning Task 2: Identify the polite response to each situation. In your notebook, write the letter of the correct answer for each item.
+1. Rex: Good evening, Lyka. Are you okay?
+A. Lyka: Good morning, Rex. Yes, I am fine. Thank you.
+B. Lyka: Good evening, Rex. Yes, I am fine. Thank you.
+
+2. Carmen: I am sorry. I forgot to bring your book.
+A. Elsa: It is okay. Just bring it tomorrow.
+B. Elsa: Goodbye. See you tomorrow. 
+
+3. Belle: Anna, thank you for helping me with my assignment.
+A. Anna: It is really difficult, Belle.
+B. Anna: You are welcome, Belle.
+
+4. John: Should I prepare the food for dinner?
+A. Carlo: Yes, please. Thank you.
+B. Carlo: I cannot help you.
+
+5. Susan: Grace, may I tell you something?
+A. Grace: Yes, you may. What is it?
+B. Grace: I know that already. 
+
+
+In your notebook, provide the appropriate polite response to the situation below.
+
+Let's do a role play. shall we? {Yes! Great.}
+Here is the scenario. 
+You borrowed a toy from me. While playing, you accidentally broke it. What would you tell me?
+
+Let's start, you ready? yes!
+
+Display Script:
+Me : Hi! How are you?
+You : Hello. I am fine. Thank you. By the way, I have to tell you something.
+Me : Oh! What is it?
+You : ___________________________________.
+Me : It’s okay. Don’t worry. I understand.
+
+Me: Hi {name}! How are you?
+You: {any response}
+Display say on screen: "Hello. I am fine. Thank you. By the way, I have to tell you something."
+
+Me: Oh! What is it?
+You: "I accidentally broke the toy I borrowed from you."
+
+Me: It's okay Don't worry. I understand.
+
 
 
 

@@ -57,11 +57,16 @@ counter = 0
 p = 0
 activeScreen = ""
 translatedWord = ""
-r = sr.Recognizer()
-m = sr.Microphone()
 speaking = False
 flag = ""
-energyThres = 70
+energyThres = 4000
+
+#initialize audio for listening in background
+r = sr.Recognizer()
+m = sr.Microphone()
+with m as source:
+    r.adjust_for_ambient_noise(source)
+    r.energy_threshold = energyThres
 
 
 ################################################################################### GLOBAL FUNCTIONS #####################################################################
@@ -778,13 +783,6 @@ class topics(QWidget):  # second screen showing the lesson and activity
     def run(self):
         global flag
         flag = "Topics"
-        #initialize audio for listening in background
-        r = sr.Recognizer()
-        m = sr.Microphone()
-        with m as source:
-            r.adjust_for_ambient_noise(source)
-            r.energy_threshold = energyThres
-            
         # start listening in the background (note that we don't have to do this inside a `with` statement)
         self.stop_listening = r.listen_in_background(m, self.callback)
         
@@ -963,10 +961,7 @@ class TranslatorScreen(QDialog):
         #speak("at sasabihin ko sa wikang filipino ay. Magandang Umaga!", "tl")
         #self.t1 = threading.Thread(name = "TranslateLoop", target=self.translateNow)
         #self.t1.setDaemon(True)
-        
-        #initialize audio for listening in background
-        self.r = sr.Recognizer()
-        self.m = sr.Microphone()
+    
         
         # start listening in the background (note that we don't have to do this inside a `with` statement)
         self.stop_listening = r.listen_in_background(self.m, self.callback)
@@ -1016,9 +1011,6 @@ class TranslatorScreen(QDialog):
         global flag
         flag = "Translate"
         
-        #initialize audio for listening in background
-        self.r = sr.Recognizer()
-        self.m = sr.Microphone()
         
         # start listening in the background (note that we don't have to do this inside a `with` statement)
         self.stop_listening = r.listen_in_background(m, self.callback)
@@ -1035,7 +1027,10 @@ class TranslatorScreen(QDialog):
             # instead of `r.recognize_google(audio)`
             text = recognizer.recognize_google(audio)
             print("Google Speech Recognition thinks you said " + text)
-            self.recognizedWords(text)
+            
+            if any (i in text for i in ["translate"]):
+                self.recognizedWords(text)
+                
         except sr.UnknownValueError:
             print("Google Speech Recognition could not understand audio")
         except sr.RequestError as e:
@@ -1180,6 +1175,7 @@ class QuizWorker(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(str, bool)
     button = pyqtSignal(str,str)
+    lcd = pyqtSignal(int)
     
     def Quiz1(self):
         
@@ -1213,11 +1209,12 @@ class QuizWorker(QObject):
             
         q1()    
         while True:
-            response = user_input   
+            response = user_input.lower()   
             if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
                 speak("Perfect!")
                 #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
                 break
             
             elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
@@ -1228,11 +1225,12 @@ class QuizWorker(QObject):
    
         q2()  
         while True:
-            response = user_input
+            response = user_input.lower() 
             if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
                 speak("Great!")
                 #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
                 break
             
             elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
@@ -1243,11 +1241,12 @@ class QuizWorker(QObject):
    
         q3()  
         while True:
-            response = user_input
+            response = user_input.lower() 
             if any(_ in response for _ in ["no", "not"]) or user_input == "no":
                 speak("Great!")
                 #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
                 break
             
             elif any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
@@ -1258,11 +1257,12 @@ class QuizWorker(QObject):
    
         q4()  
         while True:
-            response = user_input
+            response = user_input.lower() 
             if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
                 speak("Great!")
                 #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
                 break
             
             elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
@@ -1273,11 +1273,12 @@ class QuizWorker(QObject):
    
         q5()  
         while True:
-            response = user_input
+            response = user_input.lower() 
             if any(_ in response for _ in ["no", "not"]) or user_input == "no":
                 speak("Well Done!")
                 #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
                 break
             
             elif any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
@@ -1288,10 +1289,10 @@ class QuizWorker(QObject):
         
         self.progress.emit(f"You've got {score} out of 5.", False)
         speak(f"You've got {score} out of 5.")
-        
+        self.lcd.emit(score)
         if score >= 3:
             self.progress.emit("You did well! :)", True)
-            speak("You did well, uwu!")
+            speak("You did well, ooh wooh!")
             
             
         elif score < 3:
@@ -1302,13 +1303,7 @@ class QuizWorker(QObject):
         self.finished.emit()
         score = 0
         
-        
 ############ SUBJECT1: SENTENCES AND NON SENTENCES
-class QuizWorker2(QObject):
-    finished = pyqtSignal()
-    progress = pyqtSignal(str, bool)
-    button = pyqtSignal(str,str)
-    
     #Sentences and NSn sentences
     def Quiz2(self):
         
@@ -1529,8 +1524,7 @@ class QuizWorker2(QObject):
         
         self.finished.emit()
         score = 0
-
-
+        
         
         
 class QuizMain(QWidget):  # second screen showing the quiz screen
@@ -1541,60 +1535,38 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         self.btnTrue.clicked.connect(self.trueButton)
         self.showMaximized()  # opening window in maximized size
         
-        
     def run(self):
         global flag, subjectLesson
         flag = "Quiz"
 
+        
+        # Step 2: Create a QThread object
+        self.thread = QThread()
+        # Step 3: Create a worker object
+        self.worker = QuizWorker()
+        # Step 4: Move worker to the thread
+        self.worker.moveToThread(self.thread)
+        #self.subjectNow()
         if subjectLesson == "Rhyming and Non-Rhyming":
-            # Step 2: Create a QThread object
-            self.thread = QThread()
-            # Step 3: Create a worker object
-            self.worker = QuizWorker()
-            # Step 4: Move worker to the thread
-            self.worker.moveToThread(self.thread)
-            #self.subjectNow()
             self.thread.started.connect(self.worker.Quiz1)
-            self.quiz_Title.setText(subjectLesson)
-            
-            self.worker.finished.connect(self.thread.quit)
-            self.worker.finished.connect(self.worker.deleteLater)
-            self.thread.finished.connect(self.thread.deleteLater)
-            self.worker.progress.connect(self.updateScreen)
-            self.worker.button.connect(self.updateButton)
-            
-            # Step 6: Start the thread
-            self.thread.start()
-
-            # Final reset
-            self.thread.finished.connect(
-                lambda: self.showMenu()
-            )
             
         elif subjectLesson == "Sentence":
-            # Step 2: Create a QThread object
-            self.thread = QThread()
-            # Step 3: Create a worker object
-            self.worker = QuizWorker2()
-            # Step 4: Move worker to the thread
-            self.worker.moveToThread(self.thread)
-            #self.subjectNow()
             self.thread.started.connect(self.worker.Quiz2)
-            self.quiz_Title.setText(subjectLesson)
             
-            self.worker.finished.connect(self.thread.quit)
-            self.worker.finished.connect(self.worker.deleteLater)
-            self.thread.finished.connect(self.thread.deleteLater)
-            self.worker.progress.connect(self.updateScreen)
-            self.worker.button.connect(self.updateButton)
-            
-            # Step 6: Start the thread
-            self.thread.start()
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.progress.connect(self.updateScreen)
+        self.worker.button.connect(self.updateButton)
+        self.worker.lcd.connect(self.updateLCD)
+        
+        # Step 6: Start the thread
+        self.thread.start()
 
-            # Final reset
-            self.thread.finished.connect(
-                lambda: self.showMenu()
-            )
+        # Final reset
+        self.thread.finished.connect(
+            lambda: self.showMenu()
+        )
             
             
     def showMenu(self):
@@ -1609,7 +1581,8 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         self.close()
         #self.my_loop("topics")
        
-        
+    def updateLCD (self, num):
+        self.lcd.display(num)
             
     def updateButton (self, opt1, opt2):
         self.btnFalse.setText(opt1)
@@ -1939,7 +1912,10 @@ class MainMenu(QWidget):
             # instead of `r.recognize_google(audio)`
             text = recognizer.recognize_google(audio)
             print("Google Speech Recognition thinks you said " + text)
-            self.recognizedWords(text)
+            
+            if any (i in text for i in ["ai", "madam", "tutor", "et"]):
+                self.recognizedWords(text)
+            
         except sr.UnknownValueError:
             print("Google Speech Recognition could not understand audio")
         except sr.RequestError as e:
@@ -1950,6 +1926,7 @@ class MainMenu(QWidget):
         global user_input, flag
         user_input = text
         print (text)
+        
         
         if flag == "MainMenu":
             query = text
@@ -1987,9 +1964,8 @@ class MainMenu(QWidget):
             
             elif any(i in query for i in ["translate", "salin wika", "translation"]):
                 self.runTranslate()
-                
                 self.hide()
-                self.stop_listening(wait_for_stop=False)
+                #self.stop_listening(wait_for_stop=False)
             
             # about me
             elif "about" in query:
@@ -2085,14 +2061,7 @@ def myThread():
             
 def main():
     app = QApplication(sys.argv)
-    speak("ooohh woooh?")
     print("Mainthread: Started")
-    #initialize audio for listening in background
-    r = sr.Recognizer()
-    m = sr.Microphone()
-    with m as source:
-        r.adjust_for_ambient_noise(source)
-        r.energy_threshold = energyThres
         
     window = MainMenu()
     #window.run()

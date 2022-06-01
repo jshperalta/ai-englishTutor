@@ -40,50 +40,86 @@ print(arduino_ports)
 #print(ser.port)
 
 
+try:
+    arduino = serial.Serial(port=arduino_ports[0], baudrate=115200, timeout=.2)
+    #print("No arduino")
 
-arduino = serial.Serial(port=arduino_ports[0], baudrate=115200, timeout=.2)
+    def write_readx(x):
+        arduino.write(bytes(x, 'utf-8'))
+        time.sleep(0.05)
+        data = arduino.readline()
+        return data
+
+    def nod ():
+        write_readx(str(1))
+
+    def lookLeft ():
+        write_readx(str(2))
+        
+    def lookRight ():
+        write_readx(str(3))
+        
+    def lookStraight ():
+        write_readx(str(4))
+        
+    def lookUp ():
+        write_readx(str(5))
+        
+    def lookDown ():
+        write_readx(str(6))
+        
+    def notNod():
+        write_readx(str(7))
+
+    def ledSpeaking():
+        write_readx(str(11))
+
+    def ledListening():
+        write_readx(str(12))
+        
+    def ledOff():
+        write_readx(str(13))
+        
+    def ledAll():
+        write_readx(str(14))
+
+except:
+    #print("No arduino")
+
+    def nod ():
+        print("")
+
+    def lookLeft ():
+        print("")
+        
+    def lookRight ():
+        print("")
+        
+    def lookStraight ():
+        print("")
+        
+    def lookUp ():
+        print("")
+        
+    def lookDown ():
+        print("")
+        
+    def notNod():
+        print("")
+
+    def ledSpeaking():
+        print("")
+
+    def ledListening():
+        print("")
+        
+    def ledOff():
+        print("")
+        
+    def ledAll():
+        print("")
 
 
-#print("No arduino")
-
-def write_readx(x):
-    arduino.write(bytes(x, 'utf-8'))
-    time.sleep(0.05)
-    data = arduino.readline()
-    return data
-
-def nod ():
-    write_readx(str(1))
-
-def lookLeft ():
-    write_readx(str(2))
-    
-def lookRight ():
-    write_readx(str(3))
-    
-def lookStraight ():
-    write_readx(str(4))
-    
-def lookUp ():
-    write_readx(str(5))
-    
-def lookDown ():
-    write_readx(str(6))
-    
-def notNod():
-    write_readx(str(7))
-
-def ledSpeaking():
-    write_readx(str(11))
-
-def ledListening():
-    write_readx(str(12))
-    
-def ledOff():
-    write_readx(str(13))
-    
-def ledAll():
-    write_readx(str(14))
 
 #while True:
 #    lookLeft()

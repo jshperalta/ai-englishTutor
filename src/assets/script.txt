@@ -121,16 +121,16 @@ yes	5. Aura sleeps well.
 Learning Task 3: Write S if the given item is a sentence
 and NS if it is a non-sentence. Write your answers in your
 notebook.
-________1. My name is Paula Marie.
-________2. my wonderful pet
-________3. Anna’s new phone
-________4. What is your name?
-________5. her father’s house
-________6. The children are playing.
-________7. Ramon sings a song.
-________8. I am sorry.
-________9. playing the piano
-________10. selling some apples
+_s_______1. My name is Paula Marie.
+__ns______2. my wonderful pet
+___ns_____3. Anna’s new phone
+___s_____4. What is your name?
+___ns_____5. her father’s house
+___s_____6. The children are playing.
+____s____7. Ramon sings a song.
+___s_____8. I am sorry.
+____ns____9. playing the piano
+____ns____10. selling some apples
 
 Learning Task 4: Group the items (A-J) below as to
 sentences and non-sentences. Write only the letters of

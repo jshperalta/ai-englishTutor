@@ -97,7 +97,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -136,7 +136,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -175,7 +175,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -214,7 +214,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          
           <weight>75</weight>
           <bold>true</bold>
          </font>

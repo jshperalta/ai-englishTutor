@@ -13,7 +13,7 @@
   <property name="maximumSize">
    <size>
     <width>1920</width>
-    <height>1080</height>
+    <height>1200</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -50,7 +50,6 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 
      </property>
      <property name="font">
       <font>
-       <family>Gilroy SemiBold</family>
        <pointsize>-1</pointsize>
        <weight>99</weight>
        <bold>true</bold>
@@ -137,7 +136,6 @@ font-size: 26px;</string>
        <pointsize>-1</pointsize>
        <weight>75</weight>
        <bold>true</bold>
-       <underline>false</underline>
       </font>
      </property>
      <property name="styleSheet">

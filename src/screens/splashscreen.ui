@@ -6,15 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>674</width>
-    <height>450</height>
+    <width>853</width>
+    <height>534</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: white;</string>
+   <string notr="true">#SplashScreen{
+background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 198, 255, 255), stop:0.517857 rgba(0, 255, 251, 255), stop:1 rgba(174, 255, 236, 255))
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -32,16 +34,16 @@
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <property name="leftMargin">
-      <number>30</number>
+      <number>50</number>
      </property>
      <property name="topMargin">
-      <number>30</number>
+      <number>60</number>
      </property>
      <property name="rightMargin">
-      <number>30</number>
+      <number>50</number>
      </property>
      <property name="bottomMargin">
-      <number>30</number>
+      <number>70</number>
      </property>
      <item row="0" column="0">
       <widget class="QLabel" name="Title_2">
@@ -51,7 +53,7 @@ font-weight: 900;
 color: black;</string>
        </property>
        <property name="text">
-        <string>ARTIFICIAL INTELLIGENCE IN NEW NORMAL LEARNING</string>
+        <string>ARTIFICIAL INTELLIGENCE ENGLISH TUTOR IN NEW NORMAL LEARNING</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -69,7 +71,7 @@ color: black;</string>
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>40</height>
+         <height>55</height>
         </size>
        </property>
        <property name="styleSheet">

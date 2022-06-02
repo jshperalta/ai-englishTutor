@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #"""Control an Arduino over the USB port."""
 # usb.py
 # Created by John Woolsey on 12/17/2019.

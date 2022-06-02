@@ -1,7 +1,16 @@
+LICENSE
 README.md
 pyproject.toml
 setup.cfg
+setup.py
 src/ai_package_jshperalta.egg-info/PKG-INFO
 src/ai_package_jshperalta.egg-info/SOURCES.txt
 src/ai_package_jshperalta.egg-info/dependency_links.txt
 src/ai_package_jshperalta.egg-info/top_level.txt
+src/defines/Threaded Speech Recognition.py
+src/defines/__init__.py
+src/defines/pyqt.py
+src/defines/servo.py
+src/defines/speakandrecognize.py
+src/defines/translator.py
+src/defines/xyz.py

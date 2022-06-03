@@ -67,15 +67,21 @@ font-size: 26px;</string>
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: #f3f3f3;
+      <string notr="true">QPushButton {
+	background-color: #f3f3f3;
 	color: black; 
 	font-family: 'Gilroy';
 	font-weight: 600;
 	border-radius: 10px;
-	padding: 20px;</string>
+	padding: 20px;
+}
+
+QPushButton::hover {
+background-color:rgb(226, 226, 226);
+}</string>
      </property>
      <property name="text">
-      <string>MENU</string>
+      <string>Go Back</string>
      </property>
     </widget>
    </item>
@@ -150,16 +156,21 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: #92ff8f;
+      <string notr="true">QPushButton {
+	background-color: #92ff8f;
 	color: black; 
 	font-family: 'Gilroy';
 	font-weight: 600;
 	border-radius: 10px;
 	padding: 20px;
-</string>
+}
+
+QPushButton::hover {
+background-color: rgb(135, 234, 131);
+}</string>
      </property>
      <property name="text">
-      <string>START</string>
+      <string>Start</string>
      </property>
     </widget>
    </item>

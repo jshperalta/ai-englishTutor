@@ -38,7 +38,7 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 
     <widget class="QWidget" name="Quiz" native="true">
      <property name="styleSheet">
       <string notr="true">QPushButton {
-font-size: 16px;
+font-size: 16px !important;
 background-color: #AFFFEC !important;
 color: black; 
 font-family: 'Gilroy';
@@ -48,7 +48,7 @@ padding: 20px;
 }
 
 QPushButton::hover {
-background-color: #AFFFDD !important;
+background-color: #AFFFAA !important;
 }</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
@@ -100,7 +100,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -133,7 +133,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -166,7 +166,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -209,13 +209,18 @@ color: black;</string>
          <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: #ffafaf;
+         <string notr="true">QPushButton {
+	background-color: #f3f3f3;
 	color: black; 
 	font-family: 'Gilroy';
 	font-weight: 600;
 	border-radius: 10px;
 	padding: 20px;
-</string>
+}
+
+QPushButton::hover {
+background-color:rgb(226, 226, 226);
+}</string>
         </property>
         <property name="text">
          <string>Main Menu</string>
@@ -227,7 +232,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -239,13 +244,18 @@ color: black;</string>
          <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: #92ff8f;
+         <string notr="true">QPushButton {
+	background-color: #92ff8f;
 	color: black; 
 	font-family: 'Gilroy';
 	font-weight: 600;
 	border-radius: 10px;
 	padding: 20px;
-</string>
+}
+
+QPushButton::hover {
+background-color: rgb(135, 234, 131);
+}</string>
         </property>
         <property name="text">
          <string>Start</string>

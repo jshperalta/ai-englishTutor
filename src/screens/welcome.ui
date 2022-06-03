@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>827</width>
-    <height>669</height>
+    <width>666</width>
+    <height>574</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -77,7 +77,7 @@ background-color: #AFFFAA;
         <property name="font">
          <font>
           <family>Gilroy</family>
-          
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -139,7 +139,7 @@ font-weight: 900;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -172,7 +172,7 @@ font-weight: 900;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -205,7 +205,7 @@ font-weight: 900;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          
+          <pointsize>-1</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>

@@ -48,6 +48,8 @@ pygame.mixer.init()
 pygame.init()
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
+
+#####################################   GLOBAL CONTAINERS   ##############################
 global activeScreen, speaking, duration, flag, subjectLesson, user_input, score, learner_name
 learner_name = ""
 score = 0
@@ -64,7 +66,14 @@ speaking = False
 flag = ""
 energyThres = 80
 
-#initialize audio for listening in background
+thanked = ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"]
+greet = ["hi", "hello!", "yes?", "hi there"]
+greet2 = ["good morning", "good day"]
+micTest = ["I can hear you", "loud and clear"]
+praise = ["Perfect", "great!", "Well Done", "good job!", "nice!", "Excellent!"]
+disagrees =  ["nope", "nice try!", "sounds about right", "i dont think so!", "nice try!"]
+
+###########################################       initialize audio for listening in background
 r = sr.Recognizer()
 m = sr.Microphone()
 with m as source:
@@ -72,7 +81,7 @@ with m as source:
     r.energy_threshold = energyThres
 
 
-################################################################################### GLOBAL FUNCTIONS #####################################################################
+###########################################   GLOBAL FUNCTIONS #####################################################################
 
 # HERE CONVERTS USER VOICE INPUT INTO MACHINE READABLE TEXT
 def ask_ettibot():
@@ -320,9 +329,9 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["s"]) or user_input == "s":
-                speak("Perfect!")
-                #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
+                speak("Perfect!")
                 break
 
             elif any(_ in response for _ in ["ns"]) or user_input == "ns":
@@ -335,9 +344,9 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
-                speak("Great!")
-                #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
+                speak("Great!")
                 break
 
             elif any(_ in response for _ in ["s"]) or user_input == "s":
@@ -350,9 +359,9 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
-                speak("Great!")
-                #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
+                speak("Great!")
                 break
 
             elif any(_ in response for _ in ["s"]) or user_input == "s":
@@ -365,9 +374,9 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["s"]) or user_input == "s":
-                speak("Great!")
-                #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
+                speak("Great!")
                 break
 
             elif any(_ in response for _ in ["ns"]) or user_input == "ns":
@@ -380,9 +389,9 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
-                speak("Well Done!")
-                #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
+                speak("Well Done!")
                 break
 
             elif any(_ in response for _ in ["s"]) or user_input == "s":
@@ -395,9 +404,9 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["s"]) or user_input == "s":
-                speak("Well Done!")
-                #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
+                speak("Well Done!")
                 break
 
             elif any(_ in response for _ in ["ns"]) or user_input == "ns":
@@ -412,9 +421,9 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["s"]) or user_input == "s":
-                speak("Well Done!")
-                #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
+                speak("Well Done!")
                 break
 
             elif any(_ in response for _ in ["ns"]) or user_input == "ns":
@@ -427,9 +436,10 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["s"]) or user_input == "s":
-                speak("Well Done!")
-                #self.countResponse()
+                
                 score += 1
+                self.lcd.emit(score)
+                speak("Well Done!")
                 break
 
             elif any(_ in response for _ in ["ns"]) or user_input == "ns":
@@ -442,9 +452,10 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
-                speak("Well Done!")
-                #self.countResponse()
+               
                 score += 1
+                self.lcd.emit(score)
+                speak("Well Done!")
                 break
 
             elif any(_ in response for _ in ["s"]) or user_input == "s":
@@ -458,12 +469,12 @@ class QuizWorker(QObject):
         while True:
             response = user_input
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
-                speak("Well Done!")
-                #self.countResponse()
                 score += 1
+                self.lcd.emit(score)
+                speak("Well Done!")
                 break
 
-            elif any(_ in response for _ in ["s"]) or user_input == "ns":
+            elif any(_ in response for _ in ["s"]) or user_input == "s":
                 speak("nice try!")
                 break
 
@@ -1675,13 +1686,13 @@ class TranslatorScreen(QDialog):
 
 
 
-######################################################################## MAIN MENU SCREEN ###################################################################################
+###################### MAIN MENU SCREEN ###################################################################################
 class MenuWorker2(QObject):
     finished2 = pyqtSignal()
 
     def run(self):
         ard.nod()
-        speak("I'm Etti, I am programmed to teach basic english for my children and communicate with people, just like you!")
+        speak("I'm Etti, I am designed to teach basic english for my children and communicate with people, just like you!")
         ard.lookStraight()
         self.finished2.emit()
 

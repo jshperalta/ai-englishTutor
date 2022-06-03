@@ -1,0 +1,29 @@
+Google Translate
+pip install googletrans==3.1.0a0
+
+Threading
+pip install continuous_threading
+
+Google Text To Speech
+pip install gtts
+
+MP3 control
+pip install mutagen
+
+Sound Module
+pip install playsound
+
+Media Processor
+pip install pyglet
+
+Google Speech-to-Text
+pip install SpeechRecognition
+
+GUI
+pip install PyQt5 || sudo apt-get install python3-pyqt5
+
+Microphone
+sudo apt-get install libportaudio-dev
+sudo apt-get install portaudio19-dev
+pip install pyaudio
+

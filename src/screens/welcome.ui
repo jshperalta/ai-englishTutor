@@ -83,7 +83,10 @@ background-color: #AFFFAA;
          </font>
         </property>
         <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
+         <cursorShape>BlankCursor</cursorShape>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
         </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
@@ -145,7 +148,10 @@ font-weight: 900;</string>
          </font>
         </property>
         <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
+         <cursorShape>BlankCursor</cursorShape>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
         </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
@@ -178,7 +184,10 @@ font-weight: 900;</string>
          </font>
         </property>
         <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
+         <cursorShape>BlankCursor</cursorShape>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
         </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
@@ -211,7 +220,10 @@ font-weight: 900;</string>
          </font>
         </property>
         <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
+         <cursorShape>BlankCursor</cursorShape>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
         </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>

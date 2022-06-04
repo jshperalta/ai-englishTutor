@@ -50,7 +50,7 @@ logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 
 #####################################   GLOBAL CONTAINERS   ##############################
-global activeScreen, speaking, duration, flag, subjectLesson, user_input, score, learner_name
+global activeScreen, speaking, duration, flag, subjectLesson, user_input, score, learner_name, timer
 learner_name = ""
 score = 0
 duration = 0
@@ -65,6 +65,7 @@ translatedWord = ""
 speaking = False
 flag = ""
 energyThres = 80
+timer = 0
 
 thanked = ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"]
 greet = ["hi", "hello!", "yes?", "hi there"]
@@ -143,7 +144,7 @@ def speak(text, lang="en"):  # here audio is var which contain text
 ############ SUBJECT1: RHYMING WORDS
 class QuizWorker(QObject):
     finished = pyqtSignal()
-    progress = pyqtSignal(str, bool)
+    progress = pyqtSignal(str)
     button = pyqtSignal(str,str)
     lcd = pyqtSignal(int)
 
@@ -152,34 +153,34 @@ class QuizWorker(QObject):
         global user_input, score
 
         self.button.emit("NO", "YES")
-        self.progress.emit("Identify whether the words shown are rhyming or not rhyming. Answer by clicking the button or with your voice saying the word 'YES' if it's rhyming and 'NO' if it's not rhyming words.\n", True)
+        self.progress.emit("Direction: Identify whether the words shown are rhyming or not rhyming. Answer by clicking the button or with your voice saying the word 'YES' if it's rhyming and 'NO' if it's not rhyming words.")
         speak("Identify whether the words shown are rhyming or not rhyming. You can answer by clicking the buttons or with your voice. saying the word yes if it's rhyming. and no if it's not.")
         sleep(1)
         speak("ready?")
         sleep(1)
         def q1():
-            self.progress.emit("1. Car - bar", False)
+            self.progress.emit("1. Car - bar")
             speak("number 1. car. bar")
 
         def q2():
-            self.progress.emit("2. sail - tail", False)
+            self.progress.emit("2. sail - tail")
             speak("number 2. sail. tail")
 
         def q3():
-            self.progress.emit("3. can - cat", False)
+            self.progress.emit("3. can - cat")
             speak("number 3. can. cat")
 
         def q4():
-            self.progress.emit("4. pig - wig", False)
+            self.progress.emit("4. pig - wig")
             speak("number 4. pig. wig")
 
         def q5():
-            self.progress.emit("5. map - hut", False)
+            self.progress.emit("5. map - hut")
             speak("number 5. map. hut")
 
         q1()
         while True:
-            response = user_input.lower()
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
@@ -196,7 +197,7 @@ class QuizWorker(QObject):
 
         q2()
         while True:
-            response = user_input.lower()
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
@@ -213,7 +214,7 @@ class QuizWorker(QObject):
 
         q3()
         while True:
-            response = user_input.lower()
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["no", "not"]) or user_input == "no":
                 score += 1
                 self.lcd.emit(score)
@@ -230,7 +231,7 @@ class QuizWorker(QObject):
 
         q4()
         while True:
-            response = user_input.lower()
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
@@ -247,7 +248,7 @@ class QuizWorker(QObject):
 
         q5()
         while True:
-            response = user_input.lower()
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["no", "not"]) or user_input == "no":
                 score += 1
                 self.lcd.emit(score)
@@ -262,16 +263,16 @@ class QuizWorker(QObject):
 
         user_input = ""
 
-        self.progress.emit(f"You've got {score} out of 5.", False)
+        self.progress.emit(f"You've got {score} out of 5.")
         speak(f"You've got {score} out of 5.")
         self.lcd.emit(score)
         if score >= 3:
-            self.progress.emit("You did well! :)", True)
+            self.progress.emit("You did well! :)")
             speak("You did well, ooh wooh!")
 
 
         elif score < 3:
-            self.progress.emit("Try again Next Time :(", True)
+            self.progress.emit("Try again Next Time :(")
             speak("Try again Next Time")
 
         sleep(3)
@@ -285,54 +286,54 @@ class QuizWorker(QObject):
         global user_input, score
 
         self.button.emit("S", "NS")
-        self.progress.emit("Say S if the given item is a sentence and NS if it is a Non-sentence.\n", True)
+        self.progress.emit("Direction: Say S if the given item is a sentence and NS if it is a Non-sentence.\n")
         speak("Say S. if the given item is a sentence. and NS. if it is a Non-sentence.")
         sleep(1)
         speak("ready?")
         sleep(1)
         def q1():
-            self.progress.emit("1. My name is Paula Marie.", True)
+            self.progress.emit("1. My name is Paula Marie.")
             speak("number 1. My name is Paula Marie.")
 
         def q2():
-            self.progress.emit("2. my wonderful pet", True)
+            self.progress.emit("2. my wonderful pet")
             speak("number 2. my wonderful pet")
 
         def q3():
-            self.progress.emit("3. Anna’s new phone", True)
+            self.progress.emit("3. Anna’s new phone")
             speak("number 3. Anna’s new phone")
 
         def q4():
-            self.progress.emit("4. What is your name?", True)
+            self.progress.emit("4. What is your name?")
             speak("number 4. What is your name?")
 
         def q5():
-            self.progress.emit("5. her father’s house", True)
+            self.progress.emit("5. her father’s house")
             speak("number 5. her father’s house")
 
         def q6():
-            self.progress.emit("6. The children are playing.", True)
+            self.progress.emit("6. The children are playing.")
             speak("number 6. The children are playing.")
 
         def q7():
-            self.progress.emit("7. Ramon sings a song.", True)
+            self.progress.emit("7. Ramon sings a song.")
             speak("number 7. Ramon sings a song.")
 
         def q8():
-            self.progress.emit("8. I am sorry.", True)
+            self.progress.emit("8. I am sorry.")
             speak("number 8. I am sorry.")
 
         def q9():
-            self.progress.emit("9. playing the piano", True)
+            self.progress.emit("9. playing the piano")
             speak("number 9. playing the piano")
 
         def q10():
-            self.progress.emit("10. Selling some apples", True)
+            self.progress.emit("10. Selling some apples")
             speak("number 10. selling some apples")
 
         q1()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["s"]) or user_input == "s":
                 score += 1
                 self.lcd.emit(score)
@@ -347,7 +348,7 @@ class QuizWorker(QObject):
 
         q2()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
                 score += 1
                 self.lcd.emit(score)
@@ -362,7 +363,7 @@ class QuizWorker(QObject):
 
         q3()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
                 score += 1
                 self.lcd.emit(score)
@@ -377,7 +378,7 @@ class QuizWorker(QObject):
 
         q4()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["s"]) or user_input == "s":
                 score += 1
                 self.lcd.emit(score)
@@ -392,7 +393,7 @@ class QuizWorker(QObject):
 
         q5()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
                 score += 1
                 self.lcd.emit(score)
@@ -407,7 +408,7 @@ class QuizWorker(QObject):
 
         q6()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["s"]) or user_input == "s":
                 score += 1
                 self.lcd.emit(score)
@@ -424,7 +425,7 @@ class QuizWorker(QObject):
 
         q7()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["s"]) or user_input == "s":
                 score += 1
                 self.lcd.emit(score)
@@ -439,7 +440,7 @@ class QuizWorker(QObject):
 
         q8()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["s"]) or user_input == "s":
                 
                 score += 1
@@ -455,7 +456,7 @@ class QuizWorker(QObject):
 
         q9()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
                
                 score += 1
@@ -472,7 +473,7 @@ class QuizWorker(QObject):
 
         q10()
         while True:
-            response = user_input
+            response = ask_ettibot().lower()
             if any(_ in response for _ in ["ns"]) or user_input == "ns":
                 score += 1
                 self.lcd.emit(score)
@@ -568,15 +569,13 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
 
     def updateButton (self, opt1, opt2):
         self.btnFalse.setText(opt1)
-        self.btnTrue.setText(opt2)
+        self.btnTrue.setText(opt2) #
+        
+        #self.button.setIcon(QtGui.QIcon('myImage.jpg')) #Adding Icon as Image to button
+        #self.button.setIconSize(QtCore.QSize(200,200)) #
 
-    def updateScreen(self, message, append=True):
-        if append:
-            self.subtitle_2.append(message)
-
-        elif not append:
-            self.subtitle_2.setText(message)
-
+    def updateScreen(self, message):
+        self.subtitle_2.setText(message)
         self.subtitle_2.setAlignment(Qt.AlignCenter)
         #self.subject_Title.setText(subject)
 
@@ -753,34 +752,59 @@ class Worker(QObject):
     progress = pyqtSignal(str)
     image = pyqtSignal(str)
     button = pyqtSignal(bool)
+    title = pyqtSignal(str)
+    timer = pyqtSignal(str)
 
     def subjectNow(self):
+        global timer
+        subject = "Rhyming and Non-rhyming"
         #speaks(self.script)
         #self.updateScreen(subject)
         #speaks("Try to read the sets of words below")
         self.progress.emit("In this lesson, you will learn about Rhyming Words.")
         speak("In this lesson, you will learn about Rhyming Words.")
-        self.finished.emit()
+        
+        sleep(0.5)
+        
         self.progress.emit("Words are formed by combining the letters of the alphabet.")
         speak("Words are formed by combining the letters of the alphabet.")
+        
+        sleep(0.5)
+        
         self.progress.emit("It is important to remember that the English alphabet is composed of 26 letters with 5 vowels and 21 consonants.")
-        speak("It is important to remember that the English alphabet is composed of 26 letters, with 5 vowels and 21 consonants.")
+        speak("It is important to remember that the English alphabet is composed of")
+        speak("26 letters, 5 vowels and 21 consonants.")
 
         self.progress.emit("\n")
         self.image.emit('images/rhyming.png')
         speak("vowels are like, ah. ae. e. oh. oooh.")
         speak("Now, consonants are like alphabets without vowels. Such as b,c,d,f,g, and so on.")
+        
+        sleep(0.7)
+        
         self.progress.emit("By combining some of these letters, words may be formed.")
         speak("By combining some of these letters, words may be formed.")
+        
+        sleep(0.8)
+        
         self.progress.emit("Some of these words include net, one, pen, and red. Some words have the same or similar ending sounds.")
-        speak("Some of these words include net, one, pen, and red.Some words have the same or similar ending sounds.")
+        speak("Some of these words include net, one, pen, and red.")
+        speak("Some words have the same or similar ending sounds.")
+        
+        sleep(0.3)
+        
         self.progress.emit("They are called rhyming words. At the end of the lesson, you are expected to recognize rhyming words in nursery rhymes, poems or songs heard.")
         speak("They are called rhyming words.")
+        
+        sleep(0.9)
+        
         speak("At the end of the lesson, you are expected")
         speak("to recognize rhyming words in nursery rhymes, poems or songs heard.")
-
-        speak("Try to read the example below.")
+        
+        sleep(0.3)
+        
         self.progress.emit("SET A: \nHouse - Mouse.")
+        speak("Try to read the example below.")
         self.button.emit(True)
 
         while True:
@@ -827,21 +851,108 @@ class Worker(QObject):
                 break
 
         self.image.emit('images/rhymeSets.png')
-        speak("What do you notice?")
+        speak("Notice the sounds of the words?")
         sleep(2)
         speak("Sets A and B are considered as rhyming words")
+        sleep(0.3)
         speak("while set C is not.")
+        
+        sleep(3)
+        
+        speak("Let's take a test if you understand the lesson.")
+        sleep(1)
+        speak("are you ready?")
+        while True:
+            response = ask_ettibot().lower()
+            if any (i in response for i in  ["ready","yup", "yes"]):
+                speak("great!")
+                break
+        
+        sleep(1)
+        
+        speak("But. Before anything else. Do you have your notebook?")
+        while True:
+            response = ask_ettibot().lower()
+            if any (i in response for i in  ["ready","yup", "yes", "yep"]):
+                speak("great!")
+                break
+            
+            elif response == "no":
+                self.progress.emit("Say 'DONE' if you have your notebook.")
+                speak("Please prepare your notebook.")
+                sleep(1)
+                speak("Once you've got your notebook. Just say the magic word. Done")
+                
+            elif response == "done":
+                speak("great!")
+                break
+            
+        sleep(2)
+        speak("On your notebook, write numbers from 1 to 5")
+        
+        #self.image.emit()
+        speak("Now. you see what's on the screen?")
+        sleep(2)
+        
+        speak("You have to match the pictures which have the same ending sounds.")
+        speak("Just write the letters of your answers in your notebook")
+        
+        sleep(1)
+        speak("I'm giving you 3 minutes to finish it.")
+        
+        speak("sounds fair?")
+        while True:
+            response = ask_ettibot().lower()
+            if any (i in response for i in  ["ready","yup", "yes", "sure"]):
+                speak("great!")
+                timer = 180 #180 secs equivalent to 3 minutes
+                break
+            
+            elif response == "no":
+                speak("Hmm, how about 10 minutes?")
+                break
+                
+        while True:
+            response = ask_ettibot().lower()
+            if any (i in response for i in  ["okay","ok","yup", "yes", "sure"]):
+                timer = 600 #600 secs equivalent to 3 minutes
+                speak("okay, 10 minutes!")
+                break
+            
+            elif response == "no":
+                speak("Sorry, but I think 10 minutes is too much for just 5 items, right?")
+                speak("Alright.")
+                timer = 600 #600 secs equivalent to 3 minutes
+                break
+                
+        speak("Just say done, once you are finished earlier on time.")
+        speak("Timer. starts. now.")
+        print(f"Timer is set to {timer}")
+        #emit timer here
+        
+        while True:
+            response = ask_ettibot().lower()
+            if response == "done":
+                speak("great!")
+                break
+            
+            elif timer == 0:
+                speak("Time is up!")
+                break
+        
+        speak("Please hand it over to your parent or guardian to have it check")
+        speak("Here's the key to correction.")
         
         self.finished.emit()
 
     ############ SUBJECT2: SENTENCES AND NON-SENTENCES
     def subjectNow2(self):
         subject = "Sentences and Non Sentences"
-        #speaks(self.script)
-        #speaks("Try to read the sets of words below")
+
         self.progress.emit("When words are combined, you will form a group of words which may either be a sentence or a non-sentence.")
         speak("When words are combined, you will form a group of words which may either be a sentence or a non-sentence.")
-
+        
+        self.title.emit("Sentence")
         self.progress.emit("A sentence is a group of words. It tells a complete thought or idea. It is composed of a subject and a predicate. It begins with a capital letter and ends with a period ( . ), a question mark ( ? ), or an exclamation point ( ! ).")
         speak("A sentence is a group of words. It tells a complete thought or idea. It is composed of a subject and a predicate.")
         speak("It begins with a capital letter and ends with a period, a question mark, or an exclamation point.")
@@ -856,8 +967,10 @@ class Worker(QObject):
         speak("The garden is the subject, and is beautiful is the predicate.")
 
         speak("Now.")
-
-        self.progress.emit("Non-Sentences\n\nA non-sentence, like a phrase, is also a group of words. Unlike a sentence, it does not tell a complete thought or idea. It may just be the subject or the predicate.")
+        
+        self.title.emit("Non Sentence")
+        
+        self.progress.emit("A non-sentence, like a phrase, is also a group of words. Unlike a sentence, it does not tell a complete thought or idea. It may just be the subject or the predicate.")
         speak("A non-sentence, like a phrase, is also a group of words.")
         speak("Unlike a sentence, it does not tell a complete thought or idea.")
         speak("It may just be the subject or the predicate.")
@@ -913,7 +1026,7 @@ class Worker(QObject):
             self.progress.emit("What did they do when they found the gifts?")
             speak("What did they do when they found the gifts?")
 
-        subject = "Details in Short Stories or Poems"
+        subject = "Short Stories"
         #speaks(self.script)
         #speaks("Try to read the sets of words below")
         self.progress.emit("Are you familiar with short stories and poems?")
@@ -931,9 +1044,11 @@ class Worker(QObject):
 
         self.progress.emit("Now. Listen to this story.")
         speak("Now. Listen to this story,")
-
+        
+        self.title.emit("The New Toys")
         emitStory()
-
+        
+        self.title.emit(subject)
         speak("Try to answer these questions")
         self.button.emit(True)
 
@@ -943,7 +1058,7 @@ class Worker(QObject):
             if any(i in response for i in ["jay", "joy", "jay and joy", "j n joy"]):
                 speak("Perfect!")
                 ard.nod()
-                self.progress.emit("jay and joy")
+                self.progress.emit("Jay and Joy")
                 sleep(3)
                 self.countResponse()
                 break
@@ -960,7 +1075,7 @@ class Worker(QObject):
             response = ask_ettibot().lower()
             if any(i in response for i in ["tita", "auntie"]):
                 speak("Perfect!")
-                self.progress.emit("tita")
+                self.progress.emit("Tita May")
                 ard.nod()
                 sleep(3)
                 self.countResponse()
@@ -978,7 +1093,7 @@ class Worker(QObject):
             response = ask_ettibot().lower()
             if any(i in response for i in ["table", "behind the table"]):
                 speak("Great!")
-                self.progress.emit("behind the table")
+                self.progress.emit("Behind the Table")
                 ard.nod()
                 sleep(3)
                 self.countResponse()
@@ -997,7 +1112,7 @@ class Worker(QObject):
             response = ask_ettibot().lower()
             if any(i in response for i in ["toy car and doll", "car", "doll", "toy"]):
                 speak("Perfect!")
-                self.progress.emit("toy car and doll")
+                self.progress.emit("Toy Car and Doll")
                 ard.nod()
                 sleep(3)
                 self.countResponse()
@@ -1016,7 +1131,7 @@ class Worker(QObject):
             response = ask_ettibot().lower()
             if any(i in response for i in ["jumped", "jump", "jumped for joy"]):
                 speak("Well done!")
-                self.progress.emit("they jumped for joy")
+                self.progress.emit("They Jumped for Joy")
                 ard.nod()
                 sleep(3)
                 self.countResponse()
@@ -1174,6 +1289,9 @@ class Subject(QWidget):  # second screen showing the discussion screen
         else:
             self.btnStart.hide()
             self.btnMenu.hide()
+            
+    def updateTitle(self, title):
+        self.subject_Title.setText(title)
 
     def run(self):
         global flag, subjectLesson
@@ -1207,6 +1325,7 @@ class Subject(QWidget):  # second screen showing the discussion screen
         self.worker.progress.connect(self.updateScreen)
         self.worker.button.connect(self.buttonState)
         self.worker.image.connect(self.updateImage)
+        self.worker.title.connect(self.updateTitle)
         # Step 6: Start the thread
         self.thread.start()
 
@@ -1735,6 +1854,7 @@ class MainMenu(QWidget):
         super().__init__()
         uic.loadUi('screens/welcome.ui', self) # MainWindow.ui
         self.showMaximized()  # opening window in maximized size
+        self.setCursor(Qt.BlankCursor)
         #activeScreen = "MainMenu"
         # Create and connect widgets
         self.btnTopics.clicked.connect(self.runTopics)
@@ -2024,6 +2144,7 @@ class SplashScreen(QWidget):
         uic.loadUi('screens/splashscreen.ui', self) # splashscreen.ui
         self.showMaximized()  # opening window in maximized size
         self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setCursor(Qt.BlankCursor)  
         #activeScreen = "MainMenu"
         # Create and connect widgets
 
@@ -2062,10 +2183,13 @@ class SplashScreen(QWidget):
 def myThread():
     speak("Good Day, learner!")
     ard.ledAll()
-
-    while True:
+    
+    while "thread":
         if flag == "Quiz":
             print(f"Score: {score}")
+            
+        if flag == "Subject":
+            print(f"Timer: {timer}")
 
         print(f"Learner's Name: {learner_name}")
         print(f"User voice: {user_input}")
@@ -2073,7 +2197,7 @@ def myThread():
         print(f"FLAG: {flag}")
         print(f"Subject: {subjectLesson}")
         print(threading.enumerate())
-        sleep(5)
+        sleep(1)
         try:
             pass
 

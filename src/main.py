@@ -158,33 +158,34 @@ class QuizWorker(QObject):
         speak("ready?")
         sleep(1)
         def q1():
-            self.progress.emit("1. Car - bar", True)
+            self.progress.emit("1. Car - bar", False)
             speak("number 1. car. bar")
 
         def q2():
-            self.progress.emit("2. sail - tail", True)
+            self.progress.emit("2. sail - tail", False)
             speak("number 2. sail. tail")
 
         def q3():
-            self.progress.emit("3. can - cat", True)
+            self.progress.emit("3. can - cat", False)
             speak("number 3. can. cat")
 
         def q4():
-            self.progress.emit("4. pig - wig", True)
+            self.progress.emit("4. pig - wig", False)
             speak("number 4. pig. wig")
 
         def q5():
-            self.progress.emit("5. map - hut", True)
+            self.progress.emit("5. map - hut", False)
             speak("number 5. map. hut")
 
         q1()
         while True:
             response = user_input.lower()
             if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
-                speak("Perfect!")
-                #self.countResponse()
                 score += 1
                 self.lcd.emit(score)
+                speak("Perfect!")
+                #self.countResponse()
+                
                 break
 
             elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
@@ -197,10 +198,11 @@ class QuizWorker(QObject):
         while True:
             response = user_input.lower()
             if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
-                speak("Great!")
-                #self.countResponse()
                 score += 1
                 self.lcd.emit(score)
+                speak("Great!")
+                #self.countResponse()
+                
                 break
 
             elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
@@ -213,10 +215,11 @@ class QuizWorker(QObject):
         while True:
             response = user_input.lower()
             if any(_ in response for _ in ["no", "not"]) or user_input == "no":
-                speak("Great!")
-                #self.countResponse()
                 score += 1
                 self.lcd.emit(score)
+                speak("Great!")
+                #self.countResponse()
+                
                 break
 
             elif any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
@@ -229,10 +232,11 @@ class QuizWorker(QObject):
         while True:
             response = user_input.lower()
             if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
-                speak("Great!")
-                #self.countResponse()
                 score += 1
                 self.lcd.emit(score)
+                speak("Great!")
+                #self.countResponse()
+                
                 break
 
             elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
@@ -245,10 +249,11 @@ class QuizWorker(QObject):
         while True:
             response = user_input.lower()
             if any(_ in response for _ in ["no", "not"]) or user_input == "no":
-                speak("Well Done!")
-                #self.countResponse()
                 score += 1
                 self.lcd.emit(score)
+                speak("Well Done!")
+                #self.countResponse()
+                
                 break
 
             elif any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
@@ -496,7 +501,10 @@ class QuizWorker(QObject):
         sleep(3)
         self.finished.emit()
         score = 0
-
+        
+    #Polite Expression
+    def Quiz3(self):
+        print("Quiz 3")
 
 
 class QuizMain(QWidget):  # second screen showing the quiz screen
@@ -782,6 +790,12 @@ class Worker(QObject):
                 self.progress.emit("Perfect")
                 #self.countResponse()
                 break
+            
+            elif flag != "Subject":
+                self.finished.emit()
+                break
+            
+            
 
         self.progress.emit("SET B: \nSet - Net.")
         speak("Try this one.")
@@ -793,6 +807,10 @@ class Worker(QObject):
                 self.progress.emit("Great!")
                 #self.countResponse()
                 break
+            
+            elif flag != "Subject":
+                self.finished.emit()
+                break
 
         self.progress.emit("SET C: \nBig - Small.")
         speak("How about this one?")
@@ -803,9 +821,17 @@ class Worker(QObject):
                 speak("Well done!")
                 self.progress.emit("Well done!")
                 break
+            
+            elif flag != "Subject":
+                self.finished.emit()
+                break
 
-
-
+        self.image.emit('images/rhymeSets.png')
+        speak("What do you notice?")
+        sleep(2)
+        speak("Sets A and B are considered as rhyming words")
+        speak("while set C is not.")
+        
         self.finished.emit()
 
     ############ SUBJECT2: SENTENCES AND NON-SENTENCES
@@ -860,6 +886,7 @@ class Worker(QObject):
             speak("Jay and Joy have new toys.")
             speak("Jay has a new toy car. It is small but shiny.")
             speak("Meanwhile,Joy has a new doll. It is big and beautiful.")
+            speak("Their Tita May gave these gifts to them during their birthday.")
             speak("She hid them behind the table to surprise them.")
             speak("They hurriedly looked for the hidden gifts.")
             speak("When they saw them, they immediately opened them.")
@@ -1121,13 +1148,6 @@ class Subject(QWidget):  # second screen showing the discussion screen
         #self.subjectLesson()
 
     def showMenu(self):
-        # Step 2: Create a QThread object
-        #self.thread = QThread()
-        # Step 3: Create a worker object
-        worker = Worker()
-        # Step 4: Move worker to the thread
-        worker.stopThread()
-        #self.stop_listening(wait_for_stop=False)
         global flag
         flag = "Topics"
         #self.MainThrd.join()
@@ -1158,12 +1178,6 @@ class Subject(QWidget):  # second screen showing the discussion screen
     def run(self):
         global flag, subjectLesson
         flag = "Subject"
-        #self.t1 = threading.Thread(name = "TranslateLoop", target=self.subjectNow)
-        #self.t1.setDaemon(True)
-        #self.t1.start()
-        #MainThrd.stop()
-
-
         # Step 2: Create a QThread object
         self.thread = QThread()
         # Step 3: Create a worker object
@@ -1181,7 +1195,7 @@ class Subject(QWidget):  # second screen showing the discussion screen
 
         if subjectLesson == "Stories":
             self.thread.started.connect(self.worker.subjectNow3)
-            self.subject_Title.setText("Sentences and Non-Sentences")
+            self.subject_Title.setText("Short Stories")
 
         if subjectLesson == "Express":
             self.thread.started.connect(self.worker.subjectNow4)
@@ -1970,12 +1984,37 @@ class splashWorker (QObject):
     progress = pyqtSignal(int)
 
     def run(self):
-        for i in range (100):
+        for i in range (2, 20):
             self.progress.emit(i)
             sleep(0.01)
-
+            
+        sleep(1)
+        
+        for i in range (20, 30):
+            self.progress.emit(i)
+            sleep(0.03)
+            
+        sleep(1)
+        
+        for i in range (30, 70):
+            self.progress.emit(i)
+            sleep(0.02)
+            
+        sleep(2)
+        
+        for i in range (70, 100):
+            self.progress.emit(i)
+            sleep(0.03)
+            
+        for i in range (100, 101):
+            self.progress.emit(i)
+            sleep(0.01)
+            
+        sleep(5)
+        
         self.finished.emit()
-
+        
+            
 class SplashScreen(QWidget):
     def __init__(self):
         global flag
@@ -1984,6 +2023,7 @@ class SplashScreen(QWidget):
         super().__init__()
         uic.loadUi('screens/splashscreen.ui', self) # splashscreen.ui
         self.showMaximized()  # opening window in maximized size
+        self.setWindowFlag(Qt.FramelessWindowHint)
         #activeScreen = "MainMenu"
         # Create and connect widgets
 

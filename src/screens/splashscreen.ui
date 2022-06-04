@@ -6,12 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
-    <height>534</height>
+    <width>1024</width>
+    <height>610</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1024</width>
+    <height>610</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Splashscreen</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#SplashScreen{
@@ -45,15 +57,27 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 
      <property name="bottomMargin">
       <number>70</number>
      </property>
-     <item row="0" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="Title_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>167</height>
+        </size>
+       </property>
        <property name="styleSheet">
         <string notr="true">font: 87 32pt &quot;Gilroy&quot;;
 font-weight: 900;
 color: black;</string>
        </property>
        <property name="text">
-        <string>ARTIFICIAL INTELLIGENCE ENGLISH TUTOR IN NEW NORMAL LEARNING</string>
+        <string>Artificial Intelligence English Tutor in New Normal Learning: ET Robot</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -66,8 +90,14 @@ color: black;</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="3" column="0">
       <widget class="QProgressBar" name="progressBar">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -82,7 +112,7 @@ color: black;</string>
 
 QProgressBar::chunk {
 	border-radius: 10px;
-	background-color: #00E5AE;
+	background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(85, 255, 127, 255), stop:0.514423 rgba(61, 201, 235, 255), stop:0.98 rgba(85, 107, 255, 255), stop:1 rgba(0, 0, 0, 0));
 }</string>
        </property>
        <property name="value">
@@ -96,6 +126,40 @@ QProgressBar::chunk {
        </property>
        <property name="invertedAppearance">
         <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>1024</width>
+         <height>600</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap>../../../Downloads/ailogo.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>

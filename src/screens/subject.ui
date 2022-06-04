@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>641</width>
-    <height>519</height>
+    <height>474</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Subject</string>
+   <string>Discussion</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#Subject{
@@ -50,6 +50,7 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 
      </property>
      <property name="font">
       <font>
+       <family>Gilroy</family>
        <pointsize>-1</pointsize>
        <weight>99</weight>
        <bold>true</bold>
@@ -157,7 +158,7 @@ background-color: rgb(135, 234, 131);
 	border-radius: 10px;
 	padding: 50px;
 	text-align: center;
-font-size: 22px;
+font-size: 36px;
 line-height: 10px;</string>
      </property>
      <property name="text">

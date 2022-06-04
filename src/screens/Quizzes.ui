@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>546</width>
-    <height>497</height>
+    <height>524</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,7 +38,7 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 
     <widget class="QWidget" name="Quiz" native="true">
      <property name="styleSheet">
       <string notr="true">QPushButton {
-font-size: 16px !important;
+font-size: 16pt;
 background-color: #AFFFEC !important;
 color: black; 
 font-family: 'Gilroy';
@@ -100,7 +100,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          <pointsize>16</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -133,7 +133,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          <pointsize>16</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -166,7 +166,7 @@ color: black;</string>
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          <pointsize>16</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -232,7 +232,7 @@ background-color:rgb(226, 226, 226);
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          <pointsize>16</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>

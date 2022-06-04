@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>584</width>
-    <height>594</height>
+    <width>1055</width>
+    <height>628</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -20,7 +20,7 @@
    <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>Topics Screen</string>
+   <string>Lessons</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#Form{
@@ -47,7 +47,7 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 
     <widget class="QWidget" name="TopicWidget" native="true">
      <property name="styleSheet">
       <string notr="true">QPushButton {
-font-size: 16px !important;
+font-size: 16pt !important;
 background-color: #AFFFEC !important;
 color: black; 
 font-family: 'Gilroy';
@@ -64,79 +64,12 @@ background-color: #AFFFAA !important;
       <property name="spacing">
        <number>10</number>
       </property>
-      <item row="0" column="0" colspan="2">
-       <widget class="QLabel" name="Topics">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">font: 87 32pt &quot;Gilroy&quot;;
-font-weight: 900;
-background: transparent;
-color: black;</string>
-        </property>
-        <property name="text">
-         <string>Topics</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-        <property name="textInteractionFlags">
-         <set>Qt::LinksAccessibleByMouse</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QPushButton" name="btnRhyming">
-        <property name="font">
-         <font>
-          <family>Gilroy</family>
-          <pointsize>-1</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="mouseTracking">
-         <bool>true</bool>
-        </property>
-        <property name="tabletTracking">
-         <bool>true</bool>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Rhyming Words</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
+      <item row="1" column="1">
        <widget class="QPushButton" name="btnSentence">
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          <pointsize>16</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -170,12 +103,139 @@ color: black;</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
+      <item row="1" column="0">
+       <widget class="QPushButton" name="btnRhyming">
+        <property name="font">
+         <font>
+          <family>Gilroy</family>
+          <pointsize>16</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="tabletTracking">
+         <bool>true</bool>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>Rhyming Words</string>
+        </property>
+        <property name="autoDefault">
+         <bool>true</bool>
+        </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QPushButton" name="btnMenu">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	background-color: #f3f3f3;
+	color: black; 
+	font-family: 'Gilroy';
+	font-weight: 600;
+	border-radius: 10px;
+	padding: 20px;
+}
+
+QPushButton::hover {
+background-color:rgb(226, 226, 226);
+}</string>
+        </property>
+        <property name="text">
+         <string>Main Menu</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QPushButton" name="btnStart">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	background-color: #92ff8f;
+	color: black; 
+	font-family: 'Gilroy';
+	font-weight: 600;
+	border-radius: 10px;
+	padding: 20px;
+}
+
+QPushButton::hover {
+background-color: rgb(135, 234, 131);
+}</string>
+        </property>
+        <property name="text">
+         <string>Start</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="Topics">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 87 32pt &quot;Gilroy&quot;;
+font-weight: 900;
+background: transparent;
+color: black;</string>
+        </property>
+        <property name="text">
+         <string>Topics</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::LinksAccessibleByMouse</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
        <widget class="QPushButton" name="btnStories">
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          <pointsize>16</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -209,12 +269,12 @@ color: black;</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="2">
+      <item row="2" column="1">
        <widget class="QPushButton" name="btnExpress">
         <property name="font">
          <font>
           <family>Gilroy</family>
-          <pointsize>-1</pointsize>
+          <pointsize>16</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -245,66 +305,6 @@ color: black;</string>
         </property>
         <property name="flat">
          <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QPushButton" name="btnMenu">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
-	background-color: #f3f3f3;
-	color: black; 
-	font-family: 'Gilroy';
-	font-weight: 600;
-	border-radius: 10px;
-	padding: 20px;
-}
-
-QPushButton::hover {
-background-color:rgb(226, 226, 226);
-}</string>
-        </property>
-        <property name="text">
-         <string>Main Menu</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QPushButton" name="btnStart">
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
-	background-color: #92ff8f;
-	color: black; 
-	font-family: 'Gilroy';
-	font-weight: 600;
-	border-radius: 10px;
-	padding: 20px;
-}
-
-QPushButton::hover {
-background-color: rgb(135, 234, 131);
-}</string>
-        </property>
-        <property name="text">
-         <string>Start</string>
         </property>
        </widget>
       </item>

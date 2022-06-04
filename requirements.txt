@@ -27,3 +27,27 @@ sudo apt-get install libportaudio-dev
 sudo apt-get install portaudio19-dev
 pip install pyaudio
 
+Optional
+sudo apt-get install qt5-default
+sudo apt-get install qtcreator
+sudo apt-get install font-manager
+
+
+Run All
+sudo pip install googletrans==3.1.0a0
+sudo pip install continuous_threading
+sudo pip install gtts
+sudo pip install mutagen
+sudo pip install playsound
+sudo pip install pyglet
+sudo pip install SpeechRecognition
+sudo apt-get install python3-pyqt5
+sudo apt-get install libportaudio-dev
+sudo apt-get install portaudio19-dev
+sudo pip install pyaudio
+
+
+sudo apt-get install qt5-default
+sudo apt-get install qtcreator
+sudo apt-get install font-manager
+

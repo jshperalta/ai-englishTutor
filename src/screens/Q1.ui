@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>673</width>
-    <height>500</height>
+    <height>439</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,18 +23,141 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 
     <number>60</number>
    </property>
    <property name="topMargin">
-    <number>50</number>
+    <number>20</number>
    </property>
    <property name="rightMargin">
     <number>60</number>
    </property>
    <property name="bottomMargin">
-    <number>70</number>
+    <number>20</number>
    </property>
    <property name="spacing">
     <number>10</number>
    </property>
    <item row="3" column="1">
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <family>Gilroy ExtraBold</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>SCORE</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLCDNumber" name="lcd">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>37</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Gilroy</family>
+       <pointsize>16</pointsize>
+       <weight>75</weight>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: white;
+padding: 20px;
+border-radius: 10px;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="smallDecimalPoint">
+      <bool>false</bool>
+     </property>
+     <property name="segmentStyle">
+      <enum>QLCDNumber::Flat</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="quiz_Title">
+     <property name="font">
+      <font>
+       <family>Gilroy</family>
+       <pointsize>-1</pointsize>
+       <weight>99</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-weight: 900;
+font-size: 26px;</string>
+     </property>
+     <property name="text">
+      <string>Quiz Title</string>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="font">
+      <font>
+       <family>Gilroy</family>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>TIMER</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="2">
+    <widget class="QLabel" name="subtitle_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: #fff;
+	color: black; 
+	font-family: 'Gilroy';
+	font-weight: 600;
+	border-radius: 10px;
+	padding: 20px;
+	text-align: center;
+font-size: 36px;
+line-height: 10px;</string>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
     <widget class="QPushButton" name="btnTrue">
      <property name="enabled">
       <bool>true</bool>
@@ -78,100 +201,7 @@ background-color: rgb(135, 234, 131);
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label">
-     <property name="font">
-      <font>
-       <family>Gilroy ExtraBold</family>
-       <pointsize>15</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>SCORE:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QLabel" name="subtitle_2">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: #fff;
-	color: black; 
-	font-family: 'Gilroy';
-	font-weight: 600;
-	border-radius: 10px;
-	padding: 20px;
-	text-align: center;
-font-size: 36px;
-line-height: 10px;</string>
-     </property>
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-     <property name="scaledContents">
-      <bool>false</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="quiz_Title">
-     <property name="font">
-      <font>
-       <family>Gilroy</family>
-       <pointsize>-1</pointsize>
-       <weight>99</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font-weight: 900;
-font-size: 26px;</string>
-     </property>
-     <property name="text">
-      <string>Quiz Title</string>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLCDNumber" name="lcd">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>37</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Gilroy</family>
-       <pointsize>21</pointsize>
-      </font>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
+   <item row="9" column="0">
     <widget class="QPushButton" name="btnFalse">
      <property name="font">
       <font>
@@ -203,6 +233,26 @@ background-color:rgb(226, 226, 226);
      </property>
      <property name="text">
       <string>Go Back</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="timerLabel">
+     <property name="font">
+      <font>
+       <family>Gilroy</family>
+       <pointsize>16</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: white;
+padding: 10px;
+border-radius: 10px;</string>
+     </property>
+     <property name="text">
+      <string>10:00</string>
      </property>
     </widget>
    </item>

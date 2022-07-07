@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#openAI
+import openai
 
 import logging
 import random
@@ -7,10 +9,10 @@ import sys
 import time
 
 import os
-import time
 import datetime
 import numpy as np
 import pygame
+from pygame import mixer
 from time import sleep
 from googletrans import Translator
 import threading
@@ -40,17 +42,26 @@ from PyQt5 import uic, QtCore
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from PyQt5.uic import *
 
+# nltk ====
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk import ne_chunk, pos_tag, word_tokenize
+from nltk.tree import Tree
+from nltk.tokenize.treebank import TreebankWordDetokenizer
+
 translator= Translator()
 now = QDate.currentDate()
 
+
+#pygame.mixer.pre_init(22050, 16, 1, 4096) #frequency, size, channels, buffersize
 pygame.mixer.init()
-#pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
 pygame.init()
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-
+openai.api_key = "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"
+            
 #####################################   GLOBAL CONTAINERS   ##############################
-global activeScreen, speaking, duration, flag, subjectLesson, user_input, score, learner_name, timer
+global activeScreen, speaking, duration, flag, subjectLesson, user_input, score, learner_name, timer, bot_response
 learner_name = ""
 score = 0
 duration = 0
@@ -64,7 +75,7 @@ activeScreen = ""
 translatedWord = ""
 speaking = False
 flag = ""
-energyThres = 80
+energyThres = 302
 timer = 0
 
 thanked = ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"]
@@ -74,12 +85,9 @@ micTest = ["I can hear you", "loud and clear"]
 praise = ["Perfect", "great!", "Well Done", "good job!", "nice!", "Excellent!"]
 disagrees =  ["nope", "nice try!", "sounds about right", "i dont think so!", "nice try!"]
 
-###########################################       initialize audio for listening in background
+###########################################       initialize audio for listening in background ####
 r = sr.Recognizer()
 m = sr.Microphone()
-with m as source:
-    r.adjust_for_ambient_noise(source)
-    r.energy_threshold = energyThres
 
 
 ###########################################   GLOBAL FUNCTIONS #####################################################################
@@ -90,23 +98,43 @@ def ask_ettibot():
     r.energy_threshold = energyThres
     r.dynamic_energy_threshold = False
     speaking=False
+    
+    # Call LED lights here
+    ard.ledListening()
+    
 
     with sr.Microphone() as source:
         print("Listening....")
         audio = r.listen(source)  # phrase_time_limit=3)
-        # Call LED lights here
-        ard.ledListening()
+        
+        
+        
         try:
             # Call LED lights here
+            ard.ledAll()
             print("Recognising....")
             text = r.recognize_google(audio, language='en')
+            global user_input
+            user_input = text
             print(text)
+            playScript("audio/Short Marimba desecending.mp3")
+            return text
+            
 
         except Exception as e:
             print("ask etti: Exception " + str(e))
             return "0x01"
+        
 
-    return text
+def playScript(url):
+    mixer.init()
+    mixer.music.set_volume(0.3)
+    mixer.music.load(url)
+    mixer.music.play()
+   
+    while mixer.music.get_busy():  # wait for music to finish playing
+        time.sleep(1)
+    
 
 # function to convert the seconds into readable format
 def convert(seconds):
@@ -123,38 +151,64 @@ def speak(text, lang="en"):  # here audio is var which contain text
     # Call LED lights here
     ard.ledSpeaking()
     speaking = True
+    
+    
     tts = gTTS(text=text, lang=lang)
     filename = 'temp.mp3'
     tts.save(filename)
 
-    pygame.mixer.music.load(filename)
-    pygame.mixer.music.play()
+    mixer.music.set_volume(1.0)
+    mixer.music.load(filename)
+    mixer.music.play()
 
     # Create an MP3 object
     # Specify the directory address to the mp3 file as a parameter
-    audio = MP3("temp.mp3")
+    #audio = MP3("temp.mp3")
     # Contains all the metadata about the mp3 file
-    audio_info = audio.info
-    length_in_secs = int(audio_info.length)
-    hours, mins, seconds = convert(length_in_secs)
-    sleep(seconds+0.7)
+    #audio_info = audio.info
+    #length_in_secs = int(audio_info.length)
+    #hours, mins, seconds = convert(length_in_secs)
+    #sleep(seconds+0.9)
+    while mixer.music.get_busy():  # wait for music to finish playing
+        time.sleep(1)
 
 
 ########################################################### QUIZ SCREEN ###########################################################################
 ############ SUBJECT1: RHYMING WORDS
+class QuizWorker2(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(str)
+    time = pyqtSignal(str)
+    
+    def countdown(self, time_sec=600):
+        while time_sec:
+            mins, secs = divmod(time_sec, 60)
+            timeformat = '{:02d}:{:02d}'.format(mins, secs)
+            print(timeformat, end='\r')
+            time.sleep(1)
+            time_sec -= 1
+            self.time.emit(timeformat)
+        
+        self.finished.emit()
+        print("stop")
+        
+
 class QuizWorker(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(str)
     button = pyqtSignal(str,str)
     lcd = pyqtSignal(int)
+    image = pyqtSignal(str)
+
 
     def Quiz1(self):
 
         global user_input, score
-
-        self.button.emit("NO", "YES")
+        response = user_input
+        self.button.emit("", "")
         self.progress.emit("Direction: Identify whether the words shown are rhyming or not rhyming. Answer by clicking the button or with your voice saying the word 'YES' if it's rhyming and 'NO' if it's not rhyming words.")
         speak("Identify whether the words shown are rhyming or not rhyming. You can answer by clicking the buttons or with your voice. saying the word yes if it's rhyming. and no if it's not.")
+        ard.lookDown()
         sleep(1)
         speak("ready?")
         sleep(1)
@@ -177,87 +231,113 @@ class QuizWorker(QObject):
         def q5():
             self.progress.emit("5. map - hut")
             speak("number 5. map. hut")
+        
+        self.button.emit("NO", "YES")
 
         q1()
+        ard.lookDown()
+        ard.ledListening()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+            #response = ask_ettibot().lower()
+            if user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Perfect!")
                 #self.countResponse()
-                
                 break
 
-            elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
+            elif user_input == "no":
+                ard.notNod()
                 speak("uhm")
                 break
 
         user_input = ""
-
+        
+        
         q2()
+        ard.lookDown()
+        ard.ledListening()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+            #response = ask_ettibot().lower()
+            if user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Great!")
                 #self.countResponse()
                 
                 break
 
-            elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
+            elif user_input == "no":
+                ard.notNod()
                 speak("uh oh!")
                 break
 
         user_input = ""
 
+        
         q3()
+        ard.lookDown()
+        ard.ledListening()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["no", "not"]) or user_input == "no":
+            #response = ask_ettibot().lower()
+            if user_input == "no":
                 score += 1
                 self.lcd.emit(score)
+                
+                ard.nod()
                 speak("Great!")
                 #self.countResponse()
                 
                 break
 
-            elif any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+            elif user_input == "yes":
+                ard.notNod()
                 speak("nope!")
                 break
 
         user_input = ""
 
+        
         q4()
+        ard.lookDown()
+        ard.ledListening()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+            #response = ask_ettibot().lower()
+            if user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Great!")
                 #self.countResponse()
                 
                 break
 
-            elif any(_ in response for _ in ["no", "not"]) or user_input == "no":
+            elif user_input == "no":
+                ard.notNod()
                 speak("nice try!")
                 break
 
         user_input = ""
-
+        
+        
         q5()
+        ard.lookDown()
+        ard.ledListening()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["no", "not"]) or user_input == "no":
+            #response = ask_ettibot().lower()
+            if user_input == "no":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Well Done!")
                 #self.countResponse()
                 
                 break
 
-            elif any(_ in response for _ in ["yes", "rhyming"]) or user_input == "yes":
+            elif user_input == "yes":
+                ard.notNod()
                 speak("nope!")
                 break
 
@@ -269,8 +349,8 @@ class QuizWorker(QObject):
         if score >= 3:
             self.progress.emit("You did well! :)")
             speak("You did well, ooh wooh!")
-
-
+            ard.nod()
+            
         elif score < 3:
             self.progress.emit("Try again Next Time :(")
             speak("Try again Next Time")
@@ -284,10 +364,10 @@ class QuizWorker(QObject):
     def Quiz2(self):
 
         global user_input, score
-
-        self.button.emit("S", "NS")
-        self.progress.emit("Direction: Say S if the given item is a sentence and NS if it is a Non-sentence.\n")
-        speak("Say S. if the given item is a sentence. and NS. if it is a Non-sentence.")
+        self.button.emit("", "")
+        
+        self.progress.emit("Direction: Say 'Yes' if the given item is a sentence and 'No' if it is a Non-sentence.\n")
+        speak("Say YES. if the given item is a sentence. and NO. if it is a Non-sentence.")
         sleep(1)
         speak("ready?")
         sleep(1)
@@ -330,32 +410,42 @@ class QuizWorker(QObject):
         def q10():
             self.progress.emit("10. Selling some apples")
             speak("number 10. selling some apples")
-
+        self.button.emit("NO", "YES")
+        
+        
+        ard.lookDown()
         q1()
+        ard.lookStraight()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["s"]) or user_input == "s":
+            #response = ask_ettibot().lower()
+            if user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Perfect!")
                 break
 
-            elif any(_ in response for _ in ["ns"]) or user_input == "ns":
-                speak("uhm")
+            elif user_input == "no":
+                ard.notNod()
+                speak("uhm nice try")
                 break
 
         user_input = ""
 
+        ard.lookDown()
         q2()
+        ard.lookStraight()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["ns"]) or user_input == "ns":
+            #response = ask_ettibot().lower()
+            if user_input == "no":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Great!")
                 break
 
-            elif any(_ in response for _ in ["s"]) or user_input == "s":
+            elif user_input == "yes":
+                ard.notNod()
                 speak("uh oh!")
                 break
 
@@ -363,14 +453,16 @@ class QuizWorker(QObject):
 
         q3()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["ns"]) or user_input == "ns":
+            #response = ask_ettibot().lower()
+            if user_input == "no":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Great!")
                 break
 
-            elif any(_ in response for _ in ["s"]) or user_input == "s":
+            elif user_input == "yes":
+                ard.notNod()
                 speak("Nope!")
                 break
 
@@ -378,14 +470,16 @@ class QuizWorker(QObject):
 
         q4()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["s"]) or user_input == "s":
+            #response = ask_ettibot().lower()
+            if user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Great!")
                 break
 
-            elif any(_ in response for _ in ["ns"]) or user_input == "ns":
+            elif user_input == "no":
+                ard.notNod()
                 speak("nice try!")
                 break
 
@@ -393,14 +487,16 @@ class QuizWorker(QObject):
 
         q5()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["ns"]) or user_input == "ns":
+            #response = ask_ettibot().lower()
+            if user_input == "no":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Well Done!")
                 break
 
-            elif any(_ in response for _ in ["s"]) or user_input == "s":
+            elif user_input == "yes":
+                ard.notNod()
                 speak("Nope!")
                 break
 
@@ -408,14 +504,16 @@ class QuizWorker(QObject):
 
         q6()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["s"]) or user_input == "s":
+            #response = ask_ettibot().lower()
+            if user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Well Done!")
                 break
 
-            elif any(_ in response for _ in ["ns"]) or user_input == "ns":
+            elif user_input == "no":
+                ard.notNod()
                 speak("Nope!")
                 break
 
@@ -425,14 +523,16 @@ class QuizWorker(QObject):
 
         q7()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["s"]) or user_input == "s":
+            #response = ask_ettibot().lower()
+            if user_input == "yes":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Well Done!")
                 break
 
-            elif any(_ in response for _ in ["ns"]) or user_input == "ns":
+            elif user_input == "no":
+                ard.notNod()
                 speak("Nope!")
                 break
 
@@ -440,15 +540,17 @@ class QuizWorker(QObject):
 
         q8()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["s"]) or user_input == "s":
+            #response = ask_ettibot().lower()
+            if user_input == "yes":
                 
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Well Done!")
                 break
 
-            elif any(_ in response for _ in ["ns"]) or user_input == "ns":
+            elif user_input == "no":
+                ard.notNod()
                 speak("Nope!")
                 break
 
@@ -456,15 +558,17 @@ class QuizWorker(QObject):
 
         q9()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["ns"]) or user_input == "ns":
+            #response = ask_ettibot().lower()
+            if user_input == "no":
                
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Well Done!")
                 break
 
-            elif any(_ in response for _ in ["s"]) or user_input == "s":
+            elif user_input == "yes":
+                ard.notNod()
                 speak("nice try!")
                 break
 
@@ -473,30 +577,34 @@ class QuizWorker(QObject):
 
         q10()
         while True:
-            response = ask_ettibot().lower()
-            if any(_ in response for _ in ["ns"]) or user_input == "ns":
+            #response = ask_ettibot().lower()
+            if user_input == "no":
                 score += 1
                 self.lcd.emit(score)
+                ard.nod()
                 speak("Well Done!")
                 break
 
-            elif any(_ in response for _ in ["s"]) or user_input == "s":
+            elif user_input == "yes":
+                ard.notNod()
                 speak("nice try!")
                 break
 
         user_input = ""
 
 
-        self.progress.emit(f"You've got {score} out of 10.", False)
+        self.progress.emit(f"You've got {score} out of 10.")
         speak(f"You've got {score} out of 10.")
 
         if score >= 5:
-            self.progress.emit("You did well! :)", True)
+            self.progress.emit("You did well! :)")
+            ard.nod()
             speak("You did well!")
 
 
         elif score < 5:
-            self.progress.emit("Try again Next Time :(", True)
+            self.progress.emit("Try again Next Time :(")
+            ard.nod()
             speak("Try again Next Time")
 
         sleep(3)
@@ -506,7 +614,161 @@ class QuizWorker(QObject):
     #Polite Expression
     def Quiz3(self):
         print("Quiz 3")
+        
+        global user_input, score
 
+        self.button.emit(" ", " ")
+        self.progress.emit('''Direction: Match the expressions shown on
+        the screen with their appropriate responses.. You can answer by speaking
+        the appropriate response or by clicking the button''')
+        
+        speak('Match the expressions shown on the screen with their appropriate responses.')
+        speak('You can answer by speaking the appropriate response or by clicking the button.')
+        
+        sleep(1)
+        speak("ready?")
+        sleep(1)
+        
+        def q1():
+            self.progress.emit("1. Good morning!")
+            self.button.emit("You're welcome", "Good morning")
+            speak("number 1. good morning!")
+            
+        def q2():
+            self.progress.emit("2. May I go out?")
+            self.button.emit("Yes you may", "Good morning")
+            speak("number 2. may i go out?")
+            
+        def q3():
+            self.progress.emit("3. Thank you for helping me!")
+            self.button.emit("Yes please open it","You're welcome")
+            speak("number 3. Thank you for helping me!")
+        
+
+        def q4():
+            self.progress.emit("4. Would you like me to open this for you?")
+            self.button.emit("Good Morning", "Yes please open it")
+            speak("number 4. Would you like me to open this for you?")
+        
+        q1()
+        ard.lookDown()
+        ard.ledListening()
+        while True:
+            #response = ask_ettibot().lower()
+            tokenize_ans = word_tokenize(user_input)
+            bestAns = ['good morning', 'morning','good']
+            notAns = ['you\'re welcome', 'welcome','you\'re']
+            if any(i in tokenize_ans for i in bestAns):
+                score += 1
+                self.lcd.emit(score)
+                ard.nod()
+                speak("Perfect!")
+                #self.countResponse()
+                break
+
+            elif user_input == "you're welcome":
+                ard.notNod()
+                speak("uhm")
+                break
+
+        user_input = ""
+        
+        
+        q2()
+        ard.lookDown()
+        ard.ledListening()
+        while True:
+            #response = ask_ettibot().lower()
+            tokenize_ans = word_tokenize(user_input)
+            bestAns = ['yes you may', 'yes','you may']
+            notAns = ['good morning', 'good','morning']
+            if any(i in tokenize_ans for i in bestAns):
+                score += 1
+                self.lcd.emit(score)
+                ard.nod()
+                speak("Great!")
+                #self.countResponse()
+                
+                break
+
+            elif any(i in tokenize_ans for i in notAns):
+                ard.notNod()
+                speak("uh oh!")
+                break
+
+        user_input = ""
+
+        q3()
+        ard.lookDown()
+        ard.ledListening()
+        while True:
+            #response = ask_ettibot().lower()
+            tokenize_ans = word_tokenize(user_input)
+            bestAns = ['you\'re welcome', 'welcome','you\'re']
+            notAns = ['yes please open it', 'yes please','open it', 'open']
+            if any(i in tokenize_ans for i in bestAns):
+                score += 1
+                self.lcd.emit(score)
+                
+                ard.nod()
+                speak("Right!")
+                #self.countResponse()
+                
+                break
+
+            elif any(i in tokenize_ans for i in notAns):
+                ard.notNod()
+                speak("nope!")
+                break
+
+        user_input = ""
+
+        
+        q4()
+        ard.lookDown()
+        ard.ledListening()
+        while True:
+            #response = ask_ettibot().lower()
+            tokenize_ans = word_tokenize(user_input)
+            bestAns = ['yes please open it', 'yes please','open it', 'open']
+            notAns = ['good morning', 'good','morning']
+            if any(i in tokenize_ans for i in bestAns):
+                score += 1
+                self.lcd.emit(score)
+                ard.nod()
+                speak("Correct!")
+                #self.countResponse()
+                
+                break
+
+            elif any(i in tokenize_ans for i in notAns):
+                ard.notNod()
+                speak("nice try!")
+                break
+            
+
+        user_input = ""
+
+        self.progress.emit(f"You've got {score} out of 4.")
+        speak(f"You've got {score} out of 4.")
+        self.lcd.emit(score)
+        if score >= 3:
+            self.progress.emit("You did well! :)")
+            speak("You did well, ooh wooh!")
+            ard.nod()
+
+        elif score < 3:
+            self.progress.emit("Try again Next Time :(")
+            speak("Try again Next Time")
+
+        sleep(3)
+        self.finished.emit()
+        score = 0
+        
+        
+        
+        self.finished.emit()
+        
 
 class QuizMain(QWidget):  # second screen showing the quiz screen
     def __init__(self):
@@ -514,13 +776,40 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         uic.loadUi('screens/Q1.ui', self)
         self.btnFalse.clicked.connect(self.falseButton)
         self.btnTrue.clicked.connect(self.trueButton)
+        
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.showMaximized()  # opening window in maximized size
+        self.setCursor(Qt.BlankCursor)
+        
+        
+    def runTimer(self):
+        # Step 2: Create a QThread object
+        self.thread2 = QThread()
+        # Step 3: Create a worker object
+        self.worker2 = QuizWorker2()
+        # Step 4: Move worker to the thread
+        self.worker2.moveToThread(self.thread2)
+        self.thread2.started.connect(self.worker2.countdown)
+
+        self.worker2.finished.connect(self.thread2.quit)
+        self.worker2.finished.connect(self.worker2.deleteLater)
+        self.thread2.finished.connect(self.thread2.deleteLater)
+        self.worker2.time.connect(self.updateScreenTime)
+        #self.worker2.progress.connect(self.updateScreen)
+        # Step 6: Start the thread
+        self.thread2.start()
+
+        # Final resets
+        #self.btnAbout.setEnabled(False)
+
+        self.thread2.finished.connect(
+            lambda: self.timerLabel.setText("00:00")
+        )
+        
 
     def run(self):
         global flag, subjectLesson
         flag = "Quiz"
-
-
         # Step 2: Create a QThread object
         self.thread = QThread()
         # Step 3: Create a worker object
@@ -531,10 +820,18 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         if subjectLesson == "Rhyming and Non-Rhyming":
             self.thread.started.connect(self.worker.Quiz1)
             self.quiz_Title.setText("Rhyming and Non-Rhyming")
+            self.runTimer()
+            
 
         elif subjectLesson == "Sentence":
             self.thread.started.connect(self.worker.Quiz2)
             self.quiz_Title.setText("Sentence and Non-Sentence")
+            self.runTimer()
+            
+        elif subjectLesson == "Express":
+            self.thread.started.connect(self.worker.Quiz3)
+            self.quiz_Title.setText("Polite Expression")
+            self.runTimer()
 
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
@@ -542,6 +839,7 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         self.worker.progress.connect(self.updateScreen)
         self.worker.button.connect(self.updateButton)
         self.worker.lcd.connect(self.updateLCD)
+        self.worker.image.connect(self.updateImage)
 
         # Step 6: Start the thread
         self.thread.start()
@@ -571,6 +869,13 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         self.btnFalse.setText(opt1)
         self.btnTrue.setText(opt2) #
         
+    def updateImage(self, url='images/polite expression.png'):
+        self.pixmap = QPixmap()
+        self.setMinimumSize(1, 1)
+        self.pixmap.load(url)
+        self.subtitle_2.setPixmap(self.pixmap)
+        self.subtitle_2.setScaledContents(True)
+        
         #self.button.setIcon(QtGui.QIcon('myImage.jpg')) #Adding Icon as Image to button
         #self.button.setIconSize(QtCore.QSize(200,200)) #
 
@@ -578,6 +883,11 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         self.subtitle_2.setText(message)
         self.subtitle_2.setAlignment(Qt.AlignCenter)
         #self.subject_Title.setText(subject)
+        
+    
+    def updateScreenTime(self, time):
+        self.timerLabel.setText(time)
+        
 
     def falseButton(self):
         btnFalse = self.btnFalse.text()
@@ -598,7 +908,11 @@ class QuizScreen(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi('screens/Quizzes.ui', self)
+        
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.showMaximized()  # opening window in maximized size
+        self.setCursor(Qt.BlankCursor)
+        
         self.btnStart.clicked.connect(self.showMenu)
         self.btnMenu.clicked.connect(self.showMenu)
         self.btnExpress.clicked.connect(self.showExpress)
@@ -612,6 +926,8 @@ class QuizScreen(QWidget):
     def showRhyme(self):
         global subjectLesson
         subjectLesson = self.btnRhyming.text()
+        
+        self.btnRhyming.setEnabled(False)
         speak(self.btnRhyming.text())
         #self.threadTopic.stop()
         self.subj = QuizMain()
@@ -623,7 +939,10 @@ class QuizScreen(QWidget):
     def showExpress(self):
         global subjectLesson
         subjectLesson = "Express"
+        
+        self.btnExpress.setEnabled(False)
         speak(self.btnExpress.text())
+        
         self.subj = QuizMain()
         self.subj.show()
         self.subj.run()
@@ -633,6 +952,8 @@ class QuizScreen(QWidget):
     def showSentence(self):
         global subjectLesson
         subjectLesson = "Sentence"
+        
+        self.btnSentence.setEnabled(False)
         speak(self.btnSentence.text())
         self.subj = QuizMain()
         self.subj.show()
@@ -643,6 +964,7 @@ class QuizScreen(QWidget):
         global subjectLesson
         subjectLesson = "Stories"
         #self.Topics.setText(self.btnStories.text())
+        self.btnStories.setEnabled(False)
         speak(self.btnStories.text())
         self.subj = QuizMain()
         self.subj.show()
@@ -653,13 +975,12 @@ class QuizScreen(QWidget):
         #self.stop_listening(wait_for_stop=False)
         global flag
         flag = "MainMenu"
+        
+        self.btnMenu.setEnabled(False)
+        
         self.window = MainMenu()
-        speak("Main Menu")
-        #Thread 1
-        #MyLoop = threading.Thread(name="MenuLoop", target=window.my_loop)
-        #MyLoop.setDaemon(True)
-        #MyLoop.start()
         self.window.show()
+        self.window.run()
         self.hide()
 
     def updateScreen(self, text):
@@ -756,17 +1077,20 @@ class Worker(QObject):
     timer = pyqtSignal(str)
 
     def subjectNow(self):
-        global timer
+        global timer, user_input
         subject = "Rhyming and Non-rhyming"
         #speaks(self.script)
         #self.updateScreen(subject)
         #speaks("Try to read the sets of words below")
+        ard.lookStraight() 
         self.progress.emit("In this lesson, you will learn about Rhyming Words.")
-        speak("In this lesson, you will learn about Rhyming Words.")
         
+        speak("In this lesson, you will learn about Rhyming Words.")
+        ard.lookDown()
         sleep(0.5)
         
         self.progress.emit("Words are formed by combining the letters of the alphabet.")
+        ard.lookStraight()
         speak("Words are formed by combining the letters of the alphabet.")
         
         sleep(0.5)
@@ -777,39 +1101,51 @@ class Worker(QObject):
 
         self.progress.emit("\n")
         self.image.emit('images/rhyming.png')
+        ard.lookDown()
         speak("vowels are like, ah. ae. e. oh. oooh.")
         speak("Now, consonants are like alphabets without vowels. Such as b,c,d,f,g, and so on.")
         
         sleep(0.7)
         
         self.progress.emit("By combining some of these letters, words may be formed.")
+        ard.lookStraight()
         speak("By combining some of these letters, words may be formed.")
         
         sleep(0.8)
         
         self.progress.emit("Some of these words include net, one, pen, and red. Some words have the same or similar ending sounds.")
+        ard.lookDown()
         speak("Some of these words include net, one, pen, and red.")
+        ard.lookStraight()
         speak("Some words have the same or similar ending sounds.")
         
         sleep(0.3)
         
         self.progress.emit("They are called rhyming words. At the end of the lesson, you are expected to recognize rhyming words in nursery rhymes, poems or songs heard.")
+        ard.lookDown()
         speak("They are called rhyming words.")
         
         sleep(0.9)
         
+        ard.lookDown()
         speak("At the end of the lesson, you are expected")
+        ard.lookStraight()
         speak("to recognize rhyming words in nursery rhymes, poems or songs heard.")
         
         sleep(0.3)
         
-        self.progress.emit("SET A: \nHouse - Mouse.")
+        
+        self.progress.emit("House - Mouse")
         speak("Try to read the example below.")
-        self.button.emit(True)
-
+        self.button.emit(False)
+        ard.lookDown()
+        
+        user_input = ""
+        ard.ledListening()
         while True:
-            response = ask_ettibot().lower()
+            response = user_input
             if any (i in response for i in ["house mouse", "mouse", "house"]):
+                ard.nod()
                 speak("Perfect!")
                 self.progress.emit("Perfect")
                 #self.countResponse()
@@ -821,12 +1157,16 @@ class Worker(QObject):
             
             
 
-        self.progress.emit("SET B: \nSet - Net.")
+        self.progress.emit("Set - Net")
         speak("Try this one.")
+        ard.lookDown()
 
+        user_input = ""
+        ard.ledListening()
         while True:
-            response = ask_ettibot().lower()
+            response = user_input
             if any (i in response for i in ["set net", "set", "net"]):
+                ard.nod()
                 speak("Great!")
                 self.progress.emit("Great!")
                 #self.countResponse()
@@ -836,12 +1176,16 @@ class Worker(QObject):
                 self.finished.emit()
                 break
 
-        self.progress.emit("SET C: \nBig - Small.")
+        self.progress.emit("Big - Small")
         speak("How about this one?")
+        ard.lookDown()
 
+        user_input = ""
+        ard.ledListening()
         while True:
-            response = ask_ettibot().lower()
+            response = user_input
             if any (i in response for i in  ["big small","big", "small"]):
+                ard.nod()
                 speak("Well done!")
                 self.progress.emit("Well done!")
                 break
@@ -852,18 +1196,26 @@ class Worker(QObject):
 
         self.image.emit('images/rhymeSets.png')
         speak("Notice the sounds of the words?")
-        sleep(2)
+        ard.lookDown()
+        sleep(0.6)
         speak("Sets A and B are considered as rhyming words")
         sleep(0.3)
+        ard.lookStraight()
         speak("while set C is not.")
         
-        sleep(3)
+        sleep(2)
+        ard.nod()
+        speak("That's all for today's discussion. Thank you for listening!")
         
+        ########## The Learning Task 1
+        """
         speak("Let's take a test if you understand the lesson.")
         sleep(1)
         speak("are you ready?")
+        
+        user_input = ""
         while True:
-            response = ask_ettibot().lower()
+            response = user_input
             if any (i in response for i in  ["ready","yup", "yes"]):
                 speak("great!")
                 break
@@ -871,8 +1223,10 @@ class Worker(QObject):
         sleep(1)
         
         speak("But. Before anything else. Do you have your notebook?")
+        
+        user_input = ""
         while True:
-            response = ask_ettibot().lower()
+            response = user_input
             if any (i in response for i in  ["ready","yup", "yes", "yep"]):
                 speak("great!")
                 break
@@ -892,7 +1246,7 @@ class Worker(QObject):
         
         #self.image.emit()
         speak("Now. you see what's on the screen?")
-        sleep(2)
+        sleep(1.3)
         
         speak("You have to match the pictures which have the same ending sounds.")
         speak("Just write the letters of your answers in your notebook")
@@ -910,21 +1264,21 @@ class Worker(QObject):
             
             elif response == "no":
                 speak("Hmm, how about 10 minutes?")
-                break
                 
-        while True:
-            response = ask_ettibot().lower()
-            if any (i in response for i in  ["okay","ok","yup", "yes", "sure"]):
-                timer = 600 #600 secs equivalent to 3 minutes
-                speak("okay, 10 minutes!")
-                break
+                while True:
+                    response = ask_ettibot().lower()
+                    if any (i in response for i in  ["okay","ok","yup", "yes", "sure"]):
+                        timer = 600 #600 secs equivalent to 3 minutes
+                        speak("okay, 10 minutes!")
+                        break
             
-            elif response == "no":
-                speak("Sorry, but I think 10 minutes is too much for just 5 items, right?")
-                speak("Alright.")
-                timer = 600 #600 secs equivalent to 3 minutes
-                break
-                
+                    elif response == "no":
+                        speak("Sorry, but I think 10 minutes is too much for just 5 items, right?")
+                        speak("Alright.")
+                        timer = 600 #600 secs equivalent to 3 minutes
+                        break
+                    
+        self.progress.emit("Just say done, once you are finished earlier on time.")
         speak("Just say done, once you are finished earlier on time.")
         speak("Timer. starts. now.")
         print(f"Timer is set to {timer}")
@@ -940,50 +1294,64 @@ class Worker(QObject):
                 speak("Time is up!")
                 break
         
-        speak("Please hand it over to your parent or guardian to have it check")
+        speak("Please hand it over to your parent or guardian and have it check")
         speak("Here's the key to correction.")
         
+        """
         self.finished.emit()
 
     ############ SUBJECT2: SENTENCES AND NON-SENTENCES
     def subjectNow2(self):
         subject = "Sentences and Non Sentences"
 
+        ard.lookStraight()
         self.progress.emit("When words are combined, you will form a group of words which may either be a sentence or a non-sentence.")
         speak("When words are combined, you will form a group of words which may either be a sentence or a non-sentence.")
+        ard.lookDown()
         
         self.title.emit("Sentence")
         self.progress.emit("A sentence is a group of words. It tells a complete thought or idea. It is composed of a subject and a predicate. It begins with a capital letter and ends with a period ( . ), a question mark ( ? ), or an exclamation point ( ! ).")
+        ard.lookStraight()
         speak("A sentence is a group of words. It tells a complete thought or idea. It is composed of a subject and a predicate.")
+        ard.lookDown()
         speak("It begins with a capital letter and ends with a period, a question mark, or an exclamation point.")
-
+        ard.lookStraight()
         self.image.emit("images/sentence2.png")
         speak("Study the sample sentences below.")
+        
+        ard.lookDown()
         speak("1. Ella plays the piano.")
         speak("Ella is the subject, while plays the piano is the predicate.")
         speak("2. The sun rises in the east.")
         speak("The sun is the subject, and rises in the east is the predicate.")
         speak("3. The garden is beautiful.")
         speak("The garden is the subject, and is beautiful is the predicate.")
-
+        
+        ard.lookStraight()
         speak("Now.")
         
         self.title.emit("Non Sentence")
         
         self.progress.emit("A non-sentence, like a phrase, is also a group of words. Unlike a sentence, it does not tell a complete thought or idea. It may just be the subject or the predicate.")
+        
+        
         speak("A non-sentence, like a phrase, is also a group of words.")
+        ard.lookDown()
         speak("Unlike a sentence, it does not tell a complete thought or idea.")
         speak("It may just be the subject or the predicate.")
 
         self.image.emit("images/sentence3.png")
         speak("Study the sample non-sentences below.")
+        ard.lookStraight()
         speak("playing the piano.")
+        ard.lookDown()
         speak("wide garden.")
         speak("Jayson's dog.")
         speak("Ray and may.")
         speak("sets in the west.")
         speak("flying a kite.")
         speak("Unlike a sentence, the examples below do not give complete thoughts or meanings.")
+        ard.nod()
         speak("That's all for today's video, thank you for listening!")
         self.finished.emit()
 
@@ -994,15 +1362,17 @@ class Worker(QObject):
         def emitStory():
             self.progress.emit("The New Toys")
             speak("The New Toys")
-
+            ard.lookDown()
             self.image.emit("images/new toys.png")
             speak("Jay and Joy have new toys.")
+            
             speak("Jay has a new toy car. It is small but shiny.")
             speak("Meanwhile,Joy has a new doll. It is big and beautiful.")
             speak("Their Tita May gave these gifts to them during their birthday.")
             speak("She hid them behind the table to surprise them.")
             speak("They hurriedly looked for the hidden gifts.")
             speak("When they saw them, they immediately opened them.")
+            ard.nod()
             speak("They jumped for joy when they saw their new toys. They were just what they wished for.")
             speak("They thanked and kissed their Tita. They love their new toys.")
 
@@ -1029,30 +1399,38 @@ class Worker(QObject):
         subject = "Short Stories"
         #speaks(self.script)
         #speaks("Try to read the sets of words below")
+        ard.lookStraight()
         self.progress.emit("Are you familiar with short stories and poems?")
         speak("Are you familiar with short stories and poems?")
+        ard.lookDown()
 
         self.progress.emit("You've possibly read and listened to different stories and poems")
         speak("You've possibly read and listened to different stories and poems,")
+        ard.lookStraight()
 
         self.progress.emit("such as fairy tales and other bedtime stories.")
         speak("such as fairy tales and other bedtime stories.")
-
+        ard.lookDown()
+        
         self.progress.emit("These stories and poems tell us what the characters feel and do. They may also teach us important lessons in life.")
         speak("These stories and poems tell us what the characters feel and do.")
         speak("They may also teach us important lessons in life.")
+        ard.lookStraight()
 
         self.progress.emit("Now. Listen to this story.")
         speak("Now. Listen to this story,")
         
         self.title.emit("The New Toys")
+        ard.lookDown()
         emitStory()
+        ard.lookStraight()
         
         self.title.emit(subject)
         speak("Try to answer these questions")
-        self.button.emit(True)
+        self.button.emit(False)
 
         q1()
+        ard.lookDown()
         while True:
             response = ask_ettibot().lower()
             if any(i in response for i in ["jay", "joy", "jay and joy", "j n joy"]):
@@ -1071,9 +1449,10 @@ class Worker(QObject):
 
 
         q2()
+        ard.lookDown()
         while True:
             response = ask_ettibot().lower()
-            if any(i in response for i in ["tita", "auntie"]):
+            if any(i in response for i in ["tita", "auntie","may", "tita may"]):
                 speak("Perfect!")
                 self.progress.emit("Tita May")
                 ard.nod()
@@ -1089,6 +1468,7 @@ class Worker(QObject):
 
 
         q3()
+        ard.lookDown()
         while True:
             response = ask_ettibot().lower()
             if any(i in response for i in ["table", "behind the table"]):
@@ -1108,6 +1488,7 @@ class Worker(QObject):
 
 
         q4()
+        ard.lookDown()
         while True:
             response = ask_ettibot().lower()
             if any(i in response for i in ["toy car and doll", "car", "doll", "toy"]):
@@ -1127,6 +1508,7 @@ class Worker(QObject):
 
 
         q5()
+        ard.lookDown()
         while True:
             response = ask_ettibot().lower()
             if any(i in response for i in ["jumped", "jump", "jumped for joy"]):
@@ -1142,7 +1524,7 @@ class Worker(QObject):
                 emitStory()
                 continue
 
-
+        ard.nod()
         speak("That's all for today's video, thank you for listening!")
         self.finished.emit()
 
@@ -1153,39 +1535,48 @@ class Worker(QObject):
         subject = "Polite Expressions"
         #self.speaks(self.script)
         #self.speaks("Try to read the sets of words below")
+        ard.lookStraight()
         self.progress.emit("Politeness is one of the characteristics that you should have.")
-
         speak("Politeness is one of the characteristics that you should have.")
-
+        ard.lookDown()
+        
         self.progress.emit("There are lots of ways on how one can show politeness.")
         speak("There are lots of ways on how one can show politeness.")
-
+        ard.lookStraight()
+        
         self.progress.emit("Saying po and opo is one of these ways")
         speak("Saying")
         speak("po at opo", "tl")
+        ard.lookUp()
         speak("is one of these ways.")
+        ard.lookDown()
 
         self.progress.emit("Also, you can show politeness using appropriate words or expressions in different events.")
         speak("Also, you can show politeness using appropriate words or expressions in different events.")
-
+        ard.lookStraight()
+        
         self.progress.emit("At the end of the lesson, you are expected to use respond appropriately to polite expressions in greetings, leave takings, expressing gratitude and apology, asking permission, and offering help. ")
         speak("At the end of the lesson, you are expected to use respond appropriately to polite expressions in greetings")
+        ard.lookDown()
         speak("leave takings, expressing gratitude and apology, asking permission, and offering help.")
 
 
-        self.progress.emit("Read the example shown on screen. ")
-        speak("Read the example shown on screen. ")
-
+        self.progress.emit("Read the example shown on screen.")
+        speak("Now, Listen to this conversation")
+        ard.lookDown()
+        
         self.progress.emit("\n")
         self.image.emit('images/polite expression.png')
 
-        sleep(7)
+        sleep(2)
+        playScript('audio/PoliteExpress.mp3')
 
         speak("Notice the highlighted words.")
         speak("Good afternoon, Thank you very much. and You are welcome are examples of polite greetings. that you may use in talking to other people. ")
 
 
         self.progress.emit("That's All, Thank you for listening!")
+        ard.nod()
         speak("That's all for today's discussion, thank you for listening!")
 
         sleep(3)
@@ -1222,8 +1613,10 @@ class Subject(QWidget):  # second screen showing the discussion screen
         uic.loadUi('screens/subject.ui', self)
         self.btnStart.clicked.connect(self.run)
         self.btnMenu.clicked.connect(self.showMenu)
+        
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.showMaximized()  # opening window in maximized size
-        #self.updateImage()
+        self.setCursor(Qt.BlankCursor) 
 
 
     def updateImage(self, url='images/polite expression.png'):
@@ -1360,8 +1753,10 @@ class topics(QWidget):  # second screen showing the lesson and activity
     def __init__(self):
         super().__init__()
         uic.loadUi('screens/topics.ui', self)
+        
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.showMaximized()  # opening window in maximized size
-        activeScreen = "topics"
+        self.setCursor(Qt.BlankCursor)
         #sleep(duration)
         self.btnMenu.clicked.connect(self.showMenu)
 
@@ -1387,6 +1782,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
     def showRhyme(self):
         global subjectLesson
         subjectLesson = self.btnRhyming.text()
+        self.btnRhyming.setEnabled(False)
         speak(self.btnRhyming.text())
         #self.threadTopic.stop()
         self.subj = Subject()
@@ -1399,6 +1795,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
         global subjectLesson
         subjectLesson = "Express"
         self.Topics.setText(self.btnExpress.text())
+        self.btnExpress.setEnabled(False)
         speak(self.btnExpress.text())
         self.subj = Subject()
         self.subj.show()
@@ -1410,6 +1807,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
         global subjectLesson
         subjectLesson = "Sentence"
         self.Topics.setText(self.btnSentence.text())
+        self.btnSentence.setEnabled(False)
         speak(self.btnSentence.text())
         self.subj = Subject()
         self.subj.show()
@@ -1420,6 +1818,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
         global subjectLesson
         subjectLesson = "Stories"
         self.Topics.setText(self.btnStories.text())
+        self.btnStories.setEnabled(False)
         speak(self.btnStories.text())
         self.subj = Subject()
         self.subj.show()
@@ -1429,13 +1828,12 @@ class topics(QWidget):  # second screen showing the lesson and activity
     def showMenu(self):
         #self.stop_listening(wait_for_stop=False)
         global flag
-        flag = "Topics"
+        flag = "MainMenu"
+        self.btnMenu.setEnabled(False)
         self.window = MainMenu()
         self.window.show()
-        #self.window.run()
-        speak("Main Menu")
+        self.window.run()
         self.hide()
-        #self.close()
 
     def updateScreen(self, text):
         self.Topics.setText(text)
@@ -1545,9 +1943,9 @@ class TranslateWorker2(QObject):
     def run(self):
         self.progress2.emit(" ","You can translate English words to Filipino and vise versa. ")
         speak("You can translate English words to Filipino and vise versa. ")
-        self.progress2.emit(" ","Try saying: translate kumusta")
-        speak("Try saying. translate ")
-        speak("kumusta", "tl")
+        self.progress2.emit(" ","Try saying KAMUSTA")
+        speak("Try saying")
+        speak("kamusta", "tl")
         sleep(3)
         
         
@@ -1573,76 +1971,60 @@ class TranslateWorker(QObject):
 
             print("Flag: " +flag)
             query = ask_ettibot().lower()
-            word = query
-            prefix = 'translate'
-            print(word[word.startswith(prefix) and len(prefix):])
-            stippedWord = word[word.startswith(prefix) and len(prefix):]
-            #translatr.updateScreen(word)
-            #print(f"User Input: {word}")
-            detected_lang = translator.detect(word)
-            if any(i in query for i in ["translate", "salin wika", "translation"]):
+            
+            #word = query
+            #prefix = 'translate'
+            
+            #print(word[word.startswith(prefix) and len(prefix):])
+            #stippedWord = word[word.startswith(prefix) and len(prefix):]
+            detected_lang = translator.detect(query)
+            
+            #if any(i in query for i in ["translate", "salin wika", "translation"]):
+            
+            if query == "cancel":
+                print("flag is not Translate")
+                self.finished.emit()
+                break
+            
+            if query != '0x01':
                 try:
                     if detected_lang.lang == 'en':
-                        translate_text = translator.translate(stippedWord, dest='tl')
+                        translate_text = translator.translate(query, dest='tl')
                         print(f"Translation: {translate_text.text}")
                         output = translate_text.text
-                        self.progress.emit(stippedWord, output)
+                        self.progress.emit(query, output)
                         speak(translate_text.text, 'tl')
 
 
-
                     elif detected_lang.lang == 'tl':
-                        translate_text = translator.translate(stippedWord, dest='en')
+                        translate_text = translator.translate(query, dest='en')
                         print(f"Translation: {translate_text.text}")
                         output = translate_text.text
-                        self.progress.emit(stippedWord, output)
+                        self.progress.emit(query, output)
                         speak(translate_text.text, 'en')
-
 
 
                 except Exception as e:
                     print("Translate Exception " + str(e))
-                    #speak("You can try saying translate and the word you want to translate. For example, translate goodmorning")
+                    speak("Please Try again.")
                     continue
+            
 
-            # respond politely
-            elif any(_ in query for _ in ["thank", "thanks"]):
-                res = np.random.choice(
-                    ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
-                speak(res)
-
-            # respond politely
-            elif any(i in query for i in ["hi", "hello", "can you hear me"]):
-                res = np.random.choice(
-                    ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
-                speak(res)
-
-            elif "menu" in query:
-                self.finished.emit()
-                #self.showMenu()
-
-            elif "0x01" in query:
-                print(query)
-
-
-            else:
-                res = np.random.choice(
-                    ["Sorry, I don't understand what you said.", "I dont know that yet.", "Sorry, I didn't catch that.", "I didn't get that, but I heard you."])
-                speak(res)
-                print(query)
-
-            #else:
-            #    continue
-
-
+           
 class TranslatorScreen(QDialog):
     def __init__(self):
         super().__init__()
         uic.loadUi('Translator.ui', self)
-        activeScreen = "Translator"
         self.btnMenu.clicked.connect(self.showMenu)
         self.btnHow.clicked.connect(self.showHow)
+        
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.showMaximized()  # opening window in maximized size
+        self.setCursor(Qt.BlankCursor)
+        
+        global flag
+        flag = "Translate"
+        
         #self.start_button()
         #checkPlaying()
         #checkPlaying()
@@ -1696,6 +2078,7 @@ class TranslatorScreen(QDialog):
         #self.stop_listening(wait_for_stop=False)
         global flag
         flag = "MainMenu"
+        self.btnMenu.setEnabled(False)
         self.window = MainMenu()
         self.window.show()
         self.window.run()
@@ -1729,7 +2112,7 @@ class TranslatorScreen(QDialog):
 
         # Final resets
         self.thread.finished.connect(
-            lambda: self.btnHow.setEnabled(True)
+            lambda: self.showMenu()
         )
 
 
@@ -1820,20 +2203,11 @@ class TranslatorScreen(QDialog):
 
 
 ###################### MAIN MENU SCREEN ###################################################################################
-class MenuWorker2(QObject):
-    finished2 = pyqtSignal()
-
-    def run(self):
-        ard.nod()
-        speak("I'm Etti, I am designed to teach basic english for my children and communicate with people, just like you!")
-        ard.lookStraight()
-        self.finished2.emit()
-
-
 class MenuWorker(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(str)
     time = pyqtSignal()
+    translate = pyqtSignal()
     
     def updateTime(self):
         global flag
@@ -1842,6 +2216,21 @@ class MenuWorker(QObject):
             if flag != "MainMenu":
                 self.finished.emit()
                 break
+            
+            if flag == "Translate":
+                self.finished.emit()
+            
+            
+
+class MenuWorker2(QObject):
+    finished2 = pyqtSignal()
+
+    def run(self):
+        ard.nod()
+        res = np.random.choice(["I am designed to teach basic english for my children and communicate with people, just like you!", "I am Artificial Intelligence English Tutor"])
+        speak(res)
+        ard.lookStraight()
+        self.finished2.emit()
 
 
 
@@ -1853,8 +2242,9 @@ class MainMenu(QWidget):
         threading.current_thread().name = "Menu"
         super().__init__()
         uic.loadUi('screens/welcome.ui', self) # MainWindow.ui
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.showMaximized()  # opening window in maximized size
-        self.setCursor(Qt.BlankCursor)
+        self.setCursor(Qt.BlankCursor) 
         #activeScreen = "MainMenu"
         # Create and connect widgets
         self.btnTopics.clicked.connect(self.runTopics)
@@ -1879,25 +2269,50 @@ class MainMenu(QWidget):
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.worker.time.connect(self.updateScreenTime)
+        self.worker.translate.connect(self.runTranslate)
         # Step 6: Start the thread
         self.thread.start()
-
+        
+        self.thread.finished.connect(
+            lambda: self.gotoScreen()
+        )
+        
+        
+    def gotoScreen(self):
+        global flag
+        if flag == 'Translate':
+            print("go to translate")
+            #self.runTranslate()
+            #self.MainThrd.close()
+            #speak(self.btnTranslate.text())
+            self.translate = TranslatorScreen()
+            self.translate.show()
+            self.translate.run()
+            self.hide()
+            
+        elif flag == 'Topics':
+            print("go to Topics")
+            self.runTopics()
+            
+        
     def stop(self):
         self._go = False
+        
 
     def runTopics(self):
         #self.stop_listening(wait_for_stop=False)
         global flag
         flag = "Topics"
+        self.btnTopics.setEnabled(False)
         #self.MainThrd.join()
-        speak(self.btnTopics.text())
+        #speak(self.btnTopics.text())
         self.lesson = topics()
         self.lesson.show()
         self.hide()
         #self.close()
         #self.my_loop("topics")
         #MainThrd.join()
-        MainMenu=False
+        #MainMenu=False
 
     def updateScreenTime(self):
         x = datetime.datetime.now()
@@ -1922,6 +2337,7 @@ class MainMenu(QWidget):
         # self.stop_listening(wait_for_stop=False)
         global flag
         flag = "Quiz Screen"
+        self.btnQuiz.setEnabled(False)
         speak(self.btnQuiz.text())
         #self.MainThrd.close()
         #speak("Quizzes")
@@ -1935,12 +2351,8 @@ class MainMenu(QWidget):
         #self.stop_listening(wait_for_stop=False)
         global flag
         flag = "Translate"
-        #self.MainThrd.close()
-        speak(self.btnTranslate.text())
-        self.translate = TranslatorScreen()
-        self.translate.show()
-        self.translate.run()
-        self.hide()
+        self.btnTranslate.setEnabled(False)
+        
         #self.close()
 
 
@@ -1967,135 +2379,6 @@ class MainMenu(QWidget):
             lambda: self.btnAbout.setEnabled(True)
         )
 
-    # this is called from the background thread
-    def callback(self, recognizer, audio):
-        ard.ledListening()
-        # received audio data, now we'll recognize it using Google Speech Recognition
-        try:
-            # for testing purposes, we're just using the default API key
-            # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
-            # instead of `r.recognize_google(audio)`
-            text = recognizer.recognize_google(audio)
-            print("Google Speech Recognition thinks you said " + text)
-
-            if any (i in text for i in ["ai", "madam", "tutor", "et"]):
-                self.recognizedWords(text)
-
-        except sr.UnknownValueError:
-            print("Google Speech Recognition could not understand audio")
-        except sr.RequestError as e:
-            print("Could not request results from Google Speech Recognition service; {0}".format(e))
-
-
-    def recognizedWords(self, text):
-        global user_input, flag
-        user_input = text
-        print (text)
-
-
-        if flag == "MainMenu":
-            query = text
-            #print("Speaking: "+str(speaking))
-            #window = MainMenu ()
-            self.updateScreen(f"You: {query}")
-            #print(query)
-            #if window.isVisible():
-            #    print("Main Menu is Visible")
-
-            #elif splash.isVisible():
-            #    print("Splash is Visible")
-
-            # topics
-            if any(i in query for i in ["topic", "topics", "show topics", "what's the lessons"]):
-                self.stop_listening(wait_for_stop=False)
-                self.runTopics()
-                self.close()
-
-            # quiz
-            elif any(i in query for i in ["quiz", "show quiz", "what's the challenge"]):
-                self.stop_listening(wait_for_stop=False)
-                flag = "Quiz"
-                #self.MainThrd.close()
-                #speak("Quizzes")
-                quiz = QuizScreen()
-                quiz.show()
-                #self.hide()
-                self.close()
-
-            # translate
-            elif flag == "Translate":
-                print("flag is Translate")
-
-
-            elif any(i in query for i in ["translate", "salin wika", "translation"]):
-                self.runTranslate()
-                self.hide()
-                #self.stop_listening(wait_for_stop=False)
-
-            # about me
-            elif "about" in query:
-                self.runAbout()
-
-
-            # respond politely
-            elif any(_ in query for _ in ["thank", "thanks"]):
-                res = np.random.choice(
-                    ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
-                speak(res)
-
-
-            # respond politely
-            elif any(_ in query for _ in ["good morning", "morning"]):
-                res = np.random.choice(
-                    ["Good morning human", "good morning too!"])
-                speak(res)
-                ard.lookLeft()
-
-
-            # respond politely
-            elif any(i in query for i in ["hi", "hello", "can you hear me"]):
-                res = np.random.choice(
-                    ["hi", "hello!", "yes?", "I can hear you", "What do you need?"])
-
-                speak(res)
-                self.updateScreen(f"Etti: {res}")
-                ard.nod()
-                ard.lookStraight()
-
-            elif any(i in query for i in ["up", "look up"]):
-                ard.lookUp()
-
-
-            elif any(i in query for i in ["down", "look down"]):
-                ard.lookDown()
-
-
-            elif any(i in query for i in ["left", "look left"]):
-                ard.lookLeft()
-
-            elif any(i in query for i in ["right", "look right"]):
-                ard.lookRight()
-
-
-            elif any(i in query for i in ["disagree", "disaffirm"]):
-                ard.notNod()
-                ard.lookStraight()
-
-            elif any(i in query for i in ["agree", "affirm"]):
-                ard.nod()
-                ard.lookStraight()
-
-
-            elif "none" in query:
-                print(query)
-
-            else:
-                res = np.random.choice(
-                    ["Sorry, I don't understand what you said.", "I dont know that yet.", "Sorry, I didn't catch that.", "I didn't get that, but I heard you.", "Sorry?"])
-                speak(res)
-                print(query)
-
-
     def gotoMenu(self):
         self.show()
 
@@ -2108,29 +2391,29 @@ class splashWorker (QObject):
             self.progress.emit(i)
             sleep(0.01)
             
-        sleep(1)
+        sleep(0.5)
         
         for i in range (20, 30):
             self.progress.emit(i)
-            sleep(0.03)
+            sleep(0.01)
             
-        sleep(1)
+        sleep(0.5)
         
         for i in range (30, 70):
             self.progress.emit(i)
-            sleep(0.02)
+            sleep(0.01)
             
-        sleep(2)
+        sleep(1)
         
         for i in range (70, 100):
             self.progress.emit(i)
-            sleep(0.03)
+            sleep(0.01)
             
         for i in range (100, 101):
             self.progress.emit(i)
             sleep(0.01)
             
-        sleep(5)
+        sleep(2)
         
         self.finished.emit()
         
@@ -2141,9 +2424,9 @@ class SplashScreen(QWidget):
         flag = "Splash"
         threading.current_thread().name = "Menu"
         super().__init__()
-        uic.loadUi('screens/splashscreen.ui', self) # splashscreen.ui
-        self.showMaximized()  # opening window in maximized size
+        uic.loadUi('/home/pi/ai-thesis/src/screens/splashscreen.ui', self) # splashscreen.ui
         self.setWindowFlag(Qt.FramelessWindowHint)
+        self.showMaximized()  # opening window in maximized size
         self.setCursor(Qt.BlankCursor)  
         #activeScreen = "MainMenu"
         # Create and connect widgets
@@ -2203,6 +2486,161 @@ def myThread():
 
         except KeyboardInterrupt:
             sys.exit(0)
+            
+
+# this is called from the background thread
+def callback(recognizer, audio):
+    #ard.ledListening()
+    # received audio data, now we'll recognize it using Google Speech Recognition
+    try:
+        # for testing purposes, we're just using the default API key
+        # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+        # instead of `r.recognize_google(audio)`
+        text = recognizer.recognize_google(audio)
+        print("Google Speech Recognition thinks you said " + text)
+        
+        global user_input
+        user_input = text
+        stripWords = word_tokenize(text)
+        greetWords = ["hello", "hi"]
+        stopWords = ["ai", "madam", "tutor", "athena", "thesis"]
+        #print (text)
+        
+        if any (i in stripWords for i in greetWords) and flag == "MainMenu":
+            res = np.random.choice(
+                ["hello!", "hi!", "yes?", "hello?"])
+            ard.nod()
+            speak(res)
+            
+        
+        if any (i in stripWords for i in stopWords):
+            result = [i for i in stripWords if not any([e for e in stopWords if e in i])] #this code removes the stopWords from stripWords
+            recognizedWords(result)
+        
+        #if any (i in text for i in ["ai", "madam", "tutor", "athena", "thesis", "hi", "hello"]):
+            #playScript("audio/Short Marimba Notification Ding.mp3")
+        #    recognizedWords(text)
+
+    except sr.UnknownValueError:
+        print("Google Speech Recognition could not understand audio")
+    except sr.RequestError as e:
+        print("Could not request results from Google Speech Recognition service; {0}".format(e))
+
+
+def recognizedWords(text):
+    global flag
+    
+    if flag == "MainMenu":
+        response = ask_ettibot().lower()
+        query = word_tokenize(response)
+        #print("Speaking: "+str(speaking))
+        #window = MainMenu ()
+        #self.updateScreen(f"You: {query}")
+        #print(query)
+        #if window.isVisible():
+        #    print("Main Menu is Visible")
+
+        #elif splash.isVisible():
+        #    print("Splash is Visible")
+
+        # topics
+        if any(i in query for i in ["topic", "topics", "lessons", "lesson", "learn"]):
+            flag = "Topics"
+            print (flag)
+
+        # quiz
+        elif any(i in query for i in ["quiz", "quizzes", "play"]):
+            flag = "Quiz Screen"
+            print (flag)
+           
+        # translate
+        elif any(i in query for i in ["translate", "translation"]):
+            flag = "Translate"
+            print (flag)
+
+        # about me
+        elif "about" in query:
+            flag = "About"
+            print (flag)
+
+
+        # respond politely
+        elif any(_ in query for _ in ["thank", "thanks"]):
+            res = np.random.choice(
+                ["you're welcome!", "anytime!", "no problem!", "cool!", "I'm here if you need me!", "peace out!"])
+            speak(res)
+
+
+        # respond politely
+        elif any(_ in query for _ in ["good morning", "morning"]):
+            ard.nod()
+            res = np.random.choice(
+                ["Good morning human", "good morning too!"])
+            speak(res)
+            
+        # respond politely
+        elif any(i in query for i in ["hi", "hello"]):
+            ard.nod()
+            ard.lookStraight()
+            res = np.random.choice(["hi", "hello!", "What do you need?"])
+            speak(res)
+            
+        elif any(i in query for i in ["hear"]):
+            ard.nod()
+            ard.lookStraight()
+            res = np.random.choice(["yes?", "I can hear you"])
+            speak(res)
+            
+
+        elif any(i in query for i in ["up", "look up"]):
+            ard.lookUp()
+
+
+        elif any(i in query for i in ["down", "look down"]):
+            ard.lookDown()
+
+
+        elif any(i in query for i in ["left", "look left"]):
+            ard.lookLeft()
+
+        elif any(i in query for i in ["right", "look right"]):
+            ard.lookRight()
+
+
+        elif any(i in query for i in ["disagree", "disaffirm"]):
+            ard.notNod()
+            ard.lookStraight()
+
+        elif any(i in query for i in ["agree", "affirm"]):
+            ard.nod()
+            ard.lookStraight()
+
+
+        elif "none" in query:
+            print(query)
+
+        else:
+            #echo "export OPENAI_API_KEY='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'" >> ~/.zshrc
+            #openai.api_key = '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'
+            #openai.api_key = os.getenv("OPENAI_API_KEY")
+            #response = openai.Completion.create(
+            #  engine="text-davinci-002",
+            #  prompt=query,
+            #  temperature=0.9,
+            #  max_tokens=60,
+            # top_p=1.0,
+            #  frequency_penalty=0.5,
+            #  presence_penalty=0.6,
+            #  stop=["Human:", "AI:"]
+            #)
+            
+            #print(response.choices[0].text)
+            #speak(response.choices[0].text)
+            
+            res = np.random.choice(
+                ["Sorry, I don't understand what you said.", "I dont know that yet.", "Sorry, I didn't catch that.", "I didn't get that, but I heard you.", "Sorry?", "Can you repeat that?"])
+            speak(res)
+            print(query)
 
 
 
@@ -2213,10 +2651,16 @@ def main():
     splash = SplashScreen()
     splash.run()
     splash.show()
-
+    
     #window = MainMenu()
     #window.run()
     #window.show()
+    
+    with m as source:
+        r.adjust_for_ambient_noise(source)
+        r.energy_threshold = energyThres
+        
+    stop_listening = r.listen_in_background(m, callback) #phrase_time_limit=10
 
     #MainThrd.join()
 
@@ -2230,5 +2674,11 @@ def main():
 
 if __name__ == '__main__':
     #Main Thread
-    main()
+    try:
+        main()
+        
+    except KeyboardInterrupt as k:
+        sys.exit()
+        sys.exit(app.exec_())
+        print(k)
 

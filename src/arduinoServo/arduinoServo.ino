@@ -15,7 +15,9 @@ void setup() {
   
   pinMode(11, OUTPUT);    // sets the digital pin 13 as output
   pinMode(12, OUTPUT);    // sets the digital pin 13 as output
-  
+
+  digitalWrite(11, HIGH); // sets the digital pin 13 on
+  digitalWrite(12, HIGH); // sets the digital pin 13 on
 }
 
 void loop() {
@@ -73,6 +75,7 @@ void loop() {
 void ledAll() {
   digitalWrite(11, HIGH); // sets the digital pin 13 on
   digitalWrite(12, HIGH); // sets the digital pin 13 on
+  delay(300); // wait for one second
 }
 
 void ledOff (){
@@ -93,6 +96,7 @@ void ledBlue (){
 void nod () {
   lookStraight();
   lookUp();
+  lookDown();
   lookStraight();
 }
 
@@ -100,32 +104,32 @@ void notNod () {
   lookStraight();
   lookLeft();
   lookRight();
-  lookLeft();
   lookStraight();
 }
 
 
 void lookUp () {
-  servo2.write(135); // move MG996R's shaft to angle 0°
-  delay(400); // wait for one second
+  servo2.write(120); // move MG996R's shaft to angle 0°
+  delay(350); // wait for one second
 }
 
 void lookDown () {
-  servo2.write(80); // move MG996R's shaft to angle 0°
-  delay(400); // wait for one second
+  servo2.write(70); // move MG996R's shaft to angle 0°
+  delay(350); // wait for one second
 }
 
 void lookLeft () {
-  servo.write(180); // move MG996R's shaft to angle 0°
-  delay(500); // wait for one second
+  servo.write(140); // move MG996R's shaft to angle 0°
+  delay(350); // wait for one second
 }
 
 void lookRight () {
-  servo.write(0); // move MG996R's shaft to angle 0°
-  delay(500); // wait for one second
+  servo.write(40); // move MG996R's shaft to angle 0°
+  delay(350); // wait for one second
 }
 
 void lookStraight () {
   servo.write(90); // move MG996R's shaft to angle 0°
   servo2.write(90); // move MG996R's shaft to angle 0°
+  delay(350); // wait for one second
 }

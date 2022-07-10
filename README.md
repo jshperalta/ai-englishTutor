@@ -34,12 +34,20 @@ This AI has the ability to translate filipino words to english (vice versa), dis
 
 Menu             |  Topics
 :-------------------------:|:-------------------------:
-<img src="https://user-images.githubusercontent.com/49710075/169226256-57b4702f-65a6-4b22-b140-abfac283eee0.png" />   |  <img src="https://user-images.githubusercontent.com/49710075/169227691-e3f168fe-30df-465d-9e41-793ebd1e1e44.png" />
+<img src="https://user-images.githubusercontent.com/49710075/178143965-a22b3acc-356d-4a2a-a46f-7033403466dd.png" />   |  <img src="https://user-images.githubusercontent.com/49710075/178143979-12960390-65f2-47e1-9072-41b09fe9ae27.png" />
 
-Lesson Discussion       |  Translate 
+Topic Session       |  Translate 
 :-------------------------:|:-------------------------:
-<img src="https://user-images.githubusercontent.com/49710075/169228491-07f0da2b-a173-4ddf-aff4-d159b2f83f84.png" />   |  <img src="https://user-images.githubusercontent.com/49710075/169228856-1fa97bf8-8ab0-4e85-ab20-f1aab97c6f88.png" />
+<img src="https://user-images.githubusercontent.com/49710075/178144020-0b6a3f54-5d54-4db1-aab7-67514190781d.png" />   |  <img src="https://user-images.githubusercontent.com/49710075/178144032-837f8271-ad73-45c6-8d81-e718e3b2516c.png" />
+
+Quiz       |  Quiz Session 
+:-------------------------:|:-------------------------:
+<img src="https://user-images.githubusercontent.com/49710075/178144092-f26a3487-6a2c-4d9b-84e8-87c113dee2a2.png" />   |  <img src="https://user-images.githubusercontent.com/49710075/178144111-e530d987-8eed-4b76-8172-84d9e80d6dd9.png" />
 
 
 ## 3D Model
 <img src="https://user-images.githubusercontent.com/49710075/169226782-aec6fd50-8a59-4e65-86d6-d82d4c5ba91d.jpg" width="100%" />
+
+
+
+

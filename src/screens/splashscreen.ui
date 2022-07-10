@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1024</width>
-    <height>610</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -57,10 +57,13 @@ background: qlineargradient(spread:pad, x1:0, y1:1, x2:1, y2:0, stop:0 rgba(37, 
      <property name="bottomMargin">
       <number>70</number>
      </property>
+     <property name="spacing">
+      <number>20</number>
+     </property>
      <item row="2" column="0">
       <widget class="QLabel" name="Title_2">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -101,7 +104,7 @@ color: black;</string>
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>55</height>
+         <height>50</height>
         </size>
        </property>
        <property name="styleSheet">
@@ -132,7 +135,7 @@ QProgressBar::chunk {
      <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -140,7 +143,7 @@ QProgressBar::chunk {
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>0</height>
+         <height>50</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -159,7 +162,7 @@ QProgressBar::chunk {
         <bool>true</bool>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>

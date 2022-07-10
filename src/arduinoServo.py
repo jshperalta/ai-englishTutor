@@ -20,6 +20,14 @@ import time
 import warnings
 import serial.tools.list_ports
 
+import pygame
+from pygame import mixer
+
+
+#pygame.mixer.pre_init(22050, 16, 1, 4096) #frequency, size, channels, buffersize
+pygame.mixer.init()
+pygame.init()
+
 arduino_ports = None
 arduino_ports = [
         p.device
@@ -40,6 +48,15 @@ if len(arduino_ports) > 1:
 print(arduino_ports)
 #print(ser.port)
 
+def playScript(url):
+    mixer.init()
+    mixer.music.set_volume(0.3)
+    mixer.music.load(url)
+    mixer.music.play()
+   
+    while mixer.music.get_busy():  # wait for music to finish playing
+        time.sleep(1)
+
 
 try:
     arduino = serial.Serial(port=arduino_ports[0], baudrate=115200, timeout=.2)
@@ -47,9 +64,13 @@ try:
 
     def write_readx(x):
         arduino.write(bytes(x, 'utf-8'))
-        time.sleep(0.05)
+        #time.sleep(0.05)
+        #try:
         data = arduino.readline()
         return data
+        #except Exception as e:
+        #    print(e)
+        #    return 0
 
     def nod ():
         write_readx(str(1))
@@ -77,6 +98,7 @@ try:
 
     def ledListening():
         write_readx(str(12))
+        playScript("audio/Short Marimba Notification Ding.mp3")
         
     def ledOff():
         write_readx(str(13))
@@ -112,6 +134,7 @@ except:
         print("")
 
     def ledListening():
+        playScript("audio/Short Marimba Notification Ding.mp3")
         print("")
         
     def ledOff():

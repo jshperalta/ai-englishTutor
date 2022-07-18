@@ -23,7 +23,7 @@ void setup() {
 void loop() {
   while (!Serial.available());
   x = Serial.readString().toInt();
-  Serial.println(x);
+  Serial.print(x);
  
   
   if (x == 1) {

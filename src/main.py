@@ -1620,8 +1620,8 @@ class Worker(QObject):
 
             elif any(i in response for i in ["can you repeat the story", "repeat story"]):
                 speak("okay!")
-                q4()
                 emitStory()
+                q4()
                 continue
 
 
@@ -2411,10 +2411,42 @@ class MenuWorker2(QObject):
 
     def run(self):
         global flag
-        ard.nod()
-        res = np.random.choice(["I am designed to teach basic english for my children and communicate with people, just like you!", "I am Artificial Intelligence English Tutor"])
-        speak(res)
+        
+        #look straight
         ard.lookStraight()
+        speak("I am an Artificial Intelligence English Tutor Robot!") 
+
+        sleep(1)
+        #lookup
+        speak("I am specifically designed to help students learn English as a Subject in a fun and interactive way.")
+
+        sleep(1)
+        #look down
+        ard.lookDown()
+        speak("I can teach rhyming words, sentences, short stories, and polite expressions.")
+
+        sleep(1)
+        #look left
+        ard.lookLeft()
+        speak("I am also equipped with a voice recognition system so I can recognize and respond to questions.")
+
+        sleep(1)
+        #look straight
+        ard.lookStraight()
+        speak("I can translate Tagalog to English words or the opposite.")
+
+        sleep(1)
+        #look right
+        speak("I believe that robots will be a great addition to any classroom or home learning environment.")
+
+        sleep(1)
+        #look Up
+        ard.nod()
+        speak("With the help of the Tutor Robots, students will be able to improve their cognitive skills while having fun at the same time!")
+
+        sleep(1)
+        ard.lookStraight()
+        
         flag = "MainMenu"
         self.finished2.emit()
 
@@ -2502,7 +2534,32 @@ class MainMenu(QWidget):
             
         elif flag == 'About':
             print("go to quiz")
-            self.runAbout()
+            # Step 2: Create a QThread object
+            self.thread2 = QThread()
+            # Step 3: Create a worker object
+            self.worker2 = MenuWorker2()
+            # Step 4: Move worker to the thread
+            self.worker2.moveToThread(self.thread2)
+            self.thread2.started.connect(self.worker2.run)
+
+            self.worker2.finished2.connect(self.thread2.quit)
+            self.worker2.finished2.connect(self.worker2.deleteLater)
+            self.thread2.finished.connect(self.thread2.deleteLater)
+            #self.worker2.progress.connect(self.updateScreen)
+            # Step 6: Start the thread
+            self.thread2.start()
+
+            # Final resets
+            self.btnAbout.setEnabled(False)
+
+            self.thread2.finished.connect(
+                lambda: self.btnAbout.setEnabled(True)
+            )
+            
+            self.thread2.finished.connect(
+                lambda: self.gotoMenu()
+            )
+    
             
         
     def stop(self):
@@ -2565,31 +2622,9 @@ class MainMenu(QWidget):
 
 
     def runAbout(self):
-        # Step 2: Create a QThread object
-        self.thread2 = QThread()
-        # Step 3: Create a worker object
-        self.worker2 = MenuWorker2()
-        # Step 4: Move worker to the thread
-        self.worker2.moveToThread(self.thread2)
-        self.thread2.started.connect(self.worker2.run)
-
-        self.worker2.finished2.connect(self.thread2.quit)
-        self.worker2.finished2.connect(self.worker2.deleteLater)
-        self.thread2.finished.connect(self.thread2.deleteLater)
-        #self.worker2.progress.connect(self.updateScreen)
-        # Step 6: Start the thread
-        self.thread2.start()
-
-        # Final resets
-        self.btnAbout.setEnabled(False)
-
-        self.thread2.finished.connect(
-            lambda: self.btnAbout.setEnabled(True)
-        )
+        global flag
+        flag = "About"
         
-        self.thread2.finished.connect(
-            lambda: self.gotoMenu()
-        )
 
     def gotoMenu(self):
         global flag

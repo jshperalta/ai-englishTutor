@@ -30,43 +30,43 @@ void loop() {
     nod();
   }
   
-  if (x == 2) {
+  else if (x == 2) {
     lookLeft();
   }
   
-  if (x == 3) {
+  else if (x == 3) {
     lookRight();
   }
   
-  if (x == 4) {
+  else if (x == 4) {
     lookStraight();
   }
   
-  if (x == 5) {
+  else if (x == 5) {
     lookUp();
   }
   
-  if (x == 6) {
+  else if (x == 6) {
     lookDown();
   }
   
-  if (x == 7) {
+  else if (x == 7) {
     notNod();
   }
   
-  if (x == 11) {
+  else if (x == 11) {
     ledWhite();
   }
   
-  if (x == 12) {
+  else if (x == 12) {
     ledBlue();
   }
   
-  if (x == 13) {
+  else if (x == 13) {
     ledOff();
   }
   
-  if (x == 14) {
+  else if (x == 14) {
     ledAll();
   }
 }

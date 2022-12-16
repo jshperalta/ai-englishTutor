@@ -44,10 +44,24 @@ from PyQt5.uic import *
 
 # nltk ====
 import nltk
+from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nltk.tree import Tree
-from nltk.tokenize.treebank import TreebankWordDetokenizer
+from nltk.tokenize.treebank import TreebankWordDetokenizer as detoken
+
+from vosk import Model, KaldiRecognizer
+import pyaudio
+
+#Connection Checker
+import urllib.request
+
+# DATABASE
+import sqlite3
+from sqlite3 import Error
+
+model = Model(r"/home/pi/Desktop/model/vosk-model-small-en-us-0.15")
+recognizer = KaldiRecognizer(model, 16000)
 
 translator= Translator()
 now = QDate.currentDate()
@@ -61,8 +75,13 @@ logging.basicConfig(format="%(message)s", level=logging.INFO)
 openai.api_key = "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"
             
 #####################################   GLOBAL CONTAINERS   ##############################
-global activeScreen, speaking, duration, flag, subjectLesson, user_input, score, learner_name, timer, bot_response
-learner_name = ""
+global conn, vosk_input, activeScreen, speaking, duration, flag, subjectLesson, user_input, score, learner_name, timer, bot_response, Hour, Meridian
+db_file = r"/home/pi/ai-thesis/src/database/options.db"
+conn = sqlite3.connect(db_file)
+Hour = ""
+Meridian = ""
+vosk_input = ""
+learner_name = "learner"
 score = 0
 duration = 0
 user_input = ""
@@ -152,14 +171,22 @@ def speak(text, lang="en"):  # here audio is var which contain text
     ard.ledSpeaking()
     speaking = True
     
+    lowCase = text.lower()
     
     tts = gTTS(text=text, lang=lang)
-    filename = 'temp.mp3'
-    tts.save(filename)
-
+    filename = 'speech/'+lowCase+'.mp3'
     mixer.music.set_volume(1.0)
-    mixer.music.load(filename)
+    
+    try:
+        mixer.music.load(filename)
+        
+    except Exception as e:
+        print(e)
+        tts.save(filename)
+        mixer.music.load(filename)
+
     mixer.music.play()
+    
 
     # Create an MP3 object
     # Specify the directory address to the mp3 file as a parameter
@@ -171,6 +198,19 @@ def speak(text, lang="en"):  # here audio is var which contain text
     #sleep(seconds+0.9)
     while mixer.music.get_busy():  # wait for music to finish playing
         time.sleep(1)
+        
+def create_connection(db_file):
+    global conn
+    """ create a database connection to a SQLite database """
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+        print(sqlite3.version)
+    except Error as e:
+        print(e)
+    finally:
+        if conn:
+            conn.close()
 
 
 ########################################################### QUIZ SCREEN ###########################################################################
@@ -413,9 +453,10 @@ class QuizWorker(QObject):
         self.button.emit("NO", "YES")
         
         
-        ard.lookDown()
+        
         q1()
-        ard.lookStraight()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "yes":
@@ -432,9 +473,10 @@ class QuizWorker(QObject):
 
         user_input = ""
 
-        ard.lookDown()
+        
         q2()
-        ard.lookStraight()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "no":
@@ -452,6 +494,8 @@ class QuizWorker(QObject):
         user_input = ""
 
         q3()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "no":
@@ -469,6 +513,8 @@ class QuizWorker(QObject):
         user_input = ""
 
         q4()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "yes":
@@ -486,6 +532,8 @@ class QuizWorker(QObject):
         user_input = ""
 
         q5()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "no":
@@ -503,6 +551,8 @@ class QuizWorker(QObject):
         user_input = ""
 
         q6()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "yes":
@@ -522,6 +572,8 @@ class QuizWorker(QObject):
         user_input = ""
 
         q7()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "yes":
@@ -539,6 +591,8 @@ class QuizWorker(QObject):
         user_input = ""
 
         q8()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "yes":
@@ -557,6 +611,8 @@ class QuizWorker(QObject):
         user_input = ""
 
         q9()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "no":
@@ -576,6 +632,8 @@ class QuizWorker(QObject):
 
 
         q10()
+        ard.lookDown()
+        ard.ledListening()
         while True:
             #response = ask_ettibot().lower()
             if user_input == "no":
@@ -705,7 +763,7 @@ class QuizWorker(QObject):
             #response = ask_ettibot().lower()
             tokenize_ans = word_tokenize(user_input)
             bestAns = ['you\'re welcome', 'welcome','you\'re']
-            notAns = ['yes please open it', 'yes please','open it', 'open']
+            notAns = ['open it', 'yes please open it','open it', 'open']
             if any(i in tokenize_ans for i in bestAns):
                 score += 1
                 self.lcd.emit(score)
@@ -730,7 +788,7 @@ class QuizWorker(QObject):
         while True:
             #response = ask_ettibot().lower()
             tokenize_ans = word_tokenize(user_input)
-            bestAns = ['yes please open it', 'yes please','open it', 'open']
+            bestAns = ['yes please open it', 'yes please','open it', 'open', 'yes']
             notAns = ['good morning', 'good','morning']
             if any(i in tokenize_ans for i in bestAns):
                 score += 1
@@ -781,6 +839,14 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         self.showMaximized()  # opening window in maximized size
         self.setCursor(Qt.BlankCursor)
         
+        oImage = QImage("wallpaper.jpeg")
+        sImage = oImage.scaled(QSize(1024,600))                   # resize Image to widgets size
+        palette = QPalette()
+        palette.setBrush(QPalette.Window, QBrush(sImage))                        
+        self.setPalette(palette)
+
+        self.label = QLabel('Test', self)                        # test, if it's really backgroundimage
+        self.label.setGeometry(50,50,200,50)
         
     def runTimer(self):
         # Step 2: Create a QThread object
@@ -817,7 +883,7 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         #self.subjectNow()
-        if subjectLesson == "Rhyming and Non-Rhyming":
+        if subjectLesson == "Rhyming":
             self.thread.started.connect(self.worker.Quiz1)
             self.quiz_Title.setText("Rhyming and Non-Rhyming")
             self.runTimer()
@@ -854,10 +920,12 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
         worker = Worker()
         worker.stopThread()
         #self.stop_listening(wait_for_stop=False)
-        global flag
+        global flag, subjectLesson
+        subjectLesson = ""
         flag = "Quiz Screen"
         self.quiz = QuizScreen()
         self.quiz.show()
+        self.quiz.run()
         #self.hide()
         self.close()
         #self.my_loop("topics")
@@ -903,6 +971,21 @@ class QuizMain(QWidget):  # second screen showing the quiz screen
 
 
 #############################################   LEARNING TASKS
+        
+class MainQuizWorker(QObject):
+    finished = pyqtSignal()
+    
+    def watchScreen(self):
+        global flag, subjectLesson
+        while True:
+            if subjectLesson == "Rhyming" or subjectLesson == "Express" or subjectLesson == "Sentence":
+                self.finished.emit()
+                break
+            
+            if flag != "Quiz Screen":
+                self.finished.emit()
+                break
+                
 
 class QuizScreen(QWidget):
     def __init__(self):
@@ -921,44 +1004,83 @@ class QuizScreen(QWidget):
 
         # start listening in the background (note that we don't have to do this inside a `with` statement)
         #self.stop_listening = r.listen_in_background(m, self.callback)
+        
+        oImage = QImage("wallpaper.jpeg")
+        sImage = oImage.scaled(QSize(1024,600))                   # resize Image to widgets size
+        palette = QPalette()
+        palette.setBrush(QPalette.Window, QBrush(sImage))                        
+        self.setPalette(palette)
 
+        self.label = QLabel('Test', self)                        # test, if it's really backgroundimage
+        self.label.setGeometry(50,50,200,50)
+        
+        
+    def run(self):
+        # Step 2: Create a QThread object
+        self.thread3 = QThread()
+        # Step 3: Create a worker object
+        self.worker = MainQuizWorker()
+        # Step 4: Move worker to the thread
+        self.worker.moveToThread(self.thread3)
+        #self.subjectNow()
+        self.thread3.started.connect(self.worker.watchScreen)
+        self.worker.finished.connect(self.thread3.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread3.finished.connect(self.thread3.deleteLater)
+        
+        # Step 6: Start the thread
+        self.thread3.start()
+        
+        self.thread3.finished.connect(
+            lambda: self.gotoScreen()
+        )
+        
+    def gotoScreen(self):
+        global subjectLesson
+        if subjectLesson == 'Rhyming':
+            print("go to rhyme")
+            speak(self.btnRhyming.text())
+            self.subj = QuizMain()
+            self.subj.show()
+            self.subj.run()
+            self.close()
+            
+        elif subjectLesson == 'Express':
+            print("go to Express")
+            speak(self.btnExpress.text())
+            self.subj = QuizMain()
+            self.subj.show()
+            self.subj.run()
+            self.close()
+            
+        elif subjectLesson == 'Sentence':
+            print("go to Sentence")
+            speak(self.btnSentence.text())
+            self.subj = QuizMain()
+            self.subj.show()
+            self.subj.run()
+            self.close()
+            
 
     def showRhyme(self):
         global subjectLesson
-        subjectLesson = self.btnRhyming.text()
-        
+        subjectLesson = "Rhyming"
         self.btnRhyming.setEnabled(False)
-        speak(self.btnRhyming.text())
         #self.threadTopic.stop()
-        self.subj = QuizMain()
-        self.subj.show()
-        self.subj.run()
-        self.close()
 
 
     def showExpress(self):
         global subjectLesson
         subjectLesson = "Express"
-        
         self.btnExpress.setEnabled(False)
-        speak(self.btnExpress.text())
         
-        self.subj = QuizMain()
-        self.subj.show()
-        self.subj.run()
-        self.close()
 
 
     def showSentence(self):
         global subjectLesson
         subjectLesson = "Sentence"
-        
         self.btnSentence.setEnabled(False)
-        speak(self.btnSentence.text())
-        self.subj = QuizMain()
-        self.subj.show()
-        self.subj.run()
-        self.close()
+ 
 
     def showStories(self):
         global subjectLesson
@@ -966,10 +1088,7 @@ class QuizScreen(QWidget):
         #self.Topics.setText(self.btnStories.text())
         self.btnStories.setEnabled(False)
         speak(self.btnStories.text())
-        self.subj = QuizMain()
-        self.subj.show()
-        self.subj.run()
-        self.close()
+        
 
     def showMenu(self):
         #self.stop_listening(wait_for_stop=False)
@@ -1433,7 +1552,7 @@ class Worker(QObject):
         ard.lookDown()
         while True:
             response = ask_ettibot().lower()
-            if any(i in response for i in ["jay", "joy", "jay and joy", "j n joy"]):
+            if any(i in response for i in ["jay", "joy", "jay and joy", "j n joy" ,"j&j", "and"]):
                 speak("Perfect!")
                 ard.nod()
                 self.progress.emit("Jay and Joy")
@@ -1452,7 +1571,7 @@ class Worker(QObject):
         ard.lookDown()
         while True:
             response = ask_ettibot().lower()
-            if any(i in response for i in ["tita", "auntie","may", "tita may"]):
+            if any(i in response for i in ["tita", "auntie","may", "tita may", "tatami"]):
                 speak("Perfect!")
                 self.progress.emit("Tita May")
                 ard.nod()
@@ -1501,8 +1620,8 @@ class Worker(QObject):
 
             elif any(i in response for i in ["can you repeat the story", "repeat story"]):
                 speak("okay!")
-                q4()
                 emitStory()
+                q4()
                 continue
 
 
@@ -1511,7 +1630,7 @@ class Worker(QObject):
         ard.lookDown()
         while True:
             response = ask_ettibot().lower()
-            if any(i in response for i in ["jumped", "jump", "jumped for joy"]):
+            if any(i in response for i in ["jumped", "jump", "they jumped for joy", "joy" ,"for joy"]):
                 speak("Well done!")
                 self.progress.emit("They Jumped for Joy")
                 ard.nod()
@@ -1547,17 +1666,17 @@ class Worker(QObject):
         self.progress.emit("Saying po and opo is one of these ways")
         speak("Saying")
         speak("po at opo", "tl")
-        ard.lookUp()
-        speak("is one of these ways.")
         ard.lookDown()
+        speak("is one of these ways.")
+        ard.lookStraight()
 
         self.progress.emit("Also, you can show politeness using appropriate words or expressions in different events.")
         speak("Also, you can show politeness using appropriate words or expressions in different events.")
-        ard.lookStraight()
+        ard.lookDown()
         
         self.progress.emit("At the end of the lesson, you are expected to use respond appropriately to polite expressions in greetings, leave takings, expressing gratitude and apology, asking permission, and offering help. ")
         speak("At the end of the lesson, you are expected to use respond appropriately to polite expressions in greetings")
-        ard.lookDown()
+        ard.lookStraight()
         speak("leave takings, expressing gratitude and apology, asking permission, and offering help.")
 
 
@@ -1570,7 +1689,8 @@ class Worker(QObject):
 
         sleep(2)
         playScript('audio/PoliteExpress.mp3')
-
+        sleep(1)
+        
         speak("Notice the highlighted words.")
         speak("Good afternoon, Thank you very much. and You are welcome are examples of polite greetings. that you may use in talking to other people. ")
 
@@ -1616,7 +1736,16 @@ class Subject(QWidget):  # second screen showing the discussion screen
         
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.showMaximized()  # opening window in maximized size
-        self.setCursor(Qt.BlankCursor) 
+        self.setCursor(Qt.BlankCursor)
+        
+        oImage = QImage("wallpaper.jpeg")
+        sImage = oImage.scaled(QSize(1024,600))                   # resize Image to widgets size
+        palette = QPalette()
+        palette.setBrush(QPalette.Window, QBrush(sImage))                        
+        self.setPalette(palette)
+
+        self.label = QLabel('Test', self)                        # test, if it's really backgroundimage
+        self.label.setGeometry(50,50,200,50)
 
 
     def updateImage(self, url='images/polite expression.png'):
@@ -1640,28 +1769,14 @@ class Subject(QWidget):  # second screen showing the discussion screen
         self.subtitle_2.setAlignment(Qt.AlignCenter)
         #self.subject_Title.setText(subject)
 
-    def speak(self, text, lang="en"):  # here audio is var which contain text
-        # Call LED lights here
-        ard.ledSpeaking()
-        speaking = True
-        tts = gTTS(text=text, lang=lang)
-        filename = 'temp.mp3'
-        tts.save(filename)
-        playsound(filename, True)
-        #pygame.mixer.music.load(filename)
-        #pygame.mixer.music.play()
-        #while pygame.mixer.music.get_busy():
-          #  print("busy")
-
-        #self.subjectLesson()
-
     def showMenu(self):
-        global flag
+        global flag, subjectLesson
         flag = "Topics"
+        subjectLesson = ""
         #self.MainThrd.join()
         self.lesson = topics()
         self.lesson.show()
-        #self.hide()
+        self.lesson.run()
         self.close()
         #self.my_loop("topics")
         #MainThrd.join()
@@ -1696,7 +1811,7 @@ class Subject(QWidget):  # second screen showing the discussion screen
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         #self.subjectNow()
-        if subjectLesson == "Rhyming Words":
+        if subjectLesson == "Rhyming":
             self.thread.started.connect(self.worker.subjectNow)
             self.subject_Title.setText(subjectLesson)
 
@@ -1749,6 +1864,22 @@ class Subject(QWidget):  # second screen showing the discussion screen
 
 
 ######################################################## TOPICS Screen  #####################################################################
+class TopicsWorker(QObject):
+    finished = pyqtSignal()
+    
+    def watchScreen(self):
+        global flag, subjectLesson
+        while True:
+            print("IM WATCHING TOPIC SCREEN")
+            if subjectLesson == "Rhyming" or subjectLesson == "Express" or subjectLesson == "Sentence" or subjectLesson == "Stories" :
+                self.finished.emit()
+                break
+            
+            if flag != "Topics":
+                self.finished.emit()
+                break
+            
+
 class topics(QWidget):  # second screen showing the lesson and activity
     def __init__(self):
         super().__init__()
@@ -1765,30 +1896,79 @@ class topics(QWidget):  # second screen showing the lesson and activity
         self.btnSentence.clicked.connect(self.showSentence)
         self.btnStories.clicked.connect(self.showStories)
         self.btnStart.clicked.connect(self.startLesson)
+        
+        oImage = QImage("wallpaper.jpeg")
+        sImage = oImage.scaled(QSize(1024,600))                   # resize Image to widgets size
+        palette = QPalette()
+        palette.setBrush(QPalette.Window, QBrush(sImage))                        
+        self.setPalette(palette)
 
-        # start listening in the background (note that we don't have to do this inside a `with` statement)
-        #self.stop_listening = r.listen_in_background(m, self.callback)
-
+        self.label = QLabel('Test', self)                        # test, if it's really backgroundimage
+        self.label.setGeometry(50,50,200,50)
+        
     def startLesson(self):
         self.showRhyme()
 
     def run(self):
-        global flag
-        flag = "Topics"
-        # start listening in the background (note that we don't have to do this inside a `with` statement)
-        #self.stop_listening = r.listen_in_background(m, self.callback)
-
+        # Step 2: Create a QThread object
+        self.thread3 = QThread()
+        # Step 3: Create a worker object
+        self.worker = TopicsWorker()
+        # Step 4: Move worker to the thread
+        self.worker.moveToThread(self.thread3)
+        #self.subjectNow()
+        self.thread3.started.connect(self.worker.watchScreen)
+        self.worker.finished.connect(self.thread3.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread3.finished.connect(self.thread3.deleteLater)
+        
+        # Step 6: Start the thread
+        self.thread3.start()
+        
+        self.thread3.finished.connect(
+            lambda: self.gotoScreen()
+        )
+        
+    def gotoScreen(self):
+        global subjectLesson
+        if subjectLesson == 'Rhyming':
+            print("go to rhyme")
+            speak(self.btnRhyming.text())
+            self.subj = Subject()
+            self.subj.show()
+            self.subj.run()
+            self.close()
+            
+        elif subjectLesson == 'Express':
+            print("go to Express")
+            speak(self.btnExpress.text())
+            self.subj = Subject()
+            self.subj.show()
+            self.subj.run()
+            self.close()
+            
+        elif subjectLesson == 'Sentence':
+            print("go to Sentence")
+            speak(self.btnSentence.text())
+            self.subj = Subject()
+            self.subj.show()
+            self.subj.run()
+            self.close()
+            
+        elif subjectLesson == 'Stories':
+            print("go to Sentence")
+            speak(self.btnStories.text())
+            self.subj = Subject()
+            self.subj.show()
+            self.subj.run()
+            self.close()
+        
 
     def showRhyme(self):
         global subjectLesson
-        subjectLesson = self.btnRhyming.text()
+        subjectLesson = "Rhyming"
         self.btnRhyming.setEnabled(False)
-        speak(self.btnRhyming.text())
         #self.threadTopic.stop()
-        self.subj = Subject()
-        self.subj.show()
-        self.subj.run()
-        self.close()
 
 
     def showExpress(self):
@@ -1796,11 +1976,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
         subjectLesson = "Express"
         self.Topics.setText(self.btnExpress.text())
         self.btnExpress.setEnabled(False)
-        speak(self.btnExpress.text())
-        self.subj = Subject()
-        self.subj.show()
-        self.subj.run()
-        self.close()
+        
 
 
     def showSentence(self):
@@ -1808,22 +1984,12 @@ class topics(QWidget):  # second screen showing the lesson and activity
         subjectLesson = "Sentence"
         self.Topics.setText(self.btnSentence.text())
         self.btnSentence.setEnabled(False)
-        speak(self.btnSentence.text())
-        self.subj = Subject()
-        self.subj.show()
-        self.subj.run()
-        self.close()
 
     def showStories(self):
         global subjectLesson
         subjectLesson = "Stories"
         self.Topics.setText(self.btnStories.text())
         self.btnStories.setEnabled(False)
-        speak(self.btnStories.text())
-        self.subj = Subject()
-        self.subj.show()
-        self.subj.run()
-        self.close()
 
     def showMenu(self):
         #self.stop_listening(wait_for_stop=False)
@@ -1833,7 +1999,7 @@ class topics(QWidget):  # second screen showing the lesson and activity
         self.window = MainMenu()
         self.window.show()
         self.window.run()
-        self.hide()
+        self.close()
 
     def updateScreen(self, text):
         self.Topics.setText(text)
@@ -1941,9 +2107,9 @@ class TranslateWorker2(QObject):
     result2 = pyqtSignal()
 
     def run(self):
-        self.progress2.emit(" ","You can translate English words to Filipino and vise versa. ")
+        #self.progress2.emit(" ","You can translate English words to Filipino and vise versa. ")
         speak("You can translate English words to Filipino and vise versa. ")
-        self.progress2.emit(" ","Try saying KAMUSTA")
+        #self.progress2.emit(" ","Try saying KAMUSTA")
         speak("Try saying")
         speak("kamusta", "tl")
         sleep(3)
@@ -1958,25 +2124,26 @@ class TranslateWorker(QObject):
     progress = pyqtSignal(str,str)
     result = pyqtSignal()
     
+    
     def translateNow(self):
         #Translate: the bot will get user input then recognize if the input is english or tagalog
         #then bot will convert the input into opposite language and speak the output
         #speak("You can try saying. Translate, then the word you want to translate. For example, translate Goodmorning")
-
+        global user_input
+        
+        transWords = ["translate", "isalin"]
+        
         while flag == "Translate":
             if flag != "Translate":
-                print("flag is not Translate")
                 self.finished.emit()
                 break
 
-            print("Flag: " +flag)
-            query = ask_ettibot().lower()
+            query = user_input.lower()
+            stripWords = word_tokenize(query)
             
-            #word = query
-            #prefix = 'translate'
+            if query == "":
+                continue
             
-            #print(word[word.startswith(prefix) and len(prefix):])
-            #stippedWord = word[word.startswith(prefix) and len(prefix):]
             detected_lang = translator.detect(query)
             
             #if any(i in query for i in ["translate", "salin wika", "translation"]):
@@ -1986,32 +2153,41 @@ class TranslateWorker(QObject):
                 self.finished.emit()
                 break
             
-            if query != '0x01':
-                try:
-                    if detected_lang.lang == 'en':
-                        translate_text = translator.translate(query, dest='tl')
-                        print(f"Translation: {translate_text.text}")
-                        output = translate_text.text
-                        self.progress.emit(query, output)
-                        speak(translate_text.text, 'tl')
+            if any (i in stripWords for i in transWords) and flag == "Translate":
+                result = [i for i in stripWords if not any([e for e in transWords if e in i])] #this code removes the stopWords from stripWords
+                print(f"RESULT: {result}")
+                
+                if result != "":  
+                
+                    final_query = ' '.join(result).replace(' , ',',').replace(' .','.').replace(' !','!')
+                    
+                    try:
+                        if detected_lang.lang == 'en':
+                            translate_text = translator.translate(final_query, dest='tl')
+                            print(f"Translation: {translate_text.text}")
+                            output = translate_text.text
+                            self.progress.emit(final_query, output)
+                            speak(translate_text.text, 'tl')
+                            user_input = ""
 
+                        elif detected_lang.lang == 'tl':
+                            translate_text = translator.translate(final_query, dest='en')
+                            print(f"Translation: {translate_text.text}")
+                            output = translate_text.text
+                            self.progress.emit(final_query, output)
+                            speak(translate_text.text, 'en')
+                            user_input = ""
 
-                    elif detected_lang.lang == 'tl':
-                        translate_text = translator.translate(query, dest='en')
-                        print(f"Translation: {translate_text.text}")
-                        output = translate_text.text
-                        self.progress.emit(query, output)
-                        speak(translate_text.text, 'en')
-
-
-                except Exception as e:
-                    print("Translate Exception " + str(e))
-                    speak("Please Try again.")
-                    continue
+                    except Exception as e:
+                        print(e)
+                    #self.translateWords(result)
+            
+    
+                
             
 
            
-class TranslatorScreen(QDialog):
+class TranslatorScreen(QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi('Translator.ui', self)
@@ -2022,20 +2198,18 @@ class TranslatorScreen(QDialog):
         self.showMaximized()  # opening window in maximized size
         self.setCursor(Qt.BlankCursor)
         
+        oImage = QImage("wallpaper.jpeg")
+        sImage = oImage.scaled(QSize(1024,600))                   # resize Image to widgets size
+        palette = QPalette()
+        palette.setBrush(QPalette.Window, QBrush(sImage))                        
+        self.setPalette(palette)
+
+        self.label = QLabel('Test', self)                        # test, if it's really backgroundimage
+        self.label.setGeometry(50,50,200,50)
+        
         global flag
         flag = "Translate"
-        
-        #self.start_button()
-        #checkPlaying()
-        #checkPlaying()
-        #speak("at sasabihin ko sa wikang filipino ay. Magandang Umaga!", "tl")
-        #self.t1 = threading.Thread(name = "TranslateLoop", target=self.translateNow)
-        #self.t1.setDaemon(True)
-
-
-        # start listening in the background (note that we don't have to do this inside a `with` statement)
-        #self.stop_listening = r.listen_in_background(self.m, self.callback)
-
+    
 
     def updateScreen(self, inputTxt="User Input", outputTxt="Translation"):
         self.transInput.setText(f"You: {inputTxt}")
@@ -2211,6 +2385,7 @@ class MenuWorker(QObject):
     
     def updateTime(self):
         global flag
+        
         while True:
             self.time.emit()
             if flag != "MainMenu":
@@ -2219,17 +2394,60 @@ class MenuWorker(QObject):
             
             if flag == "Translate":
                 self.finished.emit()
-            
+                break
+                
+            if Hour >= "08" and Hour <= "11" and Meridian == "am":
+                self.progress.emit(f"Good Morning, {learner_name}!")
+                
+            if Hour >= "12" and Hour <= "03" and Meridian == "pm":
+                self.progress.emit(f"Good Afternoon, {learner_name}!")
+                
+            if Hour >= "04" and Hour <= "11" and Meridian == "pm":
+                self.progress.emit(f"Good Evening, {learner_name}!")
             
 
 class MenuWorker2(QObject):
     finished2 = pyqtSignal()
 
     def run(self):
-        ard.nod()
-        res = np.random.choice(["I am designed to teach basic english for my children and communicate with people, just like you!", "I am Artificial Intelligence English Tutor"])
-        speak(res)
+        global flag
+        
+        #look straight
         ard.lookStraight()
+        speak("I am an Artificial Intelligence English Tutor Robot!") 
+
+        sleep(1)
+        #lookup
+        speak("I am specifically designed to help students learn English as a Subject in a fun and interactive way.")
+
+        sleep(1)
+        #look down
+        ard.lookDown()
+        speak("I can teach rhyming words, sentences, short stories, and polite expressions.")
+
+        sleep(1)
+        #look left
+        ard.lookLeft()
+        speak("I am also equipped with a voice recognition system so I can recognize and respond to questions.")
+
+        sleep(1)
+        #look straight
+        ard.lookStraight()
+        speak("I can translate Tagalog to English words or the opposite.")
+
+        sleep(1)
+        #look right
+        speak("I believe that robots will be a great addition to any classroom or home learning environment.")
+
+        sleep(1)
+        #look Up
+        ard.nod()
+        speak("With the help of the Tutor Robots, students will be able to improve their cognitive skills while having fun at the same time!")
+
+        sleep(1)
+        ard.lookStraight()
+        
+        flag = "MainMenu"
         self.finished2.emit()
 
 
@@ -2254,7 +2472,16 @@ class MainMenu(QWidget):
 
         # start listening in the background (note that we don't have to do this inside a `with` statement)
         #self.stop_listening = r.listen_in_background(m, self.callback)
+        oImage = QImage("wallpaper.jpeg")
+        sImage = oImage.scaled(QSize(1024,600))                   # resize Image to widgets size
+        palette = QPalette()
+        palette.setBrush(QPalette.Window, QBrush(sImage))                        
+        self.setPalette(palette)
 
+        self.label = QLabel('Test', self)                        # test, if it's really backgroundimage
+        self.label.setGeometry(50,50,200,50)
+        
+  
 
     def run(self):
         # Step 2: Create a QThread object
@@ -2270,6 +2497,7 @@ class MainMenu(QWidget):
         self.thread.finished.connect(self.thread.deleteLater)
         self.worker.time.connect(self.updateScreenTime)
         self.worker.translate.connect(self.runTranslate)
+        self.worker.progress.connect(self.updateScreen)
         # Step 6: Start the thread
         self.thread.start()
         
@@ -2292,7 +2520,46 @@ class MainMenu(QWidget):
             
         elif flag == 'Topics':
             print("go to Topics")
-            self.runTopics()
+            self.lesson = topics()
+            self.lesson.show()
+            self.lesson.run()
+            self.hide()
+            
+        elif flag == 'Quiz Screen':
+            print("go to quiz")
+            self.quiz = QuizScreen()
+            self.quiz.show()
+            self.quiz.run()
+            self.hide()
+            
+        elif flag == 'About':
+            print("go to quiz")
+            # Step 2: Create a QThread object
+            self.thread2 = QThread()
+            # Step 3: Create a worker object
+            self.worker2 = MenuWorker2()
+            # Step 4: Move worker to the thread
+            self.worker2.moveToThread(self.thread2)
+            self.thread2.started.connect(self.worker2.run)
+
+            self.worker2.finished2.connect(self.thread2.quit)
+            self.worker2.finished2.connect(self.worker2.deleteLater)
+            self.thread2.finished.connect(self.thread2.deleteLater)
+            #self.worker2.progress.connect(self.updateScreen)
+            # Step 6: Start the thread
+            self.thread2.start()
+
+            # Final resets
+            self.btnAbout.setEnabled(False)
+
+            self.thread2.finished.connect(
+                lambda: self.btnAbout.setEnabled(True)
+            )
+            
+            self.thread2.finished.connect(
+                lambda: self.gotoMenu()
+            )
+    
             
         
     def stop(self):
@@ -2305,16 +2572,15 @@ class MainMenu(QWidget):
         flag = "Topics"
         self.btnTopics.setEnabled(False)
         #self.MainThrd.join()
-        #speak(self.btnTopics.text())
-        self.lesson = topics()
-        self.lesson.show()
-        self.hide()
+        speak(self.btnTopics.text())
+        
         #self.close()
         #self.my_loop("topics")
         #MainThrd.join()
         #MainMenu=False
 
     def updateScreenTime(self):
+        global Hour, Meridian
         x = datetime.datetime.now()
         Day = x.strftime("%A")
         Month = x.strftime("%B")
@@ -2341,9 +2607,7 @@ class MainMenu(QWidget):
         speak(self.btnQuiz.text())
         #self.MainThrd.close()
         #speak("Quizzes")
-        self.quiz = QuizScreen()
-        self.quiz.show()
-        self.hide()
+        
         #self.close()
 
 
@@ -2352,35 +2616,21 @@ class MainMenu(QWidget):
         global flag
         flag = "Translate"
         self.btnTranslate.setEnabled(False)
+        speak(self.btnTranslate.text())
         
         #self.close()
 
 
     def runAbout(self):
-        # Step 2: Create a QThread object
-        self.thread2 = QThread()
-        # Step 3: Create a worker object
-        self.worker2 = MenuWorker2()
-        # Step 4: Move worker to the thread
-        self.worker2.moveToThread(self.thread2)
-        self.thread2.started.connect(self.worker2.run)
-
-        self.worker2.finished2.connect(self.thread2.quit)
-        self.worker2.finished2.connect(self.worker2.deleteLater)
-        self.thread2.finished.connect(self.thread2.deleteLater)
-        #self.worker2.progress.connect(self.updateScreen)
-        # Step 6: Start the thread
-        self.thread2.start()
-
-        # Final resets
-        self.btnAbout.setEnabled(False)
-
-        self.thread2.finished.connect(
-            lambda: self.btnAbout.setEnabled(True)
-        )
+        global flag
+        flag = "About"
+        
 
     def gotoMenu(self):
-        self.show()
+        global flag
+        flag = "MainMenu"
+        self.run()
+        
 
 class splashWorker (QObject):
     finished = pyqtSignal()
@@ -2430,6 +2680,14 @@ class SplashScreen(QWidget):
         self.setCursor(Qt.BlankCursor)  
         #activeScreen = "MainMenu"
         # Create and connect widgets
+        oImage = QImage("wallpaper.jpeg")
+        sImage = oImage.scaled(QSize(1024,600))                   # resize Image to widgets size
+        palette = QPalette()
+        palette.setBrush(QPalette.Window, QBrush(sImage))                        
+        self.setPalette(palette)
+
+        self.label = QLabel('Test', self)                        # test, if it's really backgroundimage
+        self.label.setGeometry(50,50,200,50)
 
     def run(self):
         # Step 2: Create a QThread object
@@ -2465,7 +2723,7 @@ class SplashScreen(QWidget):
 
 def myThread():
     speak("Good Day, learner!")
-    ard.ledAll()
+    #ard.ledAll()
     
     while "thread":
         if flag == "Quiz":
@@ -2476,18 +2734,29 @@ def myThread():
 
         print(f"Learner's Name: {learner_name}")
         print(f"User voice: {user_input}")
+        print(f"Input VOSK: {vosk_input}")
         print(f"Counter: {counter}")
         print(f"FLAG: {flag}")
         print(f"Subject: {subjectLesson}")
         print(threading.enumerate())
         sleep(1)
+        
         try:
             pass
 
         except KeyboardInterrupt:
             sys.exit(0)
-            
 
+#check the connection
+
+def connect(host='http://google.com'):
+    try:
+        urllib.request.urlopen(host) #Python 3.x
+        return True
+    except:
+        return False
+    
+    
 # this is called from the background thread
 def callback(recognizer, audio):
     #ard.ledListening()
@@ -2497,29 +2766,126 @@ def callback(recognizer, audio):
         # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
         # instead of `r.recognize_google(audio)`
         text = recognizer.recognize_google(audio)
+        with open (str('user_audio/'+text+'.wav'), 'wb') as f:
+            f.write(audio.get_wav_data())
+            
         print("Google Speech Recognition thinks you said " + text)
         
-        global user_input
+        global user_input, flag, subjectLesson
         user_input = text
         stripWords = word_tokenize(text)
+        askWords = ["what", "where", "why", "who", "what is" , "who is", "how"]
         greetWords = ["hello", "hi"]
-        stopWords = ["ai", "madam", "tutor", "athena", "thesis"]
-        #print (text)
+        nameWords = ["name", "my name is", "i am", "just call me", "you can call me", "i'm"]
+        stopWords = ["ai", "tutor", "et", "thesis", "hi et", "hey et"]
+        print (stripWords)
         
-        if any (i in stripWords for i in greetWords) and flag == "MainMenu":
-            res = np.random.choice(
-                ["hello!", "hi!", "yes?", "hello?"])
-            ard.nod()
-            speak(res)
+        
             
-        
-        if any (i in stripWords for i in stopWords):
+        if any (i in stripWords for i in stopWords) and flag == "MainMenu":
             result = [i for i in stripWords if not any([e for e in stopWords if e in i])] #this code removes the stopWords from stripWords
-            recognizedWords(result)
+            print(result)
         
-        #if any (i in text for i in ["ai", "madam", "tutor", "athena", "thesis", "hi", "hello"]):
-            #playScript("audio/Short Marimba Notification Ding.mp3")
-        #    recognizedWords(text)
+            if result:
+                #name is called with other query
+                if any (i in result for i in greetWords):
+                    res = np.random.choice(["hello!", "hi!", "yes?", "hello?"])
+                    ard.nod()
+                    speak(res)
+                    
+                
+            else:
+                #name is only called
+                speak("result is empty")
+                speak("yes?")
+                
+            
+                while True:
+                    if user_input == "hello":
+                        speak("hello")
+                        break
+                    
+                    
+                
+            
+            """
+            if any (i in stripWords for i in greetWords):
+                res = np.random.choice(["hello!", "hi!", "yes?", "hello?"])
+                ard.nod()
+                speak(res)
+            """
+            
+        #Topics    
+        if flag == "Topics":
+            if any(i in stripWords for i in ["rhyming", "non rhyming", "rhyming and non rhyming"]):
+                subjectLesson = "Rhyming"
+                print (subjectLesson)
+                
+            elif any(i in stripWords for i in ["sentence", "sentences", "non sentence" , "non sentences", "sentences and non sentences"]):
+                subjectLesson = "Sentence"
+                print (subjectLesson)
+                
+            elif any(i in stripWords for i in ["express", "polite expression", "expression" , "polite"]):
+                subjectLesson = "Express"
+                print (subjectLesson)
+                
+            elif any(i in stripWords for i in ["stories", "short stories", "short"]):
+                subjectLesson = "Stories"
+                print (subjectLesson) 
+            
+        #quizzes    
+        if flag == "Quiz Screen":
+            if any(i in stripWords for i in ["rhyming", "non rhyming", "rhyming and non rhyming"]):
+                subjectLesson = "Rhyming"
+                print (subjectLesson)
+                
+            elif any(i in stripWords for i in ["sentence", "sentences", "non sentence" , "non sentences", "sentences and non sentences"]):
+                subjectLesson = "Sentence"
+                print (subjectLesson)
+                
+            elif any(i in stripWords for i in ["express", "polite expression", "expression" , "polite"]):
+                subjectLesson = "Express"
+                print (subjectLesson) 
+            
+            
+        # Main Menu
+        if flag == "MainMenu":
+            if any(i in stripWords for i in ["topic", "topics", "lessons", "lesson", "learning module", "module"]):
+                flag = "Topics"
+                speak("learning modules")
+                print (flag)
+
+            # quiz
+            elif any(i in stripWords for i in ["quiz", "quizzes", "play", "learning tasks", "learning task", "tasks", "task"]):
+                flag = "Quiz Screen"
+                speak("learning tasks")
+                print (flag)
+               
+            # translate
+            elif any(i in stripWords for i in ["translate", "translation"]):
+                flag = "Translate"
+                speak("translate")
+                print (flag)
+
+            # about me
+            elif any(i in stripWords for i in ["about", "info", "who are you"]):
+                flag = "About"
+                print (flag)
+            
+        '''
+        elif any (i in stripWords for i in askWords):
+            ask_without_sw = [word for word in name if not word in stopwords.words()]
+            print(ask_without_sw)
+            speak(f"{ask_without_sw[0]}?")
+            
+        elif any (i in stripWords for i in nameWords):
+            name = [i for i in stripWords if not any([e for e in nameWords if e in i])] #this code removes the nameWords from stripWords
+            name_without_sw = [word for word in name if not word in stopwords.words()]
+            print(name_without_sw)
+            speak(f"hello {name_without_sw[0]}")
+        '''   
+        
+
 
     except sr.UnknownValueError:
         print("Google Speech Recognition could not understand audio")
@@ -2527,11 +2893,12 @@ def callback(recognizer, audio):
         print("Could not request results from Google Speech Recognition service; {0}".format(e))
 
 
+
 def recognizedWords(text):
     global flag
     
     if flag == "MainMenu":
-        response = ask_ettibot().lower()
+        #response = ask_ettibot().lower()
         query = word_tokenize(response)
         #print("Speaking: "+str(speaking))
         #window = MainMenu ()
@@ -2609,11 +2976,11 @@ def recognizedWords(text):
 
         elif any(i in query for i in ["disagree", "disaffirm"]):
             ard.notNod()
-            ard.lookStraight()
+            
 
         elif any(i in query for i in ["agree", "affirm"]):
             ard.nod()
-            ard.lookStraight()
+            
 
 
         elif "none" in query:
@@ -2642,7 +3009,49 @@ def recognizedWords(text):
             speak(res)
             print(query)
 
+def listenVosk():
+    global user_input, vosk_input, flag
+    #recognizing
+    mic = pyaudio.PyAudio()
+    stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
+    stream.start_stream()
+    
+    while True:
+        data = stream.read(4096)
+        if recognizer.AcceptWaveform(data):
+            text = recognizer.Result()
+            word = text[14:-3]
+            query = word_tokenize(word)
+            print(quey)
+            sleep(3)
+            
+            print('VOSK:'+word)
+            
+            if word != "" and flag != "Translate":
+                vosk_input = word
+                user_input = word
+                
+            elif any(i in query for i in ["up", "look up"]):
+                ard.lookUp()
 
+            elif any(i in query for i in ["down", "look down"]):
+                ard.lookDown()
+
+            elif any(i in query for i in ["left", "look left"]):
+                ard.lookLeft()
+
+            elif any(i in query for i in ["right", "look right"]):
+                ard.lookRight()
+
+            elif any(i in query for i in ["disagree", "disaffirm"]):
+                ard.notNod()
+                
+            elif any(i in query for i in ["agree", "affirm"]):
+                ard.nod()
+                
+            else:
+                print("Nope")
+            
 
 def main():
     app = QApplication(sys.argv)
@@ -2661,7 +3070,13 @@ def main():
         r.energy_threshold = energyThres
         
     stop_listening = r.listen_in_background(m, callback) #phrase_time_limit=10
+    
+    #Enumerate Running Threads
+    voskThread = threading.Thread(name="VOSK", target=listenVosk)
+    voskThread.setDaemon(True)
+    voskThread.start()
 
+    
     #MainThrd.join()
 
     #Enumerate Running Threads
@@ -2675,6 +3090,22 @@ def main():
 if __name__ == '__main__':
     #Main Thread
     try:
+        #create_connection(r"/home/pi/ai-thesis/src/database/options.db")
+        try:
+            conn.execute('''CREATE TABLE ET
+             (ID INT PRIMARY KEY     NOT NULL,
+             NAME           TEXT    NOT NULL,
+             AGE            INT     NOT NULL,
+             ADDRESS        CHAR(50));''')
+            
+            print ("Table created successfully")
+            
+        except Exception as e:
+            print(e)
+            
+        conn.execute("""INSERT INTO ET (ID,NAME,AGE,ADDRESS)\
+        VALUES (1, 'Paul', 32, 'California')""");
+        
         main()
         
     except KeyboardInterrupt as k:

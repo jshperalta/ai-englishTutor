@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1076</width>
     <height>610</height>
    </rect>
   </property>
@@ -80,7 +80,7 @@ font-weight: 900;
 color: black;</string>
        </property>
        <property name="text">
-        <string>Artificial Intelligence English Tutor in New Normal Learning: ET Robot</string>
+        <string>Artificial Intelligence English Tutor for New Normal Learning</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
